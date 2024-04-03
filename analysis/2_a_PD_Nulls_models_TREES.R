@@ -55,6 +55,14 @@ trees_PD_MNTD_50km <- compute.PD.per.cell(sp_asb_df = trees_occ_df,
                                          grid = "50x50",
                                          taxon = "Trees")
 
+saveRDS(trees_PD_Faith_50km, here::here("transformed_data",
+                                        "PD_Faith_50km_TREES.rds"))
+saveRDS(trees_PD_MPD_50km, here::here("transformed_data",
+                                      "PD_MPD_50km_TREES.rds"))
+saveRDS(trees_PD_MNTD_50km, here::here("transformed_data",
+                                     "PD_MNTD_50km_TREES.rds"))
+
+
 
 # 3 - Compute PD null models ============================================
 
@@ -78,5 +86,56 @@ saveRDS(mpd_null_models, here::here("transformed_data",
 saveRDS(mntd_null_models, here::here("transformed_data",
                                     "PD_MNTD_null_models_50km_TREES.rds"))
 
+
+# 4 - Compute SES ========================================================
+
+
+# Note SES: If the test were a one-sided test of whether the value observed was
+# significantly lower than expected, we would require a P -value less than or
+# equal to 0.05. If the test were a one-sided test of whether the value
+# observed was significantly higher than expected, we would require a P -value
+# greater than or equal to 0.95. If the test were two sided, we would require
+# P -values less than or equal to 0.025 or greater than or equal to 0.975.
+
+
+# Load null model data:
+trees_null_model_faith <- readRDS(here::here("transformed_data",
+                                             "PD_Faith_null_models_50km_TREES.rds"))
+trees_null_model_mpd <- readRDS(here::here("transformed_data",
+                                           "PD_MPD_null_models_50km_TREES.rds"))
+trees_null_model_mntd <- readRDS(here::here("transformed_data",
+                                           "PD_MNTD_null_models_50km_TREES.rds"))
+
+# Load the actual values of PD indices:
+trees_PD_Faith_50km <- readRDS(here::here("transformed_data",
+                                          "PD_Faith_50km_TREES.rds"))
+trees_PD_MPD_50km <- readRDS(here::here("transformed_data",
+                                        "PD_MPD_50km_TREES.rds"))
+trees_PD_MNTD_50km <- readRDS(here::here("transformed_data",
+                                        "PD_MNTD_50km_TREES.rds"))
+
+
+# Compute SES for Faith PD:
+trees_ses_faith_df <- compute.null.model.metrics(null_model_df = trees_null_model_faith,
+                                                 null_metric_to_compute = c("ses"),
+                                                 ind_values_df = trees_PD_Faith_50km)
+saveRDS(trees_ses_faith_df, here::here("transformed_data",
+                                       "PD_Faith_null_models_metrics_50km_TREES.rds"))
+
+
+# Compute SES ratios for MPD:
+trees_ses_mpd_df <- compute.null.model.metrics(null_model_df = trees_null_model_mpd,
+                                               null_metric_to_compute = c("ses"),
+                                               ind_values_df = trees_PD_MPD_50km)
+saveRDS(trees_ses_mpd_df, here::here("transformed_data",
+                                     "PD_MPD_null_models_metrics_50km_TREES.rds"))
+
+
+# Compute SES ratios for MNTD:
+trees_ses_mntd_df <- compute.null.model.metrics(null_model_df = trees_null_model_mntd,
+                                               null_metric_to_compute = c("ses"),
+                                               ind_values_df = trees_PD_MNTD_50km)
+saveRDS(trees_ses_mntd_df, here::here("transformed_data",
+                                      "PD_MNTD_null_models_metrics_50km_TREES.rds"))
 
 
