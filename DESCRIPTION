@@ -16,4 +16,9 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
-    dplyr
+    ape,
+    dplyr,
+    here,
+    picante,
+    stats,
+    tibble

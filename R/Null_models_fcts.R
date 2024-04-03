@@ -277,8 +277,8 @@ compute.null.model.PD <- function(phylo_tree,
   # For MPD:
   mpd_df <- faith_df
 
-  # For mean(ED):
-  mED_df <- faith_df
+  # For MNTD:
+  mntd_df <- faith_df
 
 
   # Change labels because when save with write.tree, add "_":
@@ -323,40 +323,26 @@ compute.null.model.PD <- function(phylo_tree,
     MPD_pd <- picante::mpd(samp = sp_null_asb_df,
                                dis = dist_mat,
                                abundance.weighted = FALSE)
-    # Get the highest pairwise distance from all sp of the global pool:
-    # NA for asb with only one species:
-    highest_pairw <- max(dist_mat)
+    # Get the mean distance of each species to all its neighb from glob pool:
+    mean_dist_sp <- apply(dist_mat, 1, mean, na.rm = TRUE)
     # Compute relative values:
     MPD_pd_relat <- MPD_pd
-    MPD_pd_relat <- MPD_pd_relat/highest_pairw
+    MPD_pd_relat <- MPD_pd_relat/mean_dist_sp
 
 
-    ## Compute mean(ED):
-    # Compute the Evolutionary Distinctiveness for all species of the tree:
-    ED <- picante::evol.distinct(tree = phylo_tree,
-                                 type = c("fair.proportion"))
-
-    # Build an empty vector for mean(ED) value:
-    meanED_vect <- c()
-
-    # Compute the mean(ED) per each assemblage:
-    for (j in (1:nrow(sp_null_asb_df))) {
-
-      # Get the names of species present in the given assemblage:
-      sp_asb_df <- as.data.frame(sp_null_asb_df)
-      asb_sp_nm <- colnames(dplyr::select_if(sp_asb_df,
-                                             sp_asb_df[j, ] == 1))
-
-      # Compute mean(ED) of the species in the studied asb and store value:
-      mean_ED <- mean(ED$w[which(ED$Species %in% asb_sp_nm)])
-      meanED_vect <- append(meanED_vect, mean_ED)
-      names(meanED_vect)[length(meanED_vect)] <- rownames(sp_asb_df)[j]
-
-    } # end loop compute mean(ED) per asb
+    ## Compute MNTD:
+    # Compute Mean Pairwise Distance (MPD) per asb:
+    MNTD_pd <- picante::mntd(samp = sp_asb_df,
+                                 dis = dist_mat,
+                                 abundance.weighted = FALSE)
 
 
-    # Standardise by the maximal value between two species in the global pool:
-    max_ED <- max(ED$w)
+    # Get the highest pairwise distance from all sp of the global pool:
+    highest_pairw <- max(dist_mat)
+
+    # Compute relative values:
+    MNTD_pd_relat <- MNTD_pd
+    MNTD_pd_relat <- MNTD_pd_relat/highest_pairw
 
 
     # Fill the Faith df:
@@ -370,7 +356,7 @@ compute.null.model.PD <- function(phylo_tree,
     mpd_df[, i] <- MPD_pd_relat
 
     # Fill the mean(ED) df:
-    mED_df[, i] <- meanED_vect/max_ED
+    mntd_df[, i] <- MNTD_pd_relat
 
 
   } # end loop on null assemblage rep
@@ -378,7 +364,7 @@ compute.null.model.PD <- function(phylo_tree,
 
   return(list("faith" = faith_df,
               "mpd" = mpd_df,
-              "med" = mED_df))
+              "mntd" = mntd_df))
 
 }
 

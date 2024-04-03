@@ -26,8 +26,38 @@ INTEGRADIV_occ_db <- read.csv(here::here("integradiv_db",
 INTEGRADIV_trees_occ_df <- dplyr::filter(INTEGRADIV_occ_db,
                                          Taxon == "Trees")
 
-# Number of species:
+# Number of species: 204
 length(unique(INTEGRADIV_trees_occ_df$Species))
+
+# Only keep 50x50 assemblages ie cells:
+temp_trees_sp_asb_50km <- dplyr::filter(INTEGRADIV_trees_occ_df,
+                                        Grid == "50x50")
+
+# Pivot wider so asb are columns:
+trees_sp_asb_50km <- temp_trees_sp_asb_50km %>%
+  # Add a new column with 1 values (used for pivoting after):
+  dplyr::mutate(Value = 1) %>%
+  # Only keep interesting columns: species name, asb data and value:
+  dplyr::select("Species", "Idgrid", "Value") %>%
+  # Remove similar rows (same species and cells name because several info sources):
+  dplyr::distinct() %>%
+  # Pivot wider:
+  tidyr::pivot_wider(names_from = "Idgrid",
+                     values_from = "Value") %>%
+  # Replace NAs by 0:
+  replace(is.na(.), 0) %>%
+  # Species names with space instead of "_":
+  dplyr::mutate(dplyr::across("Species", stringr::str_replace, '_', ' ')) %>%
+  # Species as rownames:
+  tibble::column_to_rownames(var = "Species") %>%
+  # Transpose the df because I want asb as rows and sp as columns:
+  t()
+
+
+# Save it:
+saveRDS(trees_sp_asb_50km,
+        here::here("transformed_data",
+                   "sp_asb_50km_TREES.rds"))
 
 
 # 2 - Load and clean phylogenetic data ================================
