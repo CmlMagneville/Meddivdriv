@@ -36,14 +36,6 @@
 #' plotted along a continuous scale. Otherwise they are plotted along a
 #' discrete scale defined by 1/10 of values.
 #'
-#' @param std a character string referring to whether colors should be
-#' standardised between 0 and 1 \code{"0-1"} or between 0 and the maximal
-#' value of the index \code{"0-max"}. Only used if a continuous color scale
-#' is chosen.
-#'
-#' @param col_pal a character string referring to the color palette to use
-#' from the \code{harrypotter} package
-#'
 #' @param plot_title a TRUE/FALSE value referring to plotting or not the graph
 #' title (on the diversity facet studied)
 #'
@@ -63,7 +55,6 @@ div.maps.plot <- function(div_per_cell_df,
                           metric_nm,
                           grid,
                           continuous,
-                          std,
                           col_pal,
                           plot_title,
                           save) {
@@ -89,18 +80,17 @@ div.maps.plot <- function(div_per_cell_df,
   # if maps to be plotted as continuous:
   if (continuous == TRUE) {
 
+    # Set the colour scale limit to go from negative max to positive max:
+    limit <- max(abs(spatial_div_per_cell_df$Div_metric)) * c(-1, 1)
+
     # if plot title is TRUE:
     if (plot_title == TRUE) {
-
-      # if standardise between 0 and 1:
-      if (std == "0-1") {
 
           div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
 
             ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
 
-            harrypotter::scale_fill_hp(option = col_pal, name = metric_nm,
-                                       limits = c(0, 1))  +
+            ggplot2::scale_fill_distiller(type = "div", limit = limit) +
 
             ggplot2::theme(legend.position = "bottom",
                            legend.title = ggplot2::element_text(size = 12),
@@ -115,41 +105,11 @@ div.maps.plot <- function(div_per_cell_df,
 
             ggplot2::ggtitle(paste0(div_facet_nm, sep = " - ",
                                     unique(div_per_cell_df$Taxon)))
-      } # if std between 0 and 1
-
-
-      if (std == "0-max") {
-
-        div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
-
-          ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
-
-          harrypotter::scale_fill_hp(option = col_pal, name = metric_nm,
-                                     limits = c(0,
-                                    max(spatial_div_per_cell_df$Div_metric)))  +
-
-          ggplot2::theme(legend.position = "bottom",
-                         legend.title = ggplot2::element_text(size = 12),
-                         axis.text = ggplot2::element_text(size = 12),
-                         axis.title = ggplot2::element_text(size = 12),
-                         panel.grid.major = ggplot2::element_line(colour = "lightgrey"),
-                         panel.background = ggplot2::element_rect(fill = NA,
-                                                                  colour = "black"))  +
-
-          ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
-                        fill= metric_nm) +
-
-          ggplot2::ggtitle(paste0(div_facet_nm, sep = " - ",
-                                  unique(div_per_cell_df$Taxon)))
-      } # if std between 0 and maximal value
 
     }
 
     # if no title to plot:
     if (plot_title == FALSE) {
-
-      # if standardise between 0 and 1:
-      if (std == "0-1") {
 
         div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
 
@@ -169,31 +129,6 @@ div.maps.plot <- function(div_per_cell_df,
           ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
                         fill= metric_nm)
 
-      } # if std between 0 and 1
-
-
-      if (std == "0-max") {
-
-        div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
-
-          ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
-
-          harrypotter::scale_fill_hp(option = col_pal, name = metric_nm,
-                                     limits = c(0,
-                                                max(spatial_div_per_cell_df$Div_metric)))  +
-
-          ggplot2::theme(legend.position = "bottom",
-                         legend.title = ggplot2::element_text(size = 12),
-                         axis.text = ggplot2::element_text(size = 12),
-                         axis.title = ggplot2::element_text(size = 12),
-                         panel.grid.major = ggplot2::element_line(colour = "lightgrey"),
-                         panel.background = ggplot2::element_rect(fill = NA,
-                                                                  colour = "black"))  +
-
-          ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
-                        fill= metric_nm)
-
-      } # if std between 0 and maximal value
 
     } # end if plot title = FALSE
 
@@ -283,7 +218,7 @@ div.maps.plot <- function(div_per_cell_df,
   if (save == TRUE) {
 
     ggplot2::ggsave(plot = div_map,
-                    filename = here::here("outputs",
+                    filename = here::here("maps",
                                           paste0(unique(div_per_cell_df$Taxon),
                                                  sep = "_",
                                                  metric_nm,

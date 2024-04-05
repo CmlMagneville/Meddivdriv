@@ -327,12 +327,12 @@ compute.null.model.PD <- function(phylo_tree,
     mean_dist_sp <- apply(dist_mat, 1, mean, na.rm = TRUE)
     # Compute relative values:
     MPD_pd_relat <- MPD_pd
-    MPD_pd_relat <- MPD_pd_relat/mean_dist_sp
+    MPD_pd_relat <- MPD_pd_relat/max(mean_dist_sp)
 
 
     ## Compute MNTD:
     # Compute Mean Pairwise Distance (MPD) per asb:
-    MNTD_pd <- picante::mntd(samp = sp_asb_df,
+    MNTD_pd <- picante::mntd(samp = sp_null_asb_df,
                                  dis = dist_mat,
                                  abundance.weighted = FALSE)
 
