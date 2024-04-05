@@ -165,9 +165,76 @@ birds_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_mntd_clean_
 
 
 
-# 3 - BUTTERFLIES ####################################################################
+# 3 - REPTILES #################################################################
 
 
+
+# 2 a - Maps SES PD (Faith, MPD, MNTD) =========================================
+
+
+# Load diversity data:
+reptiles_ses_faith_df <- readRDS(here::here("transformed_data",
+                                         "PD_Faith_null_models_metrics_50km_REPTILES.rds"))
+reptiles_ses_mpd_df <- readRDS(here::here("transformed_data",
+                                       "PD_MPD_null_models_metrics_50km_REPTILES.rds"))
+reptiles_ses_mntd_df <- readRDS(here::here("transformed_data",
+                                        "PD_MNTD_null_models_metrics_50km_REPTILES.rds"))
+
+# Load grid data:
+grid_50km <- sf::st_read(here::here("integradiv_db",
+                                    "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
+# Rename the GRD_ID column as Idgrid:
+grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+
+# Transform the data frames to plot:
+reptiles_ses_faith_clean_df <- reptiles_ses_faith_df %>%
+  dplyr::select(c("Idgrid", "ses")) %>%
+  dplyr::rename(metric = "ses") %>%
+  dplyr::mutate(Grid = "50x50") %>%
+  dplyr::mutate(Taxon = "Reptiles") %>%
+  dplyr::select(c("Idgrid", "metric", "Grid", "Taxon"))
+reptiles_ses_mpd_clean_df <- reptiles_ses_mpd_df %>%
+  dplyr::select(c("Idgrid", "ses")) %>%
+  dplyr::rename(metric = "ses") %>%
+  dplyr::mutate(Grid = "50x50") %>%
+  dplyr::mutate(Taxon = "Reptiles") %>%
+  dplyr::select(c("Idgrid", "metric", "Grid", "Taxon"))
+reptiles_ses_mntd_clean_df <- reptiles_ses_mntd_df %>%
+  dplyr::select(c("Idgrid", "ses")) %>%
+  dplyr::rename(metric = "ses") %>%
+  dplyr::mutate(Grid = "50x50") %>%
+  dplyr::mutate(Taxon = "Reptiles") %>%
+  dplyr::select(c("Idgrid", "metric", "Grid", "Taxon"))
+
+
+# Map and save:
+reptiles_SES_faith_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_faith_clean_df,
+                                          div_facet_nm = "PD",
+                                          metric_nm = "SES Faith",
+                                          grid = grid_50km,
+                                          continuous = TRUE,
+                                          plot_title = TRUE,
+                                          save = TRUE)
+reptiles_SES_MPD_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_mpd_clean_df,
+                                        div_facet_nm = "PD",
+                                        metric_nm = "SES MPD",
+                                        grid = grid_50km,
+                                        continuous = TRUE,
+                                        plot_title = TRUE,
+                                        save = TRUE)
+reptiles_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_mntd_clean_df,
+                                         div_facet_nm = "PD",
+                                         metric_nm = "SES MNTD",
+                                         grid = grid_50km,
+                                         continuous = TRUE,
+                                         plot_title = TRUE,
+                                         save = TRUE)
+
+
+
+
+# 2 b - Maps SES FD (FRic, FMPD, FOri) =========================================
 
 
 
