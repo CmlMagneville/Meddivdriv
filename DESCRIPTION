@@ -18,6 +18,7 @@ RoxygenNote: 7.2.3
 Imports: 
     ape,
     dplyr,
+    funbiogeo,
     here,
     picante,
     stats,
