@@ -54,7 +54,6 @@ birds_traits_df <- dplyr::select(birds_traits_df,
                                  c("Species",
                                    "Beak.Length_Culmen",
                                    "Beak.Width",
-                                   "Beak.Depth",
                                    "Age of first breeding",
                                    "Mass",
                                    "Hand-Wing.Index",
@@ -69,11 +68,11 @@ birds_traits_df <- dplyr::select(birds_traits_df,
 
 # Making a new variable: Beak_Ratio = depth/width:
 birds_traits_df$Beak.Width <- as.numeric(birds_traits_df$Beak.Width)
-birds_traits_df$Beak.Depth <- as.numeric(birds_traits_df$Beak.Depth)
+birds_traits_df$Beak.Length_Culmen <- as.numeric(birds_traits_df$Beak.Length_Culmen)
 
 birds_traits_df <- birds_traits_df %>%
-  dplyr::mutate(Beak.Ratio = round(Beak.Depth / Beak.Width, 3)) %>%
-  dplyr::select(-c("Beak.Depth", "Beak.Width"))
+  dplyr::mutate(Beak.Ratio = round(Beak.Length_Culmen / Beak.Width, 3)) %>%
+  dplyr::select(-c("Beak.Length_Culmen", "Beak.Width"))
 
 
 
