@@ -20,6 +20,7 @@ Imports:
     dplyr,
     funbiogeo,
     here,
+    miceRanger,
     picante,
     stats,
     tibble
