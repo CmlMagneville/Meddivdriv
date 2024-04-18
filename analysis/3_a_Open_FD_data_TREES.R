@@ -57,8 +57,15 @@ trees_traits_df <- trees_traits_corrected %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
+# All traits of this dataframe will be used for the analysis, keep them all :)
 
-# All traits of this dataframe will be used for tha analysis, keep them all :)
+
+# Traits with the right format:
+trees_traits_df$LA <- as.numeric(trees_traits_df$LA)
+trees_traits_df$SeedMass <- as.numeric(trees_traits_df$SeedMass)
+trees_traits_df$SLA <- as.numeric(trees_traits_df$SLA)
+trees_traits_df$StemSpecDens <- as.numeric(trees_traits_df$StemSpecDens)
+trees_traits_df$HeightMax <- as.numeric(trees_traits_df$HeightMax)
 
 
 # Save the traits:
