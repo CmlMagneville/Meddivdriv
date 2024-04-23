@@ -1,0 +1,197 @@
+################################################################################
+##
+## Script to compute null models for FD - for BIRDS
+##
+## Camille Magneville
+##
+## 23/04/2024
+##
+## 5_b_FD_Null_models_BIRDS.R
+##
+################################################################################
+
+
+# Define the pipe symbol so I can use it:
+`%>%` <- magrittr::`%>%`
+
+
+# 1 - Load data and create traits category df ==================================
+
+
+# Species-traits data:
+sp_tr_BIRDS <- readRDS(here::here("transformed_data",
+                                  "final_traits_BIRDS.rds"))
+
+# Occurrence data:
+sp_occ_BIRDS <- readRDS(here::here("transformed_data",
+                                   "sp_asb_50km_BIRDS.rds"))
+
+# Check that traits have the right format:
+str(sp_tr_BIRDS)
+
+# Create traits category data frame:
+traits_nm <- c("Age_First_Breeding",
+               "Mass",
+               "Hand_Wing_Index",
+               "Migration",
+               "Tail_Length",
+               "Tarsus_Length",
+               "Clutch_Mean",
+               "Broods_Per_Year",
+               "Life_Span",
+               "Fledging_Period",
+               "Beak_Ratio")
+traits_cat <- c("O", "Q", "Q", "O", "Q", "Q", "Q", "O", "Q", "Q", "Q")
+trait_cat_df <- data.frame(traits_nm, traits_cat)
+colnames(trait_cat_df) <- c("trait_name", "trait_type")
+
+
+# 2 - Summarise traits and assemblages =========================================
+
+
+# Species traits summary:
+traits_summ_BIRDS <- mFD::sp.tr.summary(
+  tr_cat     = trait_cat_df,
+  sp_tr      = sp_tr_BIRDS,
+  stop_if_NA = TRUE)
+traits_summ_BIRDS$tr_summary_list
+
+# Summary of the assemblages * species dataframe:
+asb_sp_summ_BIRDS <- mFD::asb.sp.summary(asb_sp_w = sp_occ_BIRDS)
+asb_sp_summ_BIRDS$sp_tot_w # number of occurrences of each species
+asb_sp_summ_BIRDS$asb_sp_richn # number of species per asb
+
+
+# 3 - Compute functional distances based on traits =============================
+
+
+sp_dist_BIRDS <- mFD::funct.dist(
+  sp_tr         = sp_tr_BIRDS,
+  tr_cat        = trait_cat_df,
+  metric        = "gower",
+  scale_euclid  = "scale_center",
+  ordinal_var   = "classic",
+  weight_type   = "equal",
+  stop_if_NA    = TRUE)
+
+# Check if a lot of species pairs have a traits-based distance = 0:
+dist_BIRDS <- mFD::dist.to.df(list("dist" = sp_dist_BIRDS))
+# Note: Only one species pair has a distance = 0, ok :)
+
+
+# 4 - Compute functional spaces and assess their quality =======================
+
+
+fspaces_quality_BIRDS <- mFD::quality.fspaces(
+  sp_dist             = sp_dist_BIRDS,
+  maxdim_pcoa         = 10,
+  deviation_weighting = "absolute",
+  fdist_scaling       = FALSE,
+  fdendro             = "average")
+fspaces_quality_BIRDS$quality_fspaces
+
+# Plot it:
+mFD::quality.fspaces.plot(
+  fspaces_quality            = fspaces_quality_BIRDS,
+  quality_metric             = "mad",
+  fspaces_plot               = c("tree_average", "pcoa_2d", "pcoa_3d",
+                                 "pcoa_4d", "pcoa_5d", "pcoa_6d"),
+  name_file                  = NULL,
+  range_dist                 = NULL,
+  range_dev                  = NULL,
+  range_qdev                 = NULL,
+  gradient_deviation         = c(neg = "darkblue", nul = "grey80", pos = "darkred"),
+  gradient_deviation_quality = c(low = "yellow", high = "red"),
+  x_lab                      = "Trait-based distance")
+
+# Note: the 4D is ok (trade off number of species per asb and quality)
+
+
+# 5 - Test correlation between funactional axes and traits =====================
+
+
+# Retrieve birds coordinates in the functional space:
+sp_faxes_coord_BIRDS <- fspaces_quality_BIRDS$"details_fspaces"$"sp_pc_coord"
+
+# Test correlation for half of the traits (because mFD limit to plot = 11):
+tr_1_6_faxes_BIRDS <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_BIRDS[,c(1:6)],
+  sp_faxes_coord = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
+  plot           = TRUE)
+tr_1_6_faxes_BIRDS
+
+# Test correlation for the other half::
+tr_7_11_faxes_BIRDS <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_BIRDS[,c(7:11)],
+  sp_faxes_coord = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
+  plot           = TRUE)
+tr_7_11_faxes_BIRDS
+
+
+
+# 6 - Plot functional spaces ===================================================
+
+
+fct_space_BIRDS <- mFD::funct.space.plot(
+  sp_faxes_coord  = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
+  faxes           = c("PC1", "PC2", "PC3", "PC4"),
+  name_file       = NULL,
+  faxes_nm        = NULL,
+  range_faxes     = c(NA, NA),
+  color_bg        = "grey95",
+  color_pool      = "darkgoldenrod2",
+  fill_pool       = "white",
+  shape_pool      = 21,
+  size_pool       = 1,
+  plot_ch         = TRUE,
+  color_ch        = "black",
+  fill_ch         = "white",
+  alpha_ch        = 0.5,
+  plot_vertices   = TRUE,
+  color_vert      = "turquoise",
+  fill_vert       = "turquoise",
+  shape_vert      = 23,
+  size_vert       = 1,
+  plot_sp_nm      = NULL,
+  nm_size         = 3,
+  nm_color        = "black",
+  nm_fontface     = "plain",
+  check_input     = TRUE)
+fct_space_BIRDS
+
+
+# 7 - Compute functional diversity indices =====================================
+
+
+# Compute FOri and FMPD:
+fmpd_fori_indices_BIRDS <- mFD::alpha.fd.multidim(
+  sp_faxes_coord   = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
+  asb_sp_w         = sp_occ_BIRDS,
+  ind_vect         = c("fmpd", "fori"),
+  scaling          = TRUE,
+  check_input      = TRUE,
+  details_returned = TRUE)
+fmpd_fori_BIRDS <- fmpd_fori_indices_BIRDS$functional_diversity_indices
+
+# Remove assemblages that have less that 4 species for FRic (4 included):
+sp_occ_subset_BIRDS <- sp_occ_BIRDS
+
+
+# Compute FRic:
+fric_indices_BIRDS <- mFD::alpha.fd.multidim(
+  sp_faxes_coord   = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
+  asb_sp_w         = sp_occ_subset_BIRDS,
+  ind_vect         = c("fmpd", "fori"),
+  scaling          = TRUE,
+  check_input      = TRUE,
+  details_returned = TRUE)
+
+
+# 8 - Compute FD Null Models ===================================================
+
+
+
+
+# 9 - Compute SES ==============================================================
+
+
