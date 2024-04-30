@@ -51,7 +51,7 @@ pres_past_landuse_wild_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus univer
 # Habitat characteristics:
 soil_db <- soil_db %>%
   dplyr::filter(Scale == "50") %>%
-  dplyr::filter(Variable_code %in% c("pH", "OC", "VWC")) %>%
+  dplyr::filter(Variable_code %in% c("pH", "OC", "VWC", "Depth")) %>%
   dplyr::filter(Metric %in% c("mean", "stdev"))
 
 topo_db <- topo_db %>%
