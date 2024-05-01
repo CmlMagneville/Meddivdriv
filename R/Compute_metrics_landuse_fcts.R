@@ -60,7 +60,18 @@ divide.pres.past <- function(landuse_df) {
     grid_cell_sum_df <- grid_cell_sum_df %>%
       dplyr::mutate("Time" = stringr::str_sub(FinalVariableCode,
                                               start = 14,
-                                              end = -11))
+                                              end = 19))
+
+    # Remove every character after the "_" if there is one:
+    # If there is a "_" in years names (for some land use), remove it:
+    if (grepl("_", unique(general_landuse_df$Time)[1]) == TRUE ) {
+
+      # Remove it:
+      general_landuse_df$Time <- stringr::str_split(general_landuse_df$Time,
+                                                    "\\_",
+                                                    simplify = TRUE)[, 1]
+    }
+
 
     # Remove unused columns and rename the columns:
     grid_cell_final_df <- grid_cell_sum_df %>%
@@ -111,6 +122,7 @@ divide.pres.past <- function(landuse_df) {
                      "2011AD", "2012AD", "2013AD", "2014AD", "2015AD",
                      "2016AD", "2017AD", "2018AD", "2019AD", "2020AD",
                      "2021AD", "2022AD", "2023AD")
+
 
 
   # Divide into past and present:
@@ -186,79 +198,156 @@ compute.wm.wsd <- function(landuse_df) {
                               "2016AD", "2017AD", "2018AD", "2019AD", "2020AD",
                               "2021AD", "2022AD", "2023AD"))
 
-  # PAST METRICS ------
+  # PAST METRICS NEW VERSION -----
+
+  # Add a Weight column which refers to the w used for mean and sd
+  # ... number of years the value represents / total number of year (past/present)
+  past_1000_w_df <- past_1000_df %>%
+    dplyr::mutate("Weight" = 1000/(7000 + 1850))
+  past_100_w_df <- past_100_df %>%
+    dplyr::mutate("Weight" = 100/(7000 + 1850))
+  past_10_w_df <- past_10_df %>%
+    dplyr::mutate("Weight" = 10/(7000 + 1850))
+
+  # Gather all data frames:
+  past_all_w_df <- rbind(past_1000_w_df,
+                         past_100_w_df,
+                         past_10_w_df)
+
+  # Compute the weighted mean for each grid cell:
+  past_weightedmean_df <- past_all_w_df %>%
+       dplyr::group_by(Idgrid) %>%
+       dplyr::summarise("Weighted_Mean" = weighted.mean(Value, Weight))
+
+  # Compute the weighted sd for each grid cell:
+  # First compute weighted square difference for each observation:
+  past_weighteddiff_df <- past_all_w_df %>%
+    dplyr::group_by(Idgrid) %>%
+    dplyr::left_join(past_weightedmean_df, by = "Idgrid") %>%
+    dplyr::mutate("Weighted_sq_diff" = Weight*((Value - Weighted_Mean)^2))
+  # Then, compute the sum of these weighted_sq_diff for a given cell:
+  past_weightedsd_df <- past_weighteddiff_df %>%
+    dplyr::group_by(Idgrid) %>%
+    dplyr::summarise("Sum_WSD" = sum(Weighted_sq_diff))
+  # Finally, divide by (N-1)sum(w)/N
+  sum_w <- sum(past_all_w_df$Weight)
+  past_weightedsd_df <- past_weightedsd_df %>%
+    dplyr::mutate("Weighted_Sd" = sqrt(Sum_WSD / ((8850-1)*sum_w/8850)))
+
+  # Bring the two df together:
+  past_metrics_df <- past_weightedmean_df %>%
+    dplyr::left_join(past_weightedsd_df[, -2], by = "Idgrid")
+
+
+
+  # PAST METRICS (wmean only) OLD VERSION ------
 
   # Compute the mean of each time period (based on resolution)
   # for each grid cell:
-  past_1000_mean_df <- past_1000_df %>%
-    dplyr::group_by(Idgrid) %>%
-    dplyr::summarise(Mean = mean(Value))
-  past_100_mean_df <- past_100_df %>%
-    dplyr::group_by(Idgrid) %>%
-    dplyr::summarise(Mean = mean(Value))
-  past_10_mean_df <- past_10_df %>%
-    dplyr::group_by(Idgrid) %>%
-    dplyr::summarise(Mean = mean(Value))
-
-  # Weight by the number of years:
-  past_1000_mean_df <- past_1000_mean_df %>%
-    dplyr::mutate("Weighted_mean_1000" = (Mean * 7000))
-  past_100_mean_df <- past_100_mean_df %>%
-    dplyr::mutate("Weighted_mean_100" = (Mean * 1700))
-  past_10_mean_df <- past_10_mean_df %>%
-    dplyr::mutate("Weighted_mean_10" = (Mean * 140))
+  # past_1000_mean_df <- past_1000_df %>%
+  #   dplyr::group_by(Idgrid) %>%
+  #   dplyr::summarise(Mean = mean(Value))
+  # past_100_mean_df <- past_100_df %>%
+  #   dplyr::group_by(Idgrid) %>%
+  #   dplyr::summarise(Mean = mean(Value))
+  # past_10_mean_df <- past_10_df %>%
+  #   dplyr::group_by(Idgrid) %>%
+  #   dplyr::summarise(Mean = mean(Value))
+  #
+  # # Weight by the number of years:
+  # past_1000_mean_df <- past_1000_mean_df %>%
+  #   dplyr::mutate("Weighted_mean_1000" = (Mean * 7000))
+  # past_100_mean_df <- past_100_mean_df %>%
+  #   dplyr::mutate("Weighted_mean_100" = (Mean * 1700))
+  # past_10_mean_df <- past_10_mean_df %>%
+  #   dplyr::mutate("Weighted_mean_10" = (Mean * 140))
 
   # Link the three tables of resolution to compute the actual mean:
-  past_wmean_df <- past_1000_mean_df %>%
-    dplyr::left_join(past_100_mean_df[, -2], by = "Idgrid") %>%
-    dplyr::left_join(past_10_mean_df[, -2], by = "Idgrid")
+  # past_wmean_df <- past_1000_mean_df %>%
+  #   dplyr::left_join(past_100_mean_df[, -2], by = "Idgrid") %>%
+  #   dplyr::left_join(past_10_mean_df[, -2], by = "Idgrid")
 
   # Compute the final weighted mean:
-  past_final_wmean_df <- past_wmean_df %>%
-    dplyr::mutate("Weighted_mean" = (Weighted_mean_1000 +
-                                     Weighted_mean_100 +
-                                     Weighted_mean_10) / (7000 + 1700 + 140))
+  # past_final_wmean_df <- past_wmean_df %>%
+  #   dplyr::mutate("Weighted_mean" = (Weighted_mean_1000 +
+  #                                    Weighted_mean_100 +
+  #                                    Weighted_mean_10) / (7000 + 1700 + 140))
 
 
-  # Compute the square diff between xi and mean over the given resol period:
-  past_1000_sd_df <- dplyr::left_join(past_1000_df,
-                                      past_1000_mean_df)
+
+  # PRESENT METRICS NEW VERSION -----
+
+  # Add a Weight column which refers to the w used for mean and sd
+  # ... number of years the value represents / total number of year (past/present)
+  present_10_w_df <- present_10_df %>%
+    dplyr::mutate("Weight" = 10/173)
+  present_1_w_df <- present_1_df %>%
+    dplyr::mutate("Weight" = 1/173)
 
 
-  # PRESENT METRICS ------
+  # Gather all data frames:
+  present_all_w_df <- rbind(present_10_w_df,
+                         present_1_w_df)
+
+  # Compute the weighted mean for each grid cell:
+  present_weightedmean_df <- present_all_w_df %>%
+    dplyr::group_by(Idgrid) %>%
+    dplyr::summarise("Weighted_Mean" = weighted.mean(Value, Weight))
+
+  # Compute the weighted sd for each grid cell:
+  # First compute weighted square difference for each observation:
+  present_weighteddiff_df <- present_all_w_df %>%
+    dplyr::group_by(Idgrid) %>%
+    dplyr::left_join(present_weightedmean_df, by = "Idgrid") %>%
+    dplyr::mutate("Weighted_sq_diff" = Weight*((Value - Weighted_Mean)^2))
+  # Then, compute the sum of these weighted_sq_diff for a given cell:
+  present_weightedsd_df <- present_weighteddiff_df %>%
+    dplyr::group_by(Idgrid) %>%
+    dplyr::summarise("Sum_WSD" = sum(Weighted_sq_diff))
+  # Finally, divide by (N-1)sum(w)/N
+  sum_w <- sum(present_all_w_df$Weight)
+  present_weightedsd_df <- present_weightedsd_df %>%
+    dplyr::mutate("Weighted_Sd" = sqrt(Sum_WSD / ((173-1)*sum_w/173)))
+
+  # Bring the two df together:
+  present_metrics_df <- present_weightedmean_df %>%
+    dplyr::left_join(present_weightedsd_df[, -2], by = "Idgrid")
+
+
+  # PRESENT METRICS (wmean only) OLD VERSION ------
 
   # Compute the mean of each time period (based on resolution)
   # for each grid cell:
-  present_10_mean_df <- present_10_df %>%
-    dplyr::group_by(Idgrid) %>%
-    dplyr::summarise(Mean = mean(Value))
-  present_1_mean_df <- present_1_df %>%
-    dplyr::group_by(Idgrid) %>%
-    dplyr::summarise(Mean = mean(Value))
+  # present_10_mean_df <- present_10_df %>%
+  #   dplyr::group_by(Idgrid) %>%
+  #   dplyr::summarise(Mean = mean(Value))
+  # present_1_mean_df <- present_1_df %>%
+  #   dplyr::group_by(Idgrid) %>%
+  #   dplyr::summarise(Mean = mean(Value))
 
 
   # Weight by the number of years:
-  present_10_mean_df <- present_10_mean_df %>%
-    dplyr::mutate("Weighted_mean_10" = (Mean * 100))
-  present_1_mean_df <- present_1_mean_df %>%
-    dplyr::mutate("Weighted_mean_1" = (Mean * 72))
+  # present_10_mean_df <- present_10_mean_df %>%
+  #   dplyr::mutate("Weighted_mean_10" = (Mean * 100))
+  # present_1_mean_df <- present_1_mean_df %>%
+  #   dplyr::mutate("Weighted_mean_1" = (Mean * 72))
 
 
   # Link the two tables of resolution to compute the actual mean:
-  present_wmean_df <- present_10_mean_df %>%
-    dplyr::left_join(present_1_mean_df[, -2], by = "Idgrid")
+  # present_wmean_df <- present_10_mean_df %>%
+  #   dplyr::left_join(present_1_mean_df[, -2], by = "Idgrid")
 
   # Compute the final weighted mean:
-  present_final_wmean_df <- present_wmean_df %>%
-    dplyr::mutate("Weighted_mean" = (Weighted_mean_10 +
-                                       Weighted_mean_1) / (100 + 72))
+  # present_final_wmean_df <- present_wmean_df %>%
+  #   dplyr::mutate("Weighted_mean" = (Weighted_mean_10 +
+  #                                      Weighted_mean_1) / (100 + 72))
 
-
-
-
-
-
-
+  return(list("past_metrics_df" = past_metrics_df,
+              "present_metrics_df" = present_metrics_df))
 
 
 }
+
+
+
+

@@ -140,25 +140,114 @@ pres_past_landuse_village_db <- pres_past_landuse_village_db %>%
 pres_past_landuse_wild_db <- pres_past_landuse_wild_db %>%
   dplyr::filter(Scale == "50")
 
-## Divide data into past and present for each land use type and compute
-## ... weighted mean and sd:
-
-
-
-
-
-# Clean the R environment because big databases take a lot of space:
-rm(list = ls(all.names = TRUE), envir = .GlobalEnv)
 
 
 # 3 - Compute variables for past land use =======================================
 
 
+# Compute weighted mean and sd for each land use, for past (8000BC - 1840)
+# ... and present (1850-2023):
+# Crops:
+metrics_crop_df <- compute.wm.wsd(landuse_df = pres_past_landuse_crop_db)
+metrics_present_crop_df <- metrics_crop_df$present_metrics_df
+metrics_past_crop_df <- metrics_crop_df$past_metrics_df
+# Rangelands:
+metrics_rangelands_df <- compute.wm.wsd(landuse_df = pres_past_landuse_rangeland_db)
+metrics_present_rangelands_df <- metrics_rangelands_df$present_metrics_df
+metrics_past_rangelands_df <- metrics_rangelands_df$past_metrics_df
+# Dense settlements:
+metrics_denseset_df <- compute.wm.wsd(landuse_df = pres_past_landuse_denseset_db)
+metrics_present_denseset_df <- metrics_denseset_df$present_metrics_df
+metrics_past_denseset_df <- metrics_denseset_df$past_metrics_df
+# Semi natural lands:
+metrics_seminat_df <- compute.wm.wsd(landuse_df = pres_past_landuse_seminat_db)
+metrics_present_seminat_df <- metrics_seminat_df$present_metrics_df
+metrics_past_seminat_df <- metrics_seminat_df$past_metrics_df
+# Villages:
+metrics_village_df <- compute.wm.wsd(landuse_df = pres_past_landuse_village_db)
+metrics_present_village_df <- metrics_village_df$present_metrics_df
+metrics_past_village_df <- metrics_village_df$past_metrics_df
+# Wild:
+metrics_wild_df <- compute.wm.wsd(landuse_df = pres_past_landuse_wild_db)
+metrics_present_wild_df <- metrics_wild_df$present_metrics_df
+metrics_past_wild_df <- metrics_wild_df$past_metrics_df
 
 
+# Add a column which refers to the type of land use:
+# Croplands:
+metrics_past_crop_df <- metrics_past_crop_df %>%
+  dplyr::mutate("LandUse" = "croplands")
+metrics_present_crop_df <- metrics_present_crop_df %>%
+  dplyr::mutate("LandUse" = "croplands")
+# Rangelands:
+metrics_past_rangelands_df <- metrics_past_rangelands_df %>%
+  dplyr::mutate("LandUse" = "rangelands")
+metrics_present_rangelands_df <- metrics_present_rangelands_df %>%
+  dplyr::mutate("LandUse" = "rangelands")
+# Dense settlements:
+metrics_past_denseset_df <- metrics_past_denseset_df %>%
+  dplyr::mutate("LandUse" = "dense_settlements")
+metrics_present_denseset_df <- metrics_present_denseset_df %>%
+  dplyr::mutate("LandUse" = "dense_settlements")
+# Semi natural:
+metrics_past_seminat_df <- metrics_past_seminat_df %>%
+  dplyr::mutate("LandUse" = "seminatural_lands")
+metrics_present_seminat_df <- metrics_present_seminat_df %>%
+  dplyr::mutate("LandUse" = "seminatural_lands")
+# Villages :
+metrics_past_village_df <- metrics_past_village_df %>%
+  dplyr::mutate("LandUse" = "villages")
+metrics_present_village_df <- metrics_present_village_df %>%
+  dplyr::mutate("LandUse" = "villages")
+# Wild lands:
+metrics_past_wild_df <- metrics_past_wild_df %>%
+  dplyr::mutate("LandUse" = "wild_lands")
+metrics_present_wild_df <- metrics_present_wild_df %>%
+  dplyr::mutate("LandUse" = "wild_lands")
 
 
+# Gather data for past and add columns as in the INTEGRADIV db:
+past_landuse_df <- rbind(metrics_past_crop_df,
+                         metrics_past_rangelands_df,
+                         metrics_past_denseset_df,
+                         metrics_past_seminat_df,
+                         metrics_past_village_df,
+                         metrics_past_wild_df)
+past_landuse_df <- past_landuse_df %>%
+  reshape2::melt(id.vars = c("Idgrid", "LandUse")) %>%
+  dplyr::mutate("Type" = "LU") %>%
+  dplyr::mutate("Scale" = "50") %>%
+  dplyr::mutate("FinalVariableCode" = paste0("Perc", sep = "_",
+                                             LandUse)) %>%
+  dplyr::rename(Metric = variable) %>%
+  dplyr::rename(Value = value) %>%
+  dplyr::select(c("Idgrid", "Type", "Scale", "FinalVariableCode",
+                  "Metric", "Value"))
 
 
+# Gather data for present and add columns as in the INTEGRADIV db:
+present_landuse_df <- rbind(metrics_present_crop_df,
+                         metrics_present_rangelands_df,
+                         metrics_present_denseset_df,
+                         metrics_present_seminat_df,
+                         metrics_present_village_df,
+                         metrics_present_wild_df)
+present_landuse_df <- present_landuse_df %>%
+  reshape2::melt(id.vars = c("Idgrid", "LandUse")) %>%
+  dplyr::mutate("Type" = "LU") %>%
+  dplyr::mutate("Scale" = "50") %>%
+  dplyr::mutate("FinalVariableCode" = paste0("Perc", sep = "_",
+                                             LandUse)) %>%
+  dplyr::rename(Metric = variable) %>%
+  dplyr::rename(Value = value) %>%
+  dplyr::select(c("Idgrid", "Type", "Scale", "FinalVariableCode",
+                  "Metric", "Value"))
 
+# Save them:
+saveRDS(past_landuse_df, here::here("transformed_data",
+                            "env_db",
+                            "past_landuse_final_db.rds"))
+saveRDS(present_landuse_df, here::here("transformed_data",
+                            "env_db",
+                            "present_landuse_final_db.rds"))
 
