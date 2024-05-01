@@ -49,15 +49,19 @@ pres_past_landuse_wild_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus univer
 
 
 # Habitat characteristics:
+# Also rename column so all db have same name:
 soil_db <- soil_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(Variable_code %in% c("pH", "OC", "VWC", "Depth")) %>%
-  dplyr::filter(Metric %in% c("mean", "stdev"))
+  dplyr::filter(Metric %in% c("mean", "stdev")) %>%
+  dplyr::rename(FinalVariableCode = Variable_code)
 
 topo_db <- topo_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(Variable_code == "Elv") %>%
-  dplyr::filter(Metric %in% c("mean", "stdev"))
+  dplyr::filter(Metric %in% c("mean", "stdev")) %>%
+  dplyr::rename(FinalVariableCode = Variable_code)
+
 
 habitat_var_db <- rbind(soil_db, topo_db)
 
@@ -70,11 +74,13 @@ saveRDS(habitat_var_db, here::here("transformed_data",
 present_clim_db <- present_clim_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("MAT", "TAP")) %>%
-  dplyr::filter(Metric %in% c("mean", "stdev")) %>%
-  dplyr::rename(Variable_code = "FinalVariableCode")
+  dplyr::filter(Metric %in% c("mean", "stdev"))
+
 
 aridity_db <- aridity_db %>%
-  dplyr::filter(Metric %in% c("mean", "stdev"))
+  dplyr::filter(Metric %in% c("mean", "stdev")) %>%
+  dplyr::rename(FinalVariableCode = Variable_code)
+
 
 present_clim_var_db <- rbind(present_clim_db, aridity_db)
 
@@ -103,7 +109,9 @@ fire_db <- fire_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("Pr_FInt_2000-2023",
                                          "Pr_FSurf_2000-2023")) %>%
-  dplyr::filter(metric %in% c("median", "stdev"))
+  dplyr::filter(metric %in% c("median", "stdev")) %>%
+  dplyr::rename(Metric = metric)
+
 
 # Add herbivory when Manu has the mammals data ready and rbind the two db -------
 
@@ -113,11 +121,15 @@ saveRDS(fire_db, here::here("transformed_data",
 
 
 # Population: # CHANGE MEDIAN TO MEAN when Juan has computed it again (NA?)
+# Add the Type column:
 pop_db <- pop_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("Pr_Pop_2020",
                                          "Pr_RatePop_2020")) %>%
-  dplyr::filter(metric %in% c("median"))
+  dplyr::filter(metric %in% c("median")) %>%
+  dplyr::mutate(Type = "Pop") %>%
+  dplyr::rename(Metric = metric)
+
 
 saveRDS(pop_db, here::here("transformed_data",
                             "env_db",
