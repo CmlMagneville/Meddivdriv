@@ -207,6 +207,15 @@ saveRDS(fric_indices_BIRDS, here::here("transformed_data",
 # 8 - Compute FD Null Models ===================================================
 
 
+# Note: For each grid cell, same species richness but different species ...
+# ... compositions: as many null asb as wanted through the `nb_asb_rep` input:
+
+
+FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_BIRDS,
+                                          faxes_nm_vect = c("PC1", "PC2", "PC3",
+                                                            "PC4"),
+                                          sp_asb_df = sp_occ_BIRDS,
+                                          nb_asb_rep = 1000)
 
 
 # 9 - Compute SES ==============================================================

@@ -248,7 +248,6 @@ compute.null.model.metrics <- function(null_model_df,
 #'
 #' @export
 #'
-#' @examples
 #'
 
 compute.null.model.PD <- function(phylo_tree,
@@ -368,4 +367,133 @@ compute.null.model.PD <- function(phylo_tree,
 
 }
 
+
+
+#' Compute FD null models
+#'
+#' @param sp_faxes_coord a matrix gathering species coordinates in the
+#' functional space - from the mFD package. Must have at least the same number
+#' of dimensions than \code{faxes_nm_vect}.
+#' @param faxes_nm_vect a vector gathering the names of functional axes to study.
+#' They must be contained in the \code{sp_faxes_coord} matrix
+#' @param sp_asb_df a data frame with species in columns and asb (grid cells)
+#' in rows.
+#' @param nb_asb_rep a number with the number of null assemblages to compute for
+#' each grid cell.
+#'
+#' @return a list of data frames - as many as FD metrics - with the grid cells
+#' in rows and the values of the metric for each null asb in columns. For FRic,
+#' some values are NA because for some assemblages, to few species.
+#'
+#' @export
+#'
+
+compute.null.model.FD <- function(sp_faxes_coord,
+                                  faxes_nm_vect,
+                                  sp_asb_df,
+                                  nb_asb_rep) {
+
+
+  # Create random assemblages: same sp richn as real grid cells but nb_asb_rep
+  # ... different species composition:
+  set.seed(1)
+  random_asb_array <- replicate(nb_asb_rep,
+                                picante::randomizeMatrix(sp_asb_df,
+                                                         null.model = "richness"))
+
+
+  # Build the data frames which will be outputs:
+  # For FMPD:
+  fmpd_df <- as.data.frame(matrix(ncol = nb_asb_rep,
+                                  nrow = nrow(sp_asb_df),
+                                  NA))
+  colnames(fmpd_df) <- paste0(rep("null_asb", nb_asb_rep), sep = "_",
+                              c(1:nb_asb_rep))
+  rownames(fmpd_df) <- rownames(sp_asb_df)
+
+  # For FOri:
+  fori_df <- fmpd_df
+
+  # For FRic (in the end, it's reduced because some asb do not have enough sp):
+  fric_df <- fmpd_df
+  # Remove asb that do not have enough species for FRic computation:
+  sp_asb_subset_df <- sp_asb_df %>%
+    as.data.frame() %>%
+    dplyr::filter(rowSums(sp_asb_df) > length(faxes_nm_vect)) %>%
+    as.matrix()
+  fric_df <- fric_df %>%
+    dplyr::filter(rownames(fric_df) %in% rownames(sp_asb_subset_df))
+
+
+  # Loop on each null assemblage:
+  for (i in (1:nb_asb_rep)) {
+
+
+    # Print a message:
+    print(paste0("Start the", sep = " ", i,
+                 sep = " ", "repetition over", sep = " ", nb_asb_rep))
+
+
+    # Retrieve the sp*null_asb dataframe on which to work:
+    sp_null_asb_df <- random_asb_array[,,i]
+
+    # Remove asb that do not have enough species fpr FRic computation:
+    sp_null_asb_subset_df <- sp_null_asb_df %>%
+      as.data.frame() %>%
+      dplyr::filter(rowSums(sp_null_asb_df) > length(faxes_nm_vect)) %>%
+      as.matrix()
+
+    # Compute indices for FDis and FOri:
+    alpha_fd_indices_1 <- mFD::alpha.fd.multidim(
+      sp_faxes_coord   = sp_faxes_coord[, faxes_nm_vect],
+      asb_sp_w         = sp_null_asb_df,
+      ind_vect         = c("fmpd", "fori"),
+      scaling          = TRUE,
+      check_input      = TRUE,
+      details_returned = TRUE,
+      verbose          = FALSE)
+    alpha_fd_indices_df <- alpha_fd_indices_1$functional_diversity_indices
+
+    # Compute indices for FRic:
+    alpha_fd_indices_2 <- mFD::alpha.fd.multidim(
+      sp_faxes_coord   = sp_faxes_coord[, faxes_nm_vect],
+      asb_sp_w         = sp_null_asb_subset_df,
+      ind_vect         = c("fric"),
+      scaling          = TRUE,
+      check_input      = TRUE,
+      details_returned = TRUE,
+      verbose          = FALSE)
+    alpha_fric_indices_df <- alpha_fd_indices_2$functional_diversity_indices
+
+
+    # Fill the FMPD df:
+    fmpd_tmp <- alpha_fd_indices_df %>%
+      tibble::rownames_to_column(var = "Idgrid") %>%
+      dplyr::rename(metric = "fmpd") %>%
+      dplyr::select(c("Idgrid", "metric"))
+    fmpd_df[, i] <- fmpd_tmp$metric
+
+    # Fill the FOri df:
+    fori_tmp <- alpha_fd_indices_df %>%
+      tibble::rownames_to_column(var = "Idgrid") %>%
+      dplyr::rename(metric = "fori") %>%
+      dplyr::select(c("Idgrid", "metric"))
+    fori_df[, i] <- fori_tmp$metric
+
+    # Fill the FRic df:
+    fric_tmp <- alpha_fric_indices_df %>%
+      tibble::rownames_to_column(var = "Idgrid") %>%
+      dplyr::rename(metric = "fric") %>%
+      dplyr::select(c("Idgrid", "metric"))
+    fric_df[, i] <- fric_tmp$metric
+
+
+  } # end loop on null assemblage rep
+
+
+  return(list("fmpd" = fmpd_df,
+              "fori" = fori_df,
+              "fric" = fric_df))
+
+}
 
