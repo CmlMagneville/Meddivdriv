@@ -4,7 +4,7 @@
 ##
 ## Camille Magneville
 ##
-## 23/04/2024
+## 23/04/2024 - 02/05/2024
 ##
 ## 5_b_FD_Null_models_BIRDS.R
 ##
@@ -58,8 +58,8 @@ traits_summ_BIRDS$tr_summary_list
 
 # Summary of the assemblages * species dataframe:
 asb_sp_summ_BIRDS <- mFD::asb.sp.summary(asb_sp_w = sp_occ_BIRDS)
-asb_sp_summ_BIRDS$sp_tot_w # number of occurrences of each species
-asb_sp_summ_BIRDS$asb_sp_richn # number of species per asb
+sort(asb_sp_summ_BIRDS$sp_tot_w, decreasing = TRUE) # number of occurrences of each species
+sort(asb_sp_summ_BIRDS$asb_sp_richn, decreasing = TRUE) # number of species per asb
 
 
 # 3 - Compute functional distances based on traits =============================
@@ -76,6 +76,7 @@ sp_dist_BIRDS <- mFD::funct.dist(
 
 # Check if a lot of species pairs have a traits-based distance = 0:
 dist_BIRDS <- mFD::dist.to.df(list("dist" = sp_dist_BIRDS))
+dist_BIRDS
 # Note: Only one species pair has a distance = 0, ok :)
 
 
@@ -152,7 +153,7 @@ fct_space_BIRDS <- mFD::funct.space.plot(
   fill_vert       = "turquoise",
   shape_vert      = 23,
   size_vert       = 1,
-  plot_sp_nm      = NULL,
+  plot_sp_nm      = c("Aegypius monachus"),
   nm_size         = 3,
   nm_color        = "black",
   nm_fontface     = "plain",
@@ -173,19 +174,35 @@ fmpd_fori_indices_BIRDS <- mFD::alpha.fd.multidim(
   details_returned = TRUE)
 fmpd_fori_BIRDS <- fmpd_fori_indices_BIRDS$functional_diversity_indices
 
+
 # Remove assemblages that have less that 4 species for FRic (4 included):
-sp_occ_subset_BIRDS <- sp_occ_BIRDS
+low_nb_sp_asb <- rownames(fmpd_fori_BIRDS[which(fmpd_fori_BIRDS$sp_richn < 5), ])
+sp_occ_subset_BIRDS <- as.data.frame(sp_occ_BIRDS)
+sp_occ_subset_BIRDS <- sp_occ_subset_BIRDS %>%
+  tibble::rownames_to_column(var = "Asb") %>%
+  dplyr::filter(! Asb %in% low_nb_sp_asb) %>%
+  tibble::column_to_rownames("Asb") %>%
+  as.matrix()
 
 
 # Compute FRic:
 fric_indices_BIRDS <- mFD::alpha.fd.multidim(
   sp_faxes_coord   = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
   asb_sp_w         = sp_occ_subset_BIRDS,
-  ind_vect         = c("fmpd", "fori"),
+  ind_vect         = c("fric"),
   scaling          = TRUE,
   check_input      = TRUE,
   details_returned = TRUE)
+fric_BIRDS <- fric_indices_BIRDS$functional_diversity_indices
 
+
+# Save observed data:
+saveRDS(fmpd_fori_indices_BIRDS, here::here("transformed_data",
+                                            "div_values_null_models",
+                                            "FD_FMPD_FOri_50km_BIRDS.rds"))
+saveRDS(fric_indices_BIRDS, here::here("transformed_data",
+                                       "div_values_null_models",
+                                       "FD_FRic_50km_BIRDS.rds"))
 
 # 8 - Compute FD Null Models ===================================================
 
