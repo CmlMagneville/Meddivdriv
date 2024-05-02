@@ -56,10 +56,13 @@ reptiles_PD_MNTD_50km <- compute.PD.per.cell(sp_asb_df = reptiles_occ_df,
                                           taxon = "Reptiles")
 
 saveRDS(reptiles_PD_Faith_50km, here::here("transformed_data",
+                                           "div_values_null_models",
                                         "PD_Faith_50km_REPTILES.rds"))
 saveRDS(reptiles_PD_MPD_50km, here::here("transformed_data",
+                                         "div_values_null_models",
                                       "PD_MPD_50km_REPTILES.rds"))
 saveRDS(reptiles_PD_MNTD_50km, here::here("transformed_data",
+                                          "div_values_null_models",
                                        "PD_MNTD_50km_REPTILES.rds"))
 
 
@@ -80,10 +83,13 @@ mpd_null_models <- PD_null_asb_list$mpd
 mntd_null_models <- PD_null_asb_list$mntd
 
 saveRDS(faith_null_models, here::here("transformed_data",
+                                      "div_values_null_models",
                                       "PD_Faith_null_models_50km_REPTILES.rds"))
 saveRDS(mpd_null_models, here::here("transformed_data",
+                                    "div_values_null_models",
                                     "PD_MPD_null_models_50km_REPTILES.rds"))
 saveRDS(mntd_null_models, here::here("transformed_data",
+                                     "div_values_null_models",
                                      "PD_MNTD_null_models_50km_REPTILES.rds"))
 
 
@@ -120,6 +126,7 @@ reptiles_ses_faith_df <- compute.null.model.metrics(null_model_df = reptiles_nul
                                                  null_metric_to_compute = c("ses"),
                                                  ind_values_df = reptiles_PD_Faith_50km)
 saveRDS(reptiles_ses_faith_df, here::here("transformed_data",
+                                          "div_values_null_models",
                                        "PD_Faith_null_models_metrics_50km_REPTILES.rds"))
 
 
@@ -128,6 +135,7 @@ reptiles_ses_mpd_df <- compute.null.model.metrics(null_model_df = reptiles_null_
                                                null_metric_to_compute = c("ses"),
                                                ind_values_df = reptiles_PD_MPD_50km)
 saveRDS(reptiles_ses_mpd_df, here::here("transformed_data",
+                                        "div_values_null_models",
                                      "PD_MPD_null_models_metrics_50km_REPTILES.rds"))
 
 
@@ -136,6 +144,7 @@ reptiles_ses_mntd_df <- compute.null.model.metrics(null_model_df = reptiles_null
                                                 null_metric_to_compute = c("ses"),
                                                 ind_values_df = reptiles_PD_MNTD_50km)
 saveRDS(reptiles_ses_mntd_df, here::here("transformed_data",
+                                         "div_values_null_models",
                                       "PD_MNTD_null_models_metrics_50km_REPTILES.rds"))
 
 

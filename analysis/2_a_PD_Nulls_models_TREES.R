@@ -56,10 +56,13 @@ trees_PD_MNTD_50km <- compute.PD.per.cell(sp_asb_df = trees_occ_df,
                                          taxon = "Trees")
 
 saveRDS(trees_PD_Faith_50km, here::here("transformed_data",
+                                        "div_values_null_models",
                                         "PD_Faith_50km_TREES.rds"))
 saveRDS(trees_PD_MPD_50km, here::here("transformed_data",
+                                      "div_values_null_models",
                                       "PD_MPD_50km_TREES.rds"))
 saveRDS(trees_PD_MNTD_50km, here::here("transformed_data",
+                                       "div_values_null_models",
                                      "PD_MNTD_50km_TREES.rds"))
 
 
@@ -80,10 +83,13 @@ mpd_null_models <- PD_null_asb_list$mpd
 mntd_null_models <- PD_null_asb_list$mntd
 
 saveRDS(faith_null_models, here::here("transformed_data",
+                                      "div_values_null_models",
                                       "PD_Faith_null_models_50km_TREES.rds"))
 saveRDS(mpd_null_models, here::here("transformed_data",
+                                    "div_values_null_models",
                                     "PD_MPD_null_models_50km_TREES.rds"))
 saveRDS(mntd_null_models, here::here("transformed_data",
+                                     "div_values_null_models",
                                     "PD_MNTD_null_models_50km_TREES.rds"))
 
 
@@ -120,6 +126,7 @@ trees_ses_faith_df <- compute.null.model.metrics(null_model_df = trees_null_mode
                                                  null_metric_to_compute = c("ses"),
                                                  ind_values_df = trees_PD_Faith_50km)
 saveRDS(trees_ses_faith_df, here::here("transformed_data",
+                                       "div_values_null_models",
                                        "PD_Faith_null_models_metrics_50km_TREES.rds"))
 
 
@@ -128,6 +135,7 @@ trees_ses_mpd_df <- compute.null.model.metrics(null_model_df = trees_null_model_
                                                null_metric_to_compute = c("ses"),
                                                ind_values_df = trees_PD_MPD_50km)
 saveRDS(trees_ses_mpd_df, here::here("transformed_data",
+                                     "div_values_null_models",
                                      "PD_MPD_null_models_metrics_50km_TREES.rds"))
 
 
@@ -136,6 +144,7 @@ trees_ses_mntd_df <- compute.null.model.metrics(null_model_df = trees_null_model
                                                null_metric_to_compute = c("ses"),
                                                ind_values_df = trees_PD_MNTD_50km)
 saveRDS(trees_ses_mntd_df, here::here("transformed_data",
+                                      "div_values_null_models",
                                       "PD_MNTD_null_models_metrics_50km_TREES.rds"))
 
 
