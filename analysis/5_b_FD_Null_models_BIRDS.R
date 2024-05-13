@@ -217,7 +217,90 @@ FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_BIRDS,
                                           sp_asb_df = sp_occ_BIRDS,
                                           nb_asb_rep = 1000)
 
+fric_null_models <- FD_null_asb_list$fric
+fmpd_null_models <- FD_null_asb_list$fmpd
+fori_null_models <- PD_null_asb_list$fori
+
+saveRDS(fric_null_models, here::here("transformed_data",
+                                      "div_values_null_models",
+                                      "FD_FRic_null_models_50km_BIRDS.rds"))
+saveRDS(fmpd_null_models, here::here("transformed_data",
+                                    "div_values_null_models",
+                                    "FD_FMPD_null_models_50km_BIRDS.rds"))
+saveRDS(fori_null_models, here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "FD_FOri_null_models_50km_BIRDS.rds"))
+
+
 
 # 9 - Compute SES ==============================================================
+
+
+# Note SES: If the test were a one-sided test of whether the value observed was
+# significantly lower than expected, we would require a P -value less than or
+# equal to 0.05. If the test were a one-sided test of whether the value
+# observed was significantly higher than expected, we would require a P -value
+# greater than or equal to 0.95. If the test were two sided, we would require
+# P -values less than or equal to 0.025 or greater than or equal to 0.975.
+
+
+# Load null model data:
+birds_null_model_fric <- readRDS(here::here("transformed_data",
+                                            "div_values_null_models",
+                                             "FD_FRic_null_models_50km_BIRDS.rds"))
+birds_null_model_fmpd <- readRDS(here::here("transformed_data",
+                                            "div_values_null_models",
+                                           "FD_FMPD_null_models_50km_BIRDS.rds"))
+birds_null_model_fori <- readRDS(here::here("transformed_data",
+                                            "div_values_null_models",
+                                            "FD_FOri_null_models_50km_BIRDS.rds"))
+
+# Load the actual values of FD indices:
+birds_FD_FRic_50km <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
+                                          "FD_FRic_50km_BIRDS.rds"))
+birds_FD_FMPD_FOri_50km <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
+                                        "FD_FMPD_FOri_50km_BIRDS.rds"))
+
+#Prepare for the use in the function:
+birds_FD_FRic_50km_final <- birds_FD_FRic_50km$functional_diversity_indices %>%
+  tibble::rownames_to_column(var = "Idgrid") %>%
+  dplyr::select(c("Idgrid", "fric")) %>%
+  dplyr::rename("metric" = fric)
+birds_FD_FOri_50km_final <- birds_FD_FMPD_FOri_50km$functional_diversity_indices %>%
+  tibble::rownames_to_column(var = "Idgrid") %>%
+  dplyr::select(c("Idgrid", "fori")) %>%
+  dplyr::rename("metric" = fori)
+birds_FD_FMPD_50km_final <- birds_FD_FMPD_FOri_50km$functional_diversity_indices %>%
+  tibble::rownames_to_column(var = "Idgrid") %>%
+  dplyr::select(c("Idgrid", "fmpd")) %>%
+  dplyr::rename("metric" = fmpd)
+
+# Compute SES for FRic FD:
+birds_ses_fric_df <- compute.null.model.metrics(null_model_df = birds_null_model_fric,
+                                                 null_metric_to_compute = c("ses"),
+                                                 ind_values_df = birds_FD_FRic_50km_final)
+saveRDS(birds_ses_fric_df, here::here("transformed_data",
+                                       "div_values_null_models",
+                                       "FD_FRic_null_models_metrics_50km_BIRDS.rds"))
+
+
+# Compute SES ratios for FMPD:
+birds_ses_fmpd_df <- compute.null.model.metrics(null_model_df = birds_null_model_fmpd,
+                                               null_metric_to_compute = c("ses"),
+                                               ind_values_df = birds_FD_FMPD_50km_final)
+saveRDS(birds_ses_fmpd_df, here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "FD_FMPD_null_models_metrics_50km_BIRDS.rds"))
+
+
+# Compute SES ratios for FOri:
+birds_ses_fori_df <- compute.null.model.metrics(null_model_df = birds_null_model_fori,
+                                                null_metric_to_compute = c("ses"),
+                                                ind_values_df = birds_FD_FOri_50km_final)
+saveRDS(birds_ses_fori_df, here::here("transformed_data",
+                                      "div_values_null_models",
+                                      "FD_FOri_null_models_metrics_50km_BIRDS.rds"))
 
 
