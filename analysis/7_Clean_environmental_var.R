@@ -263,3 +263,97 @@ saveRDS(present_landuse_df, here::here("transformed_data",
                             "env_db",
                             "present_landuse_final_db.rds"))
 
+# 4 - Create a db containing all environmental variables =======================
+
+
+# Load data:
+soil_topo_db <- readRDS(here::here("transformed_data",
+                                   "env_db",
+                                   "soil_topo_final_db.rds"))
+disturb_db <- readRDS(here::here("transformed_data",
+                                 "env_db",
+                                 "fire_herb_final_db.rds"))
+past_clim_db <- readRDS(here::here("transformed_data",
+                                   "env_db",
+                                   "past_veloc_heterog_final_db.rds"))
+present_clim_db <- readRDS(here::here("transformed_data",
+                                      "env_db",
+                                      "present_clim_final_db.rds"))
+past_lu_db <- readRDS(here::here("transformed_data",
+                                 "env_db",
+                                 "past_landuse_final_db.rds"))
+present_lu_db <- readRDS(here::here("transformed_data",
+                                    "env_db",
+                                    "present_landuse_final_db.rds"))
+present_pop_db <- readRDS(here::here("transformed_data",
+                                     "env_db",
+                                     "present_pop_final_db.rds"))
+
+# Long format for all db:
+# Soil:
+soil_topo_long_db <- soil_topo_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0(FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+# Disturbances:
+disturb_long_db <- disturb_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0(FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+# Past climate:
+past_clim_long_db <- past_clim_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0("Past", sep = "_",
+                                          FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+# Present climate:
+present_clim_long_db <- present_clim_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0("Present", sep = "_",
+                                          FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+# Past lu:
+past_lu_long_db <- past_lu_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0("Past", sep = "_",
+                                          FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+# Present lu:
+present_lu_long_db <- present_lu_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0("Present", sep = "_",
+                                          FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+# Present pop:
+present_pop_long_db <- present_pop_db %>%
+  dplyr::mutate("Full_metric_nm" = paste0(FinalVariableCode, sep = "_",
+                                          Metric)) %>%
+
+  reshape::cast(Idgrid ~ Full_metric_nm,
+                value = "Value")
+
+# Bind all the drivers together:
+envdriv_full_db <- soil_topo_long_db %>%
+  dplyr::left_join(disturb_long_db, by = "Idgrid") %>%
+  dplyr::left_join(past_clim_long_db, by = "Idgrid") %>%
+  dplyr::left_join(present_clim_long_db, by = "Idgrid") %>%
+  dplyr::left_join(past_lu_long_db, by = "Idgrid") %>%
+  dplyr::left_join(present_lu_long_db, by = "Idgrid") %>%
+  dplyr::left_join(present_pop_long_db, by = "Idgrid")
+
+# Save it:
+saveRDS(envdriv_full_db, here::here("transformed_data",
+                                    "env_db",
+                                    "env_drivers_final_db.rds"))
