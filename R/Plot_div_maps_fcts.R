@@ -218,7 +218,7 @@ div.maps.plot <- function(div_per_cell_df,
   if (save == TRUE) {
 
     ggplot2::ggsave(plot = div_map,
-                    filename = here::here("maps",
+                    filename = here::here("outputs",
                                           paste0(unique(div_per_cell_df$Taxon),
                                                  sep = "_",
                                                  metric_nm,

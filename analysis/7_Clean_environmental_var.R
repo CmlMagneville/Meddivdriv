@@ -109,9 +109,8 @@ fire_db <- fire_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("Pr_FInt_2000-2023",
                                          "Pr_FSurf_2000-2023")) %>%
-  dplyr::filter(metric %in% c("median", "stdev")) %>%
+  dplyr::filter(metric %in% c("median", "stdev", "pixels")) %>%
   dplyr::rename(Metric = metric)
-
 
 # Add herbivory when Manu has the mammals data ready and rbind the two db -------
 
@@ -303,7 +302,12 @@ disturb_long_db <- disturb_db %>%
                                           Metric)) %>%
 
   reshape::cast(Idgrid ~ Full_metric_nm,
-                value = "Value")
+                value = "Value") %>%
+  # Remove the "-" in the names because otherwise rf doesn't work:
+  dplyr::rename(Pr_FInt_2000_2023_median = "Pr_FInt_2000-2023_median") %>%
+  dplyr::rename(Pr_FInt_2000_2023_sd = "Pr_FInt_2000-2023_stdev") %>%
+  dplyr::rename(Pr_FSurf_2000_2023_pixels = "Pr_FSurf_2000-2023_pixels")
+
 # Past climate:
 past_clim_long_db <- past_clim_db %>%
   dplyr::mutate("Full_metric_nm" = paste0("Past", sep = "_",
@@ -357,3 +361,126 @@ envdriv_full_db <- soil_topo_long_db %>%
 saveRDS(envdriv_full_db, here::here("transformed_data",
                                     "env_db",
                                     "env_drivers_final_db.rds"))
+
+
+# 5 - Check the environmental database - where are NA and type predictors ======
+
+
+## Load environmental drivers:
+envdriv_full_db <- readRDS(here::here("transformed_data",
+                                      "env_db",
+                                      "env_drivers_final_db.rds"))
+
+## 1 - Load the integradiv grid so I can localise where the NA are:
+# Load grid data:
+grid_50km <- sf::st_read(here::here("integradiv_db",
+                                    "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
+# Rename the GRD_ID column as Idgrid:
+grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+
+# Check columns with NA:
+names(which(colSums(is.na(envdriv_full_db)) > 0))
+
+# Elysa's work:
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Depth_mean) == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Depth_stdev) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$VWC_mean) == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$VWC_stdev) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+
+# My work:
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Past_CCVelLGM_mean.voccMag) == TRUE)]
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Past_CCVelHolocene_mean.voccMag) == TRUE)]
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Past_CCVelShortTerm_mean.voccMag) == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Past_CCVelYoungerDryas_mean.voccMag) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Past_TAP_sd) == TRUE)]
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Past_MAT_sd) == TRUE)]
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Present_MAT_mean) == TRUE)]
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Present_MAT_mean) == TRUE)]
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Present_MAT_stdev) == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Present_TAP_stdev) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+
+# Manuel's work:
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Present_AI_mean) == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Present_AI_stdev) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+
+# Juan work
+envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_Pop_2020_median) == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_RatePop_2020_median) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$"Pr_FInt_2000-2023_median") == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+
+
+## 2 - Check types of variables
+str(envdriv_full_db)
+
+# Change Populations to numeric:
+envdriv_full_db$Pr_Pop_2020_median <- as.numeric(envdriv_full_db$Pr_Pop_2020_median)
+envdriv_full_db$Pr_RatePop_2020_median <- as.numeric(envdriv_full_db$Pr_RatePop_2020_median)
+
+# Change Fire to numeric:
+envdriv_full_db$Pr_FInt_2000_2023_median <- as.numeric(envdriv_full_db$Pr_FInt_2000_2023_median)
+envdriv_full_db$Pr_FInt_2000_2023_sd <- as.numeric(envdriv_full_db$Pr_FInt_2000_2023_sd)
+envdriv_full_db$Pr_FSurf_2000_2023_pixels <- as.numeric(envdriv_full_db$Pr_FSurf_2000_2023_pixels)
+
+
+# 6 - Create the final environmental db - only cells with occ data and pred values =============
+
+
+# NOTE: If joining drivers db and diversity db, the final db would have
+# ... 671 rows (grid cells) but for some of these grid cells, we don't have
+# ... occurrence data for now : (birds 664 grid cells, reptiles 624 grid cells,
+# ... trees 667 grid cells)
+# ... SO: 1/ Only keep the grid cells for which I have occ information for all taxa
+# ... 2/ Remove environmental values for rows that are not studied anymore
+
+
+# Load species occurrences:
+birds_occ_df <- readRDS(here::here("transformed_data",
+                                   "sp_asb_50km_BIRDS.rds"))
+trees_occ_df <- readRDS(here::here("transformed_data",
+                                   "sp_asb_50km_TREES.rds"))
+reptiles_occ_df <- readRDS(here::here("transformed_data",
+                                      "sp_asb_50km_REPTILES.rds"))
+
+## DIVERSITY db
+
+# Get the names of the Idgrid to keep (diversity data for all taxa):
+cells_ok_birds <- rownames(birds_occ_df)
+cells_ok_reptiles <- rownames(reptiles_occ_df)
+cells_ok_trees <- rownames(trees_occ_df)
+cells_to_keep <- intersect(intersect(cells_ok_birds,
+                                     cells_ok_reptiles),
+                           cells_ok_trees)
+locate.cells(cell_vect = cells_to_keep,
+             grid = grid_50km)
+
+# Only keep these cells in the environmental drivers db:
+envdriv_full_db <- envdriv_full_db %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+
+
+## DRIVERS db
+
+# Then, remove cells which have NA for at last one predictor:
+noNA_envdriv_full_db <- na.omit(envdriv_full_db)
+
+## Save this final environmental db:
+saveRDS(noNA_envdriv_full_db,
+        here::here("transformed_data", "env_db",
+                   "env_drivers_final_noNA_db.rds"))
