@@ -26,10 +26,13 @@
 
 # Load diversity data:
 trees_ses_faith_df <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
                               "PD_Faith_null_models_metrics_50km_TREES.rds"))
 trees_ses_mpd_df <- readRDS(here::here("transformed_data",
+                                       "div_values_null_models",
                                        "PD_MPD_null_models_metrics_50km_TREES.rds"))
 trees_ses_mntd_df <- readRDS(here::here("transformed_data",
+                                        "div_values_null_models",
                                         "PD_MNTD_null_models_metrics_50km_TREES.rds"))
 
 # Load grid data:
