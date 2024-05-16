@@ -421,7 +421,13 @@ envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_Pop_2020_median) == TRUE)]
 miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_RatePop_2020_median) == TRUE)]
 locate.cells(cell_vect = miss_cell,
              grid = grid_50km)
-miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$"Pr_FInt_2000-2023_median") == TRUE)]
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_FInt_2000_2023_median) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_FInt_2000_2023_sd) == TRUE)]
+locate.cells(cell_vect = miss_cell,
+             grid = grid_50km)
+miss_cell <- envdriv_full_db$Idgrid[which(is.na(envdriv_full_db$Pr_FSurf_2000_2023_pixels) == TRUE)]
 locate.cells(cell_vect = miss_cell,
              grid = grid_50km)
 
