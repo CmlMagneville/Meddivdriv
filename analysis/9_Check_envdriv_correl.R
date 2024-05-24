@@ -19,9 +19,9 @@
 # 1 - Load the environmental drivers ===========================================
 
 
-envdriv_full_db <- readRDS(envdriv_full_db, here::here("transformed_data",
-                                                       "env_db",
-                                                       "env_drivers_final_db.rds"))
+envdriv_full_db <- readRDS(here::here("transformed_data",
+                                      "env_db",
+                                      "env_drivers_final_noNA_db.rds"))
 
 # 2 - Compute pairwise correlation============================================
 
@@ -36,7 +36,7 @@ cor_matrix <- Hmisc::rcorr(as.matrix(envdriv_full_db[, -1]),
 correl_df <- as.data.frame(cor_matrix$r)
 pvalues_correl_df <- as.data.frame(cor_matrix$P)
 
-# Put variables names back (check the code, respect var order):
+# Put variables names back (checked the code, it respects var order):
 colnames(correl_df) <- colnames(envdriv_full_db)[-1]
 rownames(correl_df) <- colnames(envdriv_full_db)[-1]
 colnames(pvalues_correl_df) <- colnames(envdriv_full_db)[-1]
@@ -71,5 +71,21 @@ correl_70 <- subset(full_correl_pvalue_df, Correl > .70 & Correl != 1)
 GGally::ggpairs(envdriv_full_db[, c(2:11, 20:25)],
                 upper = list(continuous = GGally::wrap("cor",
                                                        method = "spearman")))
+
+
+
+# including correlated predictors in the SEM? In principle, they are not
+# ... super-sensitive to that, but I would keep these correlated predictors
+# ... to the very minimum you can afford to tests your hypotheses. It is ok to
+# ... include average and SDev, even if they are correlated, just not too many
+# ... of those, otherwise the results become quite volatile and not very
+# ... trustworthy
+
+
+
+
+
+
+
 
 

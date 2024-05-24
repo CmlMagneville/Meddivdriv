@@ -3,13 +3,14 @@
 ## Script to compute one random forest with all variables for each taxas
 ## ... - 5 random forests - to get a list of variables for the SEM with Faith's PD
 ## ... and create a df for SEM with only variables to keep in the SEM according
-## ... to randomforest results
+## ... to randomforest results - FINALLY not used as variables ranking differs
+## ... a lot between taxa
 ##
 ## Camille Magneville
 ##
 ## 14/05/2024
 ##
-## 9_a_Random_forests_all_taxa_PD_Faith.R
+## 8_a_Random_forests_all_taxa_PD_Faith.R
 ##
 ################################################################################
 
@@ -106,33 +107,20 @@ rownames(rf_faith_birds_df[which(is.na(rf_faith_birds_df$ses) == TRUE), ])
 # Change SES from names num to num:
 rf_faith_birds_df$ses <- as.numeric(rf_faith_birds_df$ses)
 
-
 # Set seed for randomisation:
 set.seed(42)
 
-# Run the random forest model with mtry = predictors / 3 and 1000 trees:
-rf1 <- randomForest::randomForest(ses~.,
-                                  data = rf_faith_birds_df,
-                                  ntree= 1000,
-                                  mtry = floor((ncol(rf_faith_birds_df) - 1)/3),
-                                  importance = TRUE)
-plot(rf1) # so can redo it with 500 trees - seems stable
-print(rf1)
-randomForest::importance(rf1)
-randomForest::varImpPlot(rf1)
+# See if 500 trees and mtry = 16 ok:
+# Run the random forest model mtry = 16 and 500 trees:
+rf_birds <- randomForest::randomForest(ses~.,
+                                       data = rf_faith_birds_df,
+                                       ntree = 500,
+                                       mtry = 16,
+                                       importance = TRUE)
+# ntree:
+plot(rf_birds)
 
-# Run the random forest model mtry = predictors / 3 and 500 trees:
-rf2 <- randomForest::randomForest(ses~.,
-                                  data = rf_faith_birds_df,
-                                  ntree = 500,
-                                  mtry = floor((ncol(rf_faith_birds_df) - 1)/3),
-                                  importance = TRUE)
-plot(rf2)
-print(rf2)
-randomForest::importance(rf2)
-randomForest::varImpPlot(rf2)
-
-# Find the optimal value for trees nb and mtry:
+# mtry:
 mtry <- randomForest::tuneRF(rf_faith_birds_df[-ncol(rf_faith_birds_df)],
                              rf_faith_birds_df$ses,
                              mtryStart = 16,
@@ -141,19 +129,15 @@ mtry <- randomForest::tuneRF(rf_faith_birds_df[-ncol(rf_faith_birds_df)],
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 24 seems the best one
+print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
-# Run the random forest model mtry = 24 and 500 trees:
-rf_birds <- randomForest::randomForest(ses~.,
-                                  data = rf_faith_birds_df,
-                                  ntree = 500,
-                                  mtry = 24,
-                                  importance = TRUE)
-plot(rf_birds)
-print(rf_birds)
-randomForest::importance(rf_birds)
-randomForest::varImpPlot(rf_birds)
+# Compute 100 random forests and mean importance of each variable:
+varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
+                              iteration_nb = 10)
+
+# Plot the variables importance:
+
 
 
 # 4 - Random forest for reptiles ==================================================
@@ -203,14 +187,14 @@ mtry <- randomForest::tuneRF(rf_faith_reptiles_df[-ncol(rf_faith_reptiles_df)],
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 8 seems the best one
+print(mtry) # mtry = 16 seems ok
 
 
-# Run the random forest model mtry = 8 and 500 trees:
+# Run the random forest model mtry = 16 and 500 trees:
 rf_reptiles <- randomForest::randomForest(ses~.,
                                   data = rf_faith_reptiles_df,
                                   ntree = 500,
-                                  mtry = 8,
+                                  mtry = 16,
                                   importance = TRUE)
 plot(rf_reptiles)
 print(rf_reptiles)
@@ -229,7 +213,6 @@ rownames(rf_faith_trees_df[which(is.na(rf_faith_trees_df$ses) == TRUE), ])
 
 # Change SES from names num to num:
 rf_faith_trees_df$ses <- as.numeric(rf_faith_trees_df$ses)
-
 
 # Set seed for randomisation:
 set.seed(42)
@@ -265,14 +248,14 @@ mtry <- randomForest::tuneRF(rf_faith_trees_df[-ncol(rf_faith_trees_df)],
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 36
+print(mtry) # mtry = 16 seems ok
 
 
-# Run the random forest model mtry = 36 and 500 trees:
+# Run the random forest model mtry = 16 and 500 trees:
 rf_trees <- randomForest::randomForest(ses~.,
                                           data = rf_faith_trees_df,
                                           ntree = 500,
-                                          mtry = 36,
+                                          mtry = 16,
                                           importance = TRUE)
 plot(rf_trees)
 print(rf_trees)
@@ -283,12 +266,15 @@ randomForest::varImpPlot(rf_trees)
 # 6 - Compare the rf for the taxa and chose drivers ============================
 
 
-drivers_birds <- dplyr::arrange(as.data.frame(randomForest::importance(rf_birds)),
-                                desc("%IncMSE"))
-drivers_reptiles <- dplyr::arrange(as.data.frame(randomForest::importance(rf_reptiles)),
-                                desc("%IncMSE"))
-drivers_trees <- dplyr::arrange(as.data.frame(randomForest::importance(rf_trees)),
-                                desc("%IncMSE"))
+drivers_birds <- as.data.frame(randomForest::importance(rf_birds)) %>%
+  dplyr::rename("perc_IncMSE" = "%IncMSE") %>%
+  dplyr::arrange(desc(perc_IncMSE))
+drivers_reptiles <- as.data.frame(randomForest::importance(rf_reptiles)) %>%
+  dplyr::rename("perc_IncMSE" = "%IncMSE") %>%
+  dplyr::arrange(desc(perc_IncMSE))
+drivers_trees <- as.data.frame(randomForest::importance(rf_trees)) %>%
+  dplyr::rename("perc_IncMSE" = "%IncMSE") %>%
+  dplyr::arrange(desc(perc_IncMSE))
 
 
 
