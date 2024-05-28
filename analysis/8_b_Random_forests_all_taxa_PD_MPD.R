@@ -135,24 +135,9 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
                               iteration_nb = 100)
-# Save it:
-saveRDS(varimp_birds, here::here("transformed_data",
-                                 "rf_birds_PD_Faith_50.rds"))
 
 # Plot the variables importance:
 varimp_plot_birds <- varimp.plot(varimp_birds)
-
-# Save it:
-ggplot2::ggsave(plot = varimp_plot_birds,
-                filename = here::here("outputs",
-                                      "varimp_PD_Faith_50_BIRDS.pdf"),
-                device = "pdf",
-                scale = 1,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-
 
 
 # 4 - Random forest for reptiles ==================================================
@@ -196,23 +181,10 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
                               iteration_nb = 100)
 
-# Save it:
-saveRDS(varimp_reptiles, here::here("transformed_data",
-                                    "rf_reptiles_PD_Faith_50.rds"))
-
 # Plot the variables importance:
 varimp_plot_reptiles <- varimp.plot(varimp_reptiles)
 
-# Save it:
-ggplot2::ggsave(plot = varimp_plot_reptiles,
-                filename = here::here("outputs",
-                                      "varimp_PD_Faith_50_REPTILES.pdf"),
-                device = "pdf",
-                scale = 1,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
+
 
 # 5 - Random forest for trees ==================================================
 
@@ -255,33 +227,6 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
                                  iteration_nb = 100)
 
-# Save it:
-saveRDS(varimp_trees, here::here("transformed_data",
-                                 "rf_trees_PD_Faith_50.rds"))
-
 # Plot the variables importance:
 varimp_plot_trees <- varimp.plot(varimp_trees)
-
-# Save it:
-ggplot2::ggsave(plot = varimp_plot_trees,
-                filename = here::here("outputs",
-                                      "varimp_PD_Faith_50_TREES.pdf"),
-                device = "pdf",
-                scale = 1,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-
-
-# 6 - Plot a heatmap comparing variables importance across taxa ================
-
-
-# a - Load rf data:
-birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_Faith_50.rds"))
-reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_Faith_50.rds"))
-trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_Faith_50.rds"))
-
-PD_varimp_heatmap
-
 

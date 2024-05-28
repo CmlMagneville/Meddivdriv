@@ -76,10 +76,10 @@ test.rf.model <- function(rf_data,
 
 
     # Rename columns and remove NA rows if needed:
-    if (i == n) {
+    if (i == iteration_nb) {
       colnames(var_imp_final_df)[-1] <- paste0("%IncMSE", sep = "_",
                                                "rfmod", sep = "_",
-                                               c(1:n))
+                                               c(1:iteration_nb))
     }
 
   }
@@ -99,15 +99,15 @@ test.rf.model <- function(rf_data,
 
 
 
-#' Title
+#' Plot the variable importance for a given taxa and metric (lollipop plot)
 #'
-#' @param var_imp_df
+#' @param var_imp_df output of the \code{test.rf.model} function.
 #'
-#' @return
+#' @return a lollipop plot with drivers on columns and mean %IncMSE on x axis
+#' with colors referring to drivers category
+#'
 #' @export
 #'
-#' @examples
-
 
 varimp.plot <- function(var_imp_df) {
 
@@ -223,13 +223,23 @@ varimp.plot <- function(var_imp_df) {
     print(var_plot)
 
 
-
-  }
-
+}
 
 
 
+#' Plot a heatmap illustrating the importance of each variable for the three taxa
+#'
+#' @param rf_all_taxa_vect a vector containing the result of the
+#' \code{test.rf.model} function for all the taxa studied.
+#'
+#' @return
+#'
+#' @export
+#'
+
+heatmap.varimp <- function(rf_all_taxa_vect) {
 
 
 
 }
+
