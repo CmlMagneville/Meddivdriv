@@ -41,7 +41,7 @@ set.seed(42)
 # Impute traits and check NRMSE - with missForest R pkge:
 imputed_traits_BIRDS <- missForest::missForest(sp_tr_BIRDS,
                                                     maxiter = 100,
-                                                    ntree = 200)
+                                                    ntree = 500)
 imputed_traits_table <- imputed_traits_BIRDS$ximp
 error <- imputed_traits_BIRDS$OOBerror
 
@@ -50,7 +50,7 @@ error <- imputed_traits_BIRDS$OOBerror
 ## Check missing traits:
 mice::md.pattern(sp_tr_BIRDS)
 ## Compute missing data:
-init_test <- mice::mice(sp_tr_BIRDS, ntree = 100,
+init_test <- mice::mice(sp_tr_BIRDS, ntree = 500,
                         m = 6,
                         meth = 'rf', seed = 42)
 summary(init_test)
