@@ -282,6 +282,15 @@ birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_Faith_50.rds"))
 reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_Faith_50.rds"))
 trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_Faith_50.rds"))
 
-PD_varimp_heatmap
+rf_all_taxa_list <- list("birds_rf" = birds_rf,
+                      "reptiles_rf" = reptiles_rf,
+                      "trees_rf" = trees_rf)
 
-
+# Plot and save (only colors, no nb):
+PD_heatmap_nonb <- heatmap.varimp(rf_all_taxa_list,
+                                  metric_nm = "Faith PD",
+                                  plot_nb = FALSE)
+# Plot and save (plot also nb):
+PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
+                                  metric_nm = "Faith PD",
+                                  plot_nb = TRUE)
