@@ -109,7 +109,7 @@ fire_db <- fire_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("Pr_FInt_2000-2023",
                                          "Pr_FSurf_2000-2023")) %>%
-  dplyr::filter(metric %in% c("median", "stdev", "pixels")) %>%
+  dplyr::filter(metric %in% c("mean", "stdev", "pixels")) %>%
   dplyr::rename(Metric = metric)
 
 # Add herbivory when Manu has the mammals data ready and rbind the two db -------
@@ -125,7 +125,7 @@ pop_db <- pop_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("Pr_Pop_2020",
                                          "Pr_RatePop_2020")) %>%
-  dplyr::filter(metric %in% c("median")) %>%
+  dplyr::filter(metric %in% c("mean")) %>%
   dplyr::mutate(Type = "Pop") %>%
   dplyr::rename(Metric = metric)
 
@@ -304,7 +304,7 @@ disturb_long_db <- disturb_db %>%
   reshape::cast(Idgrid ~ Full_metric_nm,
                 value = "Value") %>%
   # Remove the "-" in the names because otherwise rf doesn't work:
-  dplyr::rename(Pr_FInt_2000_2023_median = "Pr_FInt_2000-2023_median") %>%
+  dplyr::rename(Pr_FInt_2000_2023_mean = "Pr_FInt_2000-2023_mean") %>%
   dplyr::rename(Pr_FInt_2000_2023_sd = "Pr_FInt_2000-2023_stdev") %>%
   dplyr::rename(Pr_FSurf_2000_2023_pixels = "Pr_FSurf_2000-2023_pixels")
 
@@ -436,11 +436,11 @@ locate.cells(cell_vect = miss_cell,
 str(envdriv_full_db)
 
 # Change Populations to numeric:
-envdriv_full_db$Pr_Pop_2020_median <- as.numeric(envdriv_full_db$Pr_Pop_2020_median)
-envdriv_full_db$Pr_RatePop_2020_median <- as.numeric(envdriv_full_db$Pr_RatePop_2020_median)
+envdriv_full_db$Pr_Pop_2020_mean <- as.numeric(envdriv_full_db$Pr_Pop_2020_mean)
+envdriv_full_db$Pr_RatePop_2020_mean <- as.numeric(envdriv_full_db$Pr_RatePop_2020_mean)
 
 # Change Fire to numeric:
-envdriv_full_db$Pr_FInt_2000_2023_median <- as.numeric(envdriv_full_db$Pr_FInt_2000_2023_median)
+envdriv_full_db$Pr_FInt_2000_2023_mean <- as.numeric(envdriv_full_db$Pr_FInt_2000_2023_mean)
 envdriv_full_db$Pr_FInt_2000_2023_sd <- as.numeric(envdriv_full_db$Pr_FInt_2000_2023_sd)
 envdriv_full_db$Pr_FSurf_2000_2023_pixels <- as.numeric(envdriv_full_db$Pr_FSurf_2000_2023_pixels)
 
