@@ -1,10 +1,7 @@
 ################################################################################
 ##
 ## Script to compute one random forest with all variables for each taxas
-## ... - 5 random forests - to get a list of variables for the SEM with Faith's PD
-## ... and create a df for SEM with only variables to keep in the SEM according
-## ... to randomforest results - FINALLY not used as variables ranking differs
-## ... a lot between taxa
+## ... - 5 random forests - to see which variable drive the most MPD.
 ##
 ## Camille Magneville
 ##
