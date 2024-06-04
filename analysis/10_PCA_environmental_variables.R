@@ -326,7 +326,7 @@ SEM_second_db <- SEM_first_db %>%
 # chose the centroid for each grid:
 sf::st_crs(grid_50km)$srid
 centroid <- sf::st_transform(grid_50km, "EPSG:3035")
-lat_long <- sf::st_coordinates(grid_50km)
+lat_long <- sf::st_coordinates(grid_50km, "EPSG:3035")
 
 # Add latitude and longitude:
 SEM_final_db <- SEM_second_db

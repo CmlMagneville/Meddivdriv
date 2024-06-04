@@ -517,3 +517,367 @@ heatmap.varimp <- function(rf_all_taxa_list,
 
 }
 
+
+
+#' Create a data frame to plot the circular plot of drivers for each taxa
+#'
+#' @param rf_df_list
+#' @param var_nb
+#'
+#' @return a data frame with the following columns: Driver_nm, Div_metric,
+#' Driver_imp, Driv_cat
+#'
+#' @export
+#'
+
+create.df.circular.plot <- function(rf_df_list,
+                                    var_nb) {
+
+
+  # Build the final df that will be the one to return - fill it with first rf df:
+  final_df <- rf_df_list[[1]]
+  metric_nm <- names(rf_df_list)[1]
+  # Remove unused variables and rename column based on metric name:
+  final_df <- final_df %>%
+    tibble::rownames_to_column("Drivers_nm") %>%
+    dplyr::select(c("Drivers_nm", "mean_imp"))
+  # Add a new column with the diversity metric name:
+  final_df$Div_metric <- rep(metric_nm, nrow(final_df))
+
+  # Add Drivers category:
+  final_df$Drivers_cat <- rep("Past Climate Stability", nrow(final_df))
+  # Fill this new column:
+  for (i in (1:nrow(final_df))) {
+
+    if (final_df$Drivers_nm[i] %in% c("Present_AI_stdev",
+                                      "Present_MAT_stdev",
+                                      "Present_TAP_stdev",
+                                      "pH_stdev",
+                                      "OC_stdev",
+                                      "Elv_stdev",
+                                      "Depth_stdev",
+                                      "VWC_stdev")) {
+      final_df$Drivers_cat[i] <- "Present Habitat variations"
+    }
+
+    if (final_df$Drivers_nm[i] %in% c("pH_mean",
+                                      "OC_mean",
+                                      "Elv_mean",
+                                      "Depth_mean",
+                                      "VWC_mean",
+                                      "Present_AI_mean",
+                                      "Present_MAT_mean",
+                                      "Present_TAP_mean")) {
+      final_df$Drivers_cat[i] <- "Present Habitat mean"
+    }
+
+    if (final_df$Drivers_nm[i] %in% c("Pr_FInt_2000_2023_mean",
+                                      "Pr_FInt_2000_2023_sd",
+                                      "Pr_FSurf_2000_2023_pixels")) {
+      final_df$Drivers_cat[i] <- "Disturbances"
+    }
+
+    if (final_df$Drivers_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
+                                      "Past_Perc_croplands_Weighted_Sd",
+                                      "Past_Perc_dense_settlements_Weighted_Mean",
+                                      "Past_Perc_dense_settlements_Weighted_Sd",
+                                      "Past_Perc_rangelands_Weighted_Mean",
+                                      "Past_Perc_rangelands_Weighted_Sd",
+                                      "Past_Perc_seminatural_lands_Weighted_Mean",
+                                      "Past_Perc_seminatural_lands_Weighted_Sd",
+                                      "Past_Perc_villages_Weighted_Mean",
+                                      "Past_Perc_villages_Weighted_Sd",
+                                      "Past_Perc_wild_lands_Weighted_Mean",
+                                      "Past_Perc_wild_lands_Weighted_Sd" )) {
+      final_df$Drivers_cat[i] <- "Past Land Use"
+    }
+
+    if (final_df$Drivers_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
+                                      "Present_Perc_croplands_Weighted_Sd",
+                                      "Present_Perc_dense_settlements_Weighted_Mean",
+                                      "Present_Perc_dense_settlements_Weighted_Sd",
+                                      "Present_Perc_rangelands_Weighted_Mean",
+                                      "Present_Perc_rangelands_Weighted_Sd",
+                                      "Present_Perc_seminatural_lands_Weighted_Mean",
+                                      "Present_Perc_seminatural_lands_Weighted_Sd",
+                                      "Present_Perc_villages_Weighted_Mean",
+                                      "Present_Perc_villages_Weighted_Sd",
+                                      "Present_Perc_wild_lands_Weighted_Mean",
+                                      "Present_Perc_wild_lands_Weighted_Sd")) {
+      final_df$Drivers_cat[i] <- "Present Land Use"
+    }
+
+    if (final_df$Drivers_nm[i] %in% c("Pr_Pop_2020_mean",
+                                      "Pr_RatePop_2020_mean")) {
+      final_df$Drivers_cat[i] <- "Present Population"
+    }
+
+  }
+
+  # Only keep the first n variables:
+  final_df <- dplyr::arrange(final_df, desc(mean_imp))
+  # Only keep the first "var_nb" variables:
+  final_df <- final_df[c(1:var_nb), ]
+
+
+  # Now do a loop on the other data frames (one for each diversity metric left):
+  for (j in (2:length(rf_df_list))) {
+
+    # Build a temp df that will be rowbin with the final_df one:
+    temp_df <- rf_df_list[[j]]
+    metric_nm <- names(rf_df_list)[j]
+    # Remove unused variables and rename column based on metric name:
+    temp_df <- temp_df %>%
+      tibble::rownames_to_column("Drivers_nm") %>%
+      dplyr::select(c("Drivers_nm", "mean_imp"))
+    # Add a new column with the diversity metric name:
+    temp_df$Div_metric <- rep(metric_nm, nrow(temp_df))
+
+    # Add Drivers category:
+    temp_df$Drivers_cat <- rep("Past Climate Stability", nrow(temp_df))
+    # Fill this new column:
+    for (i in (1:nrow(temp_df))) {
+
+      if (temp_df$Drivers_nm[i] %in% c("Present_AI_stdev",
+                                        "Present_MAT_stdev",
+                                        "Present_TAP_stdev",
+                                        "pH_stdev",
+                                        "OC_stdev",
+                                        "Elv_stdev",
+                                        "Depth_stdev",
+                                        "VWC_stdev")) {
+        temp_df$Drivers_cat[i] <- "Present Habitat variations"
+      }
+
+      if (temp_df$Drivers_nm[i] %in% c("pH_mean",
+                                        "OC_mean",
+                                        "Elv_mean",
+                                        "Depth_mean",
+                                        "VWC_mean",
+                                        "Present_AI_mean",
+                                        "Present_MAT_mean",
+                                        "Present_TAP_mean")) {
+        temp_df$Drivers_cat[i] <- "Present Habitat mean"
+      }
+
+      if (temp_df$Drivers_nm[i] %in% c("Pr_FInt_2000_2023_mean",
+                                        "Pr_FInt_2000_2023_sd",
+                                        "Pr_FSurf_2000_2023_pixels")) {
+        temp_df$Drivers_cat[i] <- "Disturbances"
+      }
+
+      if (temp_df$Drivers_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
+                                        "Past_Perc_croplands_Weighted_Sd",
+                                        "Past_Perc_dense_settlements_Weighted_Mean",
+                                        "Past_Perc_dense_settlements_Weighted_Sd",
+                                        "Past_Perc_rangelands_Weighted_Mean",
+                                        "Past_Perc_rangelands_Weighted_Sd",
+                                        "Past_Perc_seminatural_lands_Weighted_Mean",
+                                        "Past_Perc_seminatural_lands_Weighted_Sd",
+                                        "Past_Perc_villages_Weighted_Mean",
+                                        "Past_Perc_villages_Weighted_Sd",
+                                        "Past_Perc_wild_lands_Weighted_Mean",
+                                        "Past_Perc_wild_lands_Weighted_Sd" )) {
+        temp_df$Drivers_cat[i] <- "Past Land Use"
+      }
+
+      if (temp_df$Drivers_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
+                                        "Present_Perc_croplands_Weighted_Sd",
+                                        "Present_Perc_dense_settlements_Weighted_Mean",
+                                        "Present_Perc_dense_settlements_Weighted_Sd",
+                                        "Present_Perc_rangelands_Weighted_Mean",
+                                        "Present_Perc_rangelands_Weighted_Sd",
+                                        "Present_Perc_seminatural_lands_Weighted_Mean",
+                                        "Present_Perc_seminatural_lands_Weighted_Sd",
+                                        "Present_Perc_villages_Weighted_Mean",
+                                        "Present_Perc_villages_Weighted_Sd",
+                                        "Present_Perc_wild_lands_Weighted_Mean",
+                                        "Present_Perc_wild_lands_Weighted_Sd")) {
+        temp_df$Drivers_cat[i] <- "Present Land Use"
+      }
+
+      if (temp_df$Drivers_nm[i] %in% c("Pr_Pop_2020_mean",
+                                        "Pr_RatePop_2020_mean")) {
+        temp_df$Drivers_cat[i] <- "Present Population"
+      }
+
+    }
+
+    # Only keep the first n variables:
+    temp_df <- dplyr::arrange(temp_df, desc(mean_imp))
+    # Only keep the first "var_nb" variables:
+    temp_df <- temp_df[c(1:var_nb), ]
+
+    final_df <- rbind(final_df, temp_df)
+
+  } # loop on the diversity df
+
+  return(final_df)
+
+}
+
+
+
+
+#' Plot n drivers for a given taxa and all diversity metrics
+#'
+#' @param taxa_plot_df dta frame from the \code{create.df.circular.plot} function
+#' @param var_nb the number of drivers to consider in each diversity panel
+#'
+#' @return
+#' @export
+#'
+
+
+circular.drivers.plot <- function(taxa_plot_df,
+                                  var_nb) {
+
+
+  # Set classes:
+  taxa_plot_df$Div_metric <- as.factor(taxa_plot_df$Div_metric)
+  taxa_plot_df$Drivers_cat <- as.factor(taxa_plot_df$Drivers_cat)
+
+  # Order drivers column:
+  taxa_plot_df$Drivers_cat <- factor(taxa_plot_df$Drivers_cat,
+                                     levels = c("Past Climate Stability",
+                                                "Present Habitat mean",
+                                                "Present Habitat variations",
+                                                "Disturbances",
+                                                "Past Land Use",
+                                                "Present Land Use",
+                                                "Present Population"))
+
+  # Decreasing variable importance:
+  taxa_plot_df <- taxa_plot_df %>%
+    dplyr::arrange(dplyr::desc(mean_imp))
+
+  # Set a number of 'empty bars' to add at the end of each group:
+  empty_bar <- 3
+  to_add <- data.frame(matrix(NA, empty_bar*nlevels(taxa_plot_df$Div_metric),
+                              ncol(taxa_plot_df)))
+  colnames(to_add) <- colnames(taxa_plot_df)
+  to_add$Div_metric <- rep(levels(taxa_plot_df$Div_metric), each = empty_bar)
+  taxa_plot_df <- rbind(taxa_plot_df, to_add)
+  taxa_plot_df <- taxa_plot_df %>%
+    dplyr::arrange(Div_metric)
+  taxa_plot_df$ind <- seq(1, nrow(taxa_plot_df))
+
+
+  # Get the name and the y position of each label
+  label_data <- taxa_plot_df
+  number_of_bar <- nrow(label_data)
+  angle <- 90 - 360 * (label_data$ind-0.5)/number_of_bar     # I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)
+  label_data$hjust <- ifelse( angle < -90, 1, 0)
+  label_data$angle <- ifelse(angle < -90, angle+180, angle)
+
+
+  # Prepare a data frame for base lines
+  base_data <- taxa_plot_df %>%
+    dplyr::group_by(Div_metric) %>%
+    dplyr::summarize(start = min(ind), end = max(ind) - empty_bar) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(title = mean(c(start, end)))
+
+  # Prepare a data frame for grid (scales)
+  grid_data <- base_data
+  grid_data$end <- grid_data$end[ c( nrow(grid_data), 1:nrow(grid_data)-1)] + 1
+  grid_data$start <- grid_data$start - 1
+  grid_data <- grid_data[-1,]
+
+
+  # Make the plot
+  drivers_circ_plot <- ggplot2::ggplot(data = taxa_plot_df,
+                                       ggplot2::aes(x = as.factor(ind),
+                                                    y = mean_imp,
+                                                    fill = Div_metric)) +
+
+    ggplot2::geom_bar(ggplot2::aes(x = as.factor(ind),
+                                   y = mean_imp,
+                                   fill = Drivers_cat),
+                      stat = "identity", alpha = 0.5) +
+
+    # ggplot2::scale_fill_manual(palette = c("darkslategray3",
+    #                                        "palegreen4",
+    #                                        "palegreen2",
+    #                                        "tan1",
+    #                                        "orchid4",
+    #                                        "orchid",
+    #                                        "plum2")) +
+
+    # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
+    ggplot2::geom_segment(data = grid_data,
+                          ggplot2::aes(x = end, y = 80, xend = start, yend = 80),
+                          colour = "grey", alpha = 1, size = 0.3 ,
+                          inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data = grid_data,
+                          ggplot2::aes(x = end, y = 60, xend = start, yend = 60),
+                          colour = "grey", alpha = 1, size = 0.3 ,
+                          inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data = grid_data,
+                          ggplot2::aes(x = end, y = 40, xend = start, yend = 40),
+                          colour = "grey", alpha = 1, size = 0.3,
+                          inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data = grid_data,
+                          ggplot2::aes(x = end, y = 20, xend = start, yend = 20),
+                          colour = "grey", alpha = 1, size = 0.3 ,
+                          inherit.aes = FALSE ) +
+
+    # Add text showing the value of lines
+    ggplot2::annotate("text", x = c(max(taxa_plot_df$ind), max(taxa_plot_df$ind)/2),
+                      y = c(20, 40),
+                      label = c("20", "40"), color = "grey",
+                      size = 3, angle = 0, fontface = "bold", hjust = 1) +
+
+    # ggplot2::geom_bar(ggplot2::aes(x = as.factor(ind), y = mean_imp,
+    #                                fill = "Drivers_cat"),
+    #                   stat = "identity", alpha = 0.5) +
+
+    ggplot2::ylim(-100,120) +
+
+    ggplot2::theme_minimal() +
+
+    ggplot2::theme(
+      legend.position = "none",
+      axis.text = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      plot.margin = grid::unit(rep(-1,4), "cm")) +
+
+    ggplot2::coord_polar() +
+
+    ggplot2::geom_text(data = label_data, ggplot2::aes(x = ind,
+                                                       y = mean_imp + 10,
+                                                       label = Drivers_nm,
+                                                       hjust = hjust),
+                       color = "black", fontface = "bold", alpha = 0.6,
+                       size = 2.5, angle = label_data$angle,
+                       inherit.aes = FALSE) +
+
+    # Add base line information
+    ggplot2::geom_segment(data = base_data, ggplot2::aes(x = start, y = -5,
+                                                         xend = end, yend = -5),
+                          colour = "black", alpha = 0.8, size = 0.6,
+                          inherit.aes = FALSE)
+
+
+
+    # HERE USE GEOMTEXT PATH TO MAKE NICE FIGURE AS IN :
+  # cf example couleurs: https://allancameron.github.io/geomtextpath/articles/curved_polar.html
+    # add a box color arounf PD et ecrire au ilieu "birds" (ajouter taxon input)
+  #https://allancameron.github.io/geomtextpath/articles/gallery.html
+
+    geomtextpath::coord_curvedpolar()
+
+
+
+
+    ggplot2::geom_text(data = base_data, ggplot2::aes(x = title, y = -20,
+                                                      label = Div_metric),
+                       hjust = c(1,1,0), colour = "black",
+                       alpha = 0.8, size = 4, fontface="bold",
+                       inherit.aes = FALSE)
+
+
+
+
+}
