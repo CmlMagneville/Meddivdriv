@@ -103,13 +103,17 @@ test.rf.model <- function(rf_data,
 #'
 #' @param var_imp_df output of the \code{test.rf.model} function.
 #'
+#' @param max a number referring to the maximal value that the x axis should take
+#' ie. max over the five taxa of interest for one metric.
+#'
 #' @return a lollipop plot with drivers on columns and mean %IncMSE on x axis
 #' with colors referring to drivers category
 #'
 #' @export
 #'
 
-varimp.plot <- function(var_imp_df) {
+varimp.plot <- function(var_imp_df,
+                        max) {
 
 
   # Add a new column that will refer to drivers categories:
@@ -131,26 +135,26 @@ varimp.plot <- function(var_imp_df) {
     if (rownames(var_imp_plot_df)[i] %in% c("Present_AI_stdev",
                                             "Present_MAT_stdev",
                                             "Present_TAP_stdev",
+                                            "Present_AI_mean",
+                                            "Present_MAT_mean",
+                                            "Present_TAP_mean")) {
+      var_imp_plot_df$cat[i] <- "Present Climate"
+    }
+
+    if (rownames(var_imp_plot_df)[i] %in% c("pH_mean",
+                                            "OC_mean",
+                                            "Elv_mean",
+                                            "Depth_mean",
+                                            "VWC_mean",
                                             "pH_stdev",
                                             "OC_stdev",
                                             "Elv_stdev",
                                             "Depth_stdev",
                                             "VWC_stdev")) {
-      var_imp_plot_df$cat[i] <- "Habitat characteristics variation"
+      var_imp_plot_df$cat[i] <- "Present Habitat Characteristics"
     }
 
-    if (rownames(var_imp_plot_df)[i] %in% c("Present_AI_mean",
-                                            "Present_MAT_mean",
-                                            "Present_TAP_mean",
-                                            "pH_mean",
-                                            "OC_mean",
-                                            "Elv_mean",
-                                            "Depth_mean",
-                                            "VWC_mean")) {
-      var_imp_plot_df$cat[i] <- "Habitat characteristics mean"
-    }
-
-    if (rownames(var_imp_plot_df)[i] %in% c("Pr_FInt_2000_2023_median",
+    if (rownames(var_imp_plot_df)[i] %in% c("Pr_FInt_2000_2023_mean",
                                             "Pr_FInt_2000_2023_sd",
                                             "Pr_FSurf_2000_2023_pixels")) {
       var_imp_plot_df$cat[i] <- "Disturbances"
@@ -186,9 +190,21 @@ varimp.plot <- function(var_imp_df) {
       var_imp_plot_df$cat[i] <- "Present Land Use"
     }
 
-    if (rownames(var_imp_plot_df)[i] %in% c("Pr_Pop_2020_median",
-                                            "Pr_RatePop_2020_median")) {
+    if (rownames(var_imp_plot_df)[i] %in% c("Pr_Pop_2020_mean",
+                                            "Pr_RatePop_2020_mean")) {
       var_imp_plot_df$cat[i] <- "Present Population"
+    }
+
+  }
+
+  # Add a new column about whether it's sd or mean:
+  var_imp_plot_df$var <- rep("sd", nrow(var_imp_df))
+
+  # Fill this new column:
+  for (i in (1:nrow(var_imp_plot_df))) {
+
+    if (grepl("mean", rownames(var_imp_plot_df)[i])) {
+      var_imp_plot_df$var[i] <- "mean"
     }
 
   }
@@ -197,28 +213,43 @@ varimp.plot <- function(var_imp_df) {
   var_imp_plot_df <- var_imp_plot_df %>%
     tibble::rownames_to_column("drivers")
 
+  # Order drivers column:
+  var_imp_plot_df$cat <- factor(var_imp_plot_df$cat,
+                                  levels = c("Past Climate Stability",
+                                             "Present Climate",
+                                             "Present Habitat Characteristics",
+                                             "Disturbances",
+                                             "Past Land Use",
+                                             "Present Land Use",
+                                             "Present Population"))
+
 
   # Plot:
   var_plot <- ggpubr::ggdotchart(var_imp_plot_df,
                                  x = "drivers",
                                  y = "mean_imp",
                                  color = "cat",
-                                 palette = c("tan1",
-                                             "palegreen2",
-                                             "palegreen4",
+                                 palette = c("darkslategray3",
                                              "paleturquoise",
+                                             "palegreen2",
+                                             "tan1",
                                              "orchid4",
                                              "orchid",
-                                             "orchid"),
+                                             "plum2"),
+                                 shape = "var",
                                  sorting = "descending",
                                  rotate = TRUE,
                                  add = "segments",
-                                 dot.size = 4) +
+                                 dot.size = 3.5,
+                                 alpha = 0.6) +
+
+    ggplot2::ylim(0, max) +
     ggplot2::ylab("mean %IncMSE over 100 repetitions") +
 
     ggplot2::theme(ggpubr::theme_pubr()) +
 
-    ggplot2::labs(color = "Drivers category")
+    ggplot2::labs(color = "Drivers category",
+                  shape = "Metric")
 
     print(var_plot)
 
@@ -394,7 +425,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
                          size = 3) +
 
       ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`mean%IncMSE`),
-                                               max(var_imp_df$`mean%IncMSE`))) +
+                                               25)) +
 
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
                                                               colour = "grey83"),
@@ -443,7 +474,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
       ggplot2::geom_raster() +
 
       ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`mean%IncMSE`),
-                                               max(var_imp_df$`mean%IncMSE`))) +
+                                               25)) +
 
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
                                                               colour = "grey83"),
@@ -472,7 +503,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
                                                  sep = "_",
                                                  metric_nm,
                                                  sep = "_",
-                                                 "alltaxa_nb_50.pdf")),
+                                                 "alltaxa_50.pdf")),
                     device = "pdf",
                     scale = 0.9,
                     height = 5500,

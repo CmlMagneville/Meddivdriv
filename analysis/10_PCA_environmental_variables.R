@@ -324,8 +324,9 @@ SEM_second_db <- SEM_first_db %>%
 
 # Retreive latitude and longitude from integradiv grid:
 # chose the centroid for each grid:
-centroid <- sf::st_centroid(grid_50km)
-lat_long <- sf::st_coordinates(centroid)
+sf::st_crs(grid_50km)$srid
+centroid <- sf::st_transform(grid_50km, "EPSG:3035")
+lat_long <- sf::st_coordinates(grid_50km)
 
 # Add latitude and longitude:
 SEM_final_db <- SEM_second_db

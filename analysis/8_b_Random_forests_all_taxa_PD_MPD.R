@@ -154,6 +154,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
+# % Var explained around 50%
 varimp_birds <- test.rf.model(rf_data = rf_mpd_birds_df,
                               iteration_nb = 100)
 # Save it:
@@ -161,7 +162,11 @@ saveRDS(varimp_birds, here::here("transformed_data",
                                  "rf_birds_PD_mpd_50.rds"))
 
 # Plot the variables importance:
-varimp_plot_birds <- varimp.plot(varimp_birds)
+max(varimp_birds$mean_imp)
+# max(varimp_trees$mean_imp)
+# max(varimp_reptiles$mean_imp)
+varimp_plot_birds <- varimp.plot(varimp_birds,
+                                 max = 25)
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_birds,
@@ -211,6 +216,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
+# % Var explained around 50%
 varimp_reptiles <- test.rf.model(rf_data = rf_mpd_reptiles_df,
                                  iteration_nb = 100)
 
@@ -219,7 +225,8 @@ saveRDS(varimp_reptiles, here::here("transformed_data",
                                     "rf_reptiles_PD_mpd_50.rds"))
 
 # Plot the variables importance:
-varimp_plot_reptiles <- varimp.plot(varimp_reptiles)
+varimp_plot_reptiles <- varimp.plot(varimp_reptiles,
+                                    max = 25)
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_reptiles,
@@ -267,6 +274,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
+# % Var explained around 50%
 varimp_trees <- test.rf.model(rf_data = rf_mpd_trees_df,
                               iteration_nb = 100)
 
@@ -275,7 +283,8 @@ saveRDS(varimp_trees, here::here("transformed_data",
                                  "rf_trees_PD_mpd_50.rds"))
 
 # Plot the variables importance:
-varimp_plot_trees <- varimp.plot(varimp_trees)
+varimp_plot_trees <- varimp.plot(varimp_trees,
+                                 max = 25)
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_trees,
