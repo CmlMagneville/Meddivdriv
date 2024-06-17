@@ -14,7 +14,7 @@
 
 
 #' Compute n iteration of the random forest model to test its accuracy and
-#' variable importance
+#' variable importance and compute partial dependance plots
 #'
 #' @param rf_data a data frame containing data to run the random forest - ie
 #' predictor variables in columns with the last column being the ses of a given
@@ -22,7 +22,8 @@
 #'
 #' @param iteration_nb the number of time the random forest should be repeated.
 #'
-#' @return a data frame with variable importance and model performance
+#' @return a data frame with variable importance for each rf and the mean/sd.
+#' It also returns partial dependance plot for each driver studied.
 #'
 #' @export
 #'
@@ -38,25 +39,31 @@ test.rf.model <- function(rf_data,
   var_imp_final_df[, 1] <- colnames(rf_data)[-ncol(rf_data)]
   colnames(var_imp_final_df) <- "drivers"
 
+  # create a list that wil contains all rf results (from the n iterations):
+  rf_models <- vector("list", iteration_nb)
+
 
   # Running random forest n times:
   for (i in c(1:iteration_nb)) {
 
     # Split into training and testing sets:
-    data_split <- rsample::initial_split(rf_data,
-                                         prop = 0.8)
-    train <- rsample::training(data_split)
-    test <- rsample::testing(data_split)
+    # data_split <- rsample::initial_split(rf_data,
+    #                                      prop = 0.8)
+    # train <- rsample::training(data_split)
+    # test <- rsample::testing(data_split)
 
     # Run the rf model on the training set:
     rf_mod <- randomForest::randomForest(ses~ .,
-                          data = train,
+                          data = rf_data,
                           mtry = 16,
                           importance = TRUE,
                           num.trees = 500)
 
+    # Put the output of the model in the rf vect:
+    rf_models[[i]] <- rf_mod
+
     # test the model with the testing set:
-    score <- predict(rf_mod, test)
+    #score <- predict(rf_mod, test)
 
     # Get the variables importance:
     var_imp_rf <- randomForest::importance(rf_mod)
@@ -90,12 +97,68 @@ test.rf.model <- function(rf_data,
   var_imp_mean_df$mean_imp <- apply(var_imp_mean_df, 1, mean)
   var_imp_mean_df$sd_imp <- apply(var_imp_mean_df, 1, sd)
 
+
+  # Do partial regression plot for each variable:
+  # Get the list of predictor variables:
+  variables <- names(rf_data)[names(rf_data) != "ses"]
+
+  # Loop through each predictor variable:
+  for (var in variables) {
+
+    # Get combined partial dependence data for the variable:
+    combined_pd <- plot.partial.dependence(rf_models, var, rf_data)
+
+    # Create a ggplot for the partial dependence data:
+    p <- ggplot2::ggplot(combined_pd, ggplot2::aes(x = !!rlang::sym(var),
+                                                   y = yhat,
+                                                   group = Iteration,
+                                                   color = as.factor(Iteration))) +
+      # Plot lines with transparency for each iteration:
+      ggplot2::geom_line(alpha = 0.2) +
+
+      ggplot2::labs(title = paste("Partial Dependence of", var),
+                    x = var, y = "Partial Dependence") +
+      ggplot2::theme_minimal() +
+      # Remove legend:
+      ggplot2::theme(legend.position = "none")
+
+    print(p)
+
+  }
+
   return(var_imp_mean_df)
 
 }
 
 
 
+#' Take a list of models, a predictor variable name, and the training data,
+#' then computes and combines the partial dependence plots for the given
+#' variable across all models.
+#'
+#' @param models
+#' @param var_name
+#' @param data
+#'
+#' @return
+#' @export
+#'
+
+plot.partial.dependence <- function(models, var_name, data) {
+
+  # Generate partial dependence plots for each model and the studied variable:
+  partial_plots <- lapply(models, function(model) {
+    pdp::partial(object = model, pred.var = var_name, train = data,
+                 plot = FALSE)
+  })
+
+  # Combine results into a single data frame:
+  combined_pd <- do.call(rbind, lapply(partial_plots, function(p) data.frame(p)))
+  combined_pd$Iteration <- rep(1:iteration_nb, each = nrow(partial_plots[[1]]))
+
+  return(combined_pd)
+
+}
 
 
 
@@ -328,7 +391,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
         taxa_rf_df$Driver_cat[j] <- "Habitat characteristics mean"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_FInt_2000_2023_median",
+      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_FInt_2000_2023_mean",
                                               "Pr_FInt_2000_2023_sd",
                                               "Pr_FSurf_2000_2023_pixels")) {
         taxa_rf_df$Driver_cat[j] <- "Disturbances"
@@ -364,8 +427,8 @@ heatmap.varimp <- function(rf_all_taxa_list,
         taxa_rf_df$Driver_cat[j] <- "Present Land Use"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_Pop_2020_median",
-                                         "Pr_RatePop_2020_median")) {
+      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_Pop_2020_mean",
+                                         "Pr_RatePop_2020_mean")) {
         taxa_rf_df$Driver_cat[j] <- "Present Population"
       }
 
@@ -425,7 +488,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
                          size = 3) +
 
       ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`mean%IncMSE`),
-                                               25)) +
+                                               max(var_imp_df$`mean%IncMSE`))) +
 
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
                                                               colour = "grey83"),
@@ -474,7 +537,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
       ggplot2::geom_raster() +
 
       ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`mean%IncMSE`),
-                                               25)) +
+                                               max(var_imp_df$`mean%IncMSE`))) +
 
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
                                                               colour = "grey83"),
@@ -521,8 +584,12 @@ heatmap.varimp <- function(rf_all_taxa_list,
 
 #' Create a data frame to plot the circular plot of drivers for each taxa
 #'
-#' @param rf_df_list
-#' @param var_nb
+#' @param rf_df_list a list containing the rf results from the
+#' \code{test.rf.model} function - each element should be given the name of the
+#' metric studied.
+#'
+#' @param var_nb a number referring to the number of variables that should be
+#' kept in the graph - variables ordered according to their importance.
 #'
 #' @return a data frame with the following columns: Driver_nm, Div_metric,
 #' Driver_imp, Driv_cat
@@ -721,8 +788,10 @@ create.df.circular.plot <- function(rf_df_list,
 
 #' Plot n drivers for a given taxa and all diversity metrics
 #'
-#' @param taxa_plot_df dta frame from the \code{create.df.circular.plot} function
-#' @param var_nb the number of drivers to consider in each diversity panel
+#' @param taxa_plot_df data frame from the \code{create.df.circular.plot} function
+#' @param drivers_nm_df a data frame containing shortened names of drivers
+#' @palette a color palette containing the color names of the category present
+#' in the \code{taxa_plot_df}
 #'
 #' @return
 #' @export
@@ -730,7 +799,8 @@ create.df.circular.plot <- function(rf_df_list,
 
 
 circular.drivers.plot <- function(taxa_plot_df,
-                                  var_nb) {
+                                  drivers_nm_df,
+                                  palette) {
 
 
   # Set classes:
@@ -750,6 +820,11 @@ circular.drivers.plot <- function(taxa_plot_df,
   # Decreasing variable importance:
   taxa_plot_df <- taxa_plot_df %>%
     dplyr::arrange(dplyr::desc(mean_imp))
+
+  # Add shortened names of drivers:
+  taxa_plot_df <- dplyr::left_join(taxa_plot_df,
+                                   drivers_nm_df,
+                                   by = "Drivers_nm")
 
   # Set a number of 'empty bars' to add at the end of each group:
   empty_bar <- 3
@@ -784,6 +859,12 @@ circular.drivers.plot <- function(taxa_plot_df,
   grid_data$start <- grid_data$start - 1
   grid_data <- grid_data[-1,]
 
+  # Prepare a dataframe for metrics labels # CHANGE WHEN METRICS CHANGED.
+  data_labmetric <- data.frame(x = c(8, 26, 44),
+                               y = c(-8, -8, -8),
+                               label = c("PD Dispersion",
+                                         "PD Originality",
+                                         "PD Richness"))
 
   # Make the plot
   drivers_circ_plot <- ggplot2::ggplot(data = taxa_plot_df,
@@ -796,13 +877,7 @@ circular.drivers.plot <- function(taxa_plot_df,
                                    fill = Drivers_cat),
                       stat = "identity", alpha = 0.5) +
 
-    # ggplot2::scale_fill_manual(palette = c("darkslategray3",
-    #                                        "palegreen4",
-    #                                        "palegreen2",
-    #                                        "tan1",
-    #                                        "orchid4",
-    #                                        "orchid",
-    #                                        "plum2")) +
+    ggplot2::scale_fill_manual(values = palette) +
 
     # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
     ggplot2::geom_segment(data = grid_data,
@@ -823,21 +898,20 @@ circular.drivers.plot <- function(taxa_plot_df,
                           inherit.aes = FALSE ) +
 
     # Add text showing the value of lines
-    ggplot2::annotate("text", x = c(max(taxa_plot_df$ind), max(taxa_plot_df$ind)/2),
+    ggplot2::annotate("text", x = c(max(taxa_plot_df$ind), max(taxa_plot_df$ind)),
                       y = c(20, 40),
                       label = c("20", "40"), color = "grey",
                       size = 3, angle = 0, fontface = "bold", hjust = 1) +
 
-    # ggplot2::geom_bar(ggplot2::aes(x = as.factor(ind), y = mean_imp,
-    #                                fill = "Drivers_cat"),
-    #                   stat = "identity", alpha = 0.5) +
+    ggplot2::ylim(-50,40) +
 
-    ggplot2::ylim(-100,120) +
+    ggplot2::labs(fill = "Drivers category") +
 
     ggplot2::theme_minimal() +
 
     ggplot2::theme(
       legend.position = "none",
+      legend.text = ggplot2::element_text(size = 7),
       axis.text = ggplot2::element_blank(),
       axis.title = ggplot2::element_blank(),
       panel.grid = ggplot2::element_blank(),
@@ -847,37 +921,39 @@ circular.drivers.plot <- function(taxa_plot_df,
 
     ggplot2::geom_text(data = label_data, ggplot2::aes(x = ind,
                                                        y = mean_imp + 10,
-                                                       label = Drivers_nm,
+                                                       label = Drivers_short_nm,
                                                        hjust = hjust),
-                       color = "black", fontface = "bold", alpha = 0.6,
+                       color = "black", alpha = 0.6, fontface = "bold",
                        size = 2.5, angle = label_data$angle,
                        inherit.aes = FALSE) +
 
-    # Add base line information
-    ggplot2::geom_segment(data = base_data, ggplot2::aes(x = start, y = -5,
-                                                         xend = end, yend = -5),
-                          colour = "black", alpha = 0.8, size = 0.6,
-                          inherit.aes = FALSE)
+    # Add metrics retangles and name:
+    ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = 16,
+                                    ymin = -15, ymax = -2),
+                       fill = "grey80",
+                       alpha = 0.7,
+                       color = "white",
+                       size = 2) +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 18, xmax = 34,
+                                  ymin = -15, ymax = -2),
+                      fill = "grey80",
+                      alpha = 0.7,
+                      color = "white",
+                      size = 2) +
+    ggplot2::geom_rect(ggplot2::aes(xmin = 36, xmax = 52,
+                                  ymin = -15, ymax = -2),
+                      fill = "grey80",
+                      alpha = 0.7,
+                      color = "white",
+                      size = 2) +
 
+    geomtextpath::geom_textpath(data = data_labmetric,
+                                ggplot2::aes(x = x, y = y, label = label),
+                                size = 4,
+                                color = "white",
+                                fontface = "bold",
+                                inherit.aes = FALSE)
 
-
-    # HERE USE GEOMTEXT PATH TO MAKE NICE FIGURE AS IN :
-  # cf example couleurs: https://allancameron.github.io/geomtextpath/articles/curved_polar.html
-    # add a box color arounf PD et ecrire au ilieu "birds" (ajouter taxon input)
-  #https://allancameron.github.io/geomtextpath/articles/gallery.html
-
-    geomtextpath::coord_curvedpolar()
-
-
-
-
-    ggplot2::geom_text(data = base_data, ggplot2::aes(x = title, y = -20,
-                                                      label = Div_metric),
-                       hjust = c(1,1,0), colour = "black",
-                       alpha = 0.8, size = 4, fontface="bold",
-                       inherit.aes = FALSE)
-
-
-
+  return(drivers_circ_plot)
 
 }
