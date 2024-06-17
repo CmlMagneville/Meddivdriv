@@ -24,6 +24,7 @@ Imports:
     here,
     miceRanger,
     patchwork,
+    pdp,
     picante,
     reshape,
     reshape2,

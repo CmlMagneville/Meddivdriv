@@ -1,7 +1,8 @@
 ################################################################################
 ##
 ## Script to compute one random forest with all variables for each taxas
-## ... - 5 random forests - to see which variable drive the most MPD.
+## ... - 5 random forests - to see which variable drive the most Faith PD.
+## ... Also compute partial dependance plots for each driver.
 ##
 ## Camille Magneville
 ##
@@ -117,6 +118,11 @@ rf_birds <- randomForest::randomForest(ses~.,
 # ntree:
 plot(rf_birds)
 
+try <- randomForest::partialPlot(rf_birds,
+                          pred.data = rf_faith_birds_df,
+                          x.var = "Present_MAT_mean",
+                          add = TRUE)
+
 # mtry:
 mtry <- randomForest::tuneRF(rf_faith_birds_df[-ncol(rf_faith_birds_df)],
                              rf_faith_birds_df$ses,
@@ -196,7 +202,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
-# % Var explained around 50%
+# % Var explained around 45%
 varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
                               iteration_nb = 100)
 

@@ -322,14 +322,23 @@ SEM_second_db <- SEM_first_db %>%
 # Add herbivore consumption: TO DO ONCE HERB CONSUMPTION IS USED !!!!!!!!!!!!!!!
 
 
-# Retreive latitude and longitude from integradiv grid:
+# Retrieve latitude and longitude from integradiv grid:
 # chose the centroid for each grid:
 sf::st_crs(grid_50km)$srid
-centroid <- sf::st_transform(grid_50km, "EPSG:3035")
-lat_long <- sf::st_coordinates(grid_50km, "EPSG:3035")
-
-# Add latitude and longitude:
-SEM_final_db <- SEM_second_db
+lat_long <- grid_50km[, c("Idgrid", "Y_LLC", "X_LLC")]
+colnames(lat_long)[2] <- "latitude"
+colnames(lat_long)[3] <- "longitude"
 
 
+# Add latitude and longitude (in meters):
+SEM_final_db <- SEM_second_db  %>%
+  dplyr::left_join(lat_long,
+                   by = "Idgrid") %>%
+  dplyr::select(-"geometry")
+
+# Save it:
+saveRDS(SEM_final_db,
+        here::here("transformed_data",
+                   "env_db",
+                   "SEM_env_db.rds"))
 

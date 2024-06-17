@@ -2,7 +2,6 @@
 ##
 ## Script to compute one random forest with all variables for each taxas
 ## ... - 5 random forests - to see which variable drive the most MNTD.
-##
 ## Camille Magneville
 ##
 ## 04/06/2024
@@ -216,7 +215,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
-# % Var explained between 25-30%
+# % Var explained ~ 29%
 varimp_reptiles <- test.rf.model(rf_data = rf_mntd_reptiles_df,
                                  iteration_nb = 100)
 
@@ -274,7 +273,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
-# % Var explained between 25-30%:
+# % Var explained ~ 30%:
 varimp_trees <- test.rf.model(rf_data = rf_mntd_trees_df,
                               iteration_nb = 100)
 
