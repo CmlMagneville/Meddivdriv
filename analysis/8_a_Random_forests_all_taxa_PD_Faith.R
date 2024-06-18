@@ -118,11 +118,6 @@ rf_birds <- randomForest::randomForest(ses~.,
 # ntree:
 plot(rf_birds)
 
-try <- randomForest::partialPlot(rf_birds,
-                          pred.data = rf_faith_birds_df,
-                          x.var = "Present_MAT_mean",
-                          add = TRUE)
-
 # mtry:
 mtry <- randomForest::tuneRF(rf_faith_birds_df[-ncol(rf_faith_birds_df)],
                              rf_faith_birds_df$ses,
@@ -135,10 +130,13 @@ mtry <- randomForest::tuneRF(rf_faith_birds_df[-ncol(rf_faith_birds_df)],
 print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
-# Compute 100 random forests and mean importance of each variable:
+# Compute 100 random forests and mean importance of each variable + part dep plot:
 # % Var explained around 50%
 varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
-                              iteration_nb = 100)
+                              iteration_nb = 100,
+                              metric_nm = "PD_Faith",
+                              taxa_nm = "BIRDS",
+                              plot = TRUE)
 # Save it:
 saveRDS(varimp_birds, here::here("transformed_data",
                                  "rf_birds_PD_Faith_50.rds"))
@@ -204,7 +202,10 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 45%
 varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
-                              iteration_nb = 100)
+                              iteration_nb = 100,
+                              metric_nm = "PD_Faith",
+                              taxa_nm = "REPTILES",
+                              plot = TRUE)
 
 # Save it:
 saveRDS(varimp_reptiles, here::here("transformed_data",
@@ -265,7 +266,10 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
 varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
-                                 iteration_nb = 100)
+                                 iteration_nb = 100,
+                              metric_nm = "PD_Faith",
+                              taxa_nm = "TREES",
+                              plot = TRUE)
 
 # Save it:
 saveRDS(varimp_trees, here::here("transformed_data",

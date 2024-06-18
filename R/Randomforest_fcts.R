@@ -22,6 +22,15 @@
 #'
 #' @param iteration_nb the number of time the random forest should be repeated.
 #'
+#' @param metric_nm a character string referring to the name of the metric studied
+#' (used for saving partial dependance files)
+#'
+#' @param taxa_nm a character string referring to the name of the taxa studied
+#' (used for saving partial dependance files)
+#'
+#' @param plot a TRUE/FALSE value according to whether or not partial dependance
+#' are to be plotted and saved (it takes a lot of time)
+#'
 #' @return a data frame with variable importance for each rf and the mean/sd.
 #' It also returns partial dependance plot for each driver studied.
 #'
@@ -29,7 +38,10 @@
 #'
 
 test.rf.model <- function(rf_data,
-                       iteration_nb) {
+                       iteration_nb,
+                       metric_nm,
+                       taxa_nm,
+                       plot) {
 
 
   # Create one final db that will be returned:
@@ -98,31 +110,50 @@ test.rf.model <- function(rf_data,
   var_imp_mean_df$sd_imp <- apply(var_imp_mean_df, 1, sd)
 
 
-  # Do partial regression plot for each variable:
-  # Get the list of predictor variables:
-  variables <- names(rf_data)[names(rf_data) != "ses"]
+  # If partial dependance plots are to be plotted and saved:
+  if (plot == TRUE) {
 
-  # Loop through each predictor variable:
-  for (var in variables) {
+    # Do partial regression plot for each variable:
+    # Get the list of predictor variables:
+    variables <- names(rf_data)[names(rf_data) != "ses"]
 
-    # Get combined partial dependence data for the variable:
-    combined_pd <- plot.partial.dependence(rf_models, var, rf_data)
+    # Loop through each predictor variable:
+    for (var in variables) {
 
-    # Create a ggplot for the partial dependence data:
-    p <- ggplot2::ggplot(combined_pd, ggplot2::aes(x = !!rlang::sym(var),
-                                                   y = yhat,
-                                                   group = Iteration,
-                                                   color = as.factor(Iteration))) +
-      # Plot lines with transparency for each iteration:
-      ggplot2::geom_line(alpha = 0.2) +
+      # Get combined partial dependence data for the variable:
+      combined_pd <- plot.partial.dependence(rf_models, var, rf_data)
 
-      ggplot2::labs(title = paste("Partial Dependence of", var),
-                    x = var, y = "Partial Dependence") +
-      ggplot2::theme_minimal() +
-      # Remove legend:
-      ggplot2::theme(legend.position = "none")
+      # Create a ggplot for the partial dependence data:
+      p <- ggplot2::ggplot(combined_pd, ggplot2::aes(x = !!rlang::sym(var),
+                                                     y = yhat,
+                                                     group = Iteration)) +
+        # Plot lines with transparency for each iteration:
+        ggplot2::geom_line(alpha = 0.2, color = "aquamarine2") +
 
-    print(p)
+        ggplot2::labs(title = paste("Partial Dependence of", var),
+                      x = var, y = "Partial Dependence") +
+        ggplot2::theme_minimal() +
+        # Remove legend:
+        ggplot2::theme(legend.position = "none")
+
+      print(p)
+
+      ggplot2::ggsave(plot = p,
+                      filename = here::here("outputs",
+                                            "Partial_dependance_plots",
+                                            paste0(metric_nm, sep = "_",
+                                                   "50", sep = "_", taxa_nm,
+                                                   sep = "_", var, ".png")),
+                      device = "png",
+                      scale = 1,
+                      height = 550,
+                      width = 419,
+                      units = "px",
+                      dpi = 600)
+
+  }
+
+
 
   }
 

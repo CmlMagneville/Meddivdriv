@@ -156,7 +156,10 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
 varimp_birds <- test.rf.model(rf_data = rf_mpd_birds_df,
-                              iteration_nb = 100)
+                              iteration_nb = 100,
+                              metric_nm = "PD_MPD",
+                              taxa_nm = "BIRDS",
+                              plot = TRUE)
 # Save it:
 saveRDS(varimp_birds, here::here("transformed_data",
                                  "rf_birds_PD_mpd_50.rds"))
@@ -218,7 +221,10 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
 varimp_reptiles <- test.rf.model(rf_data = rf_mpd_reptiles_df,
-                                 iteration_nb = 100)
+                                 iteration_nb = 100,
+                                 metric_nm = "PD_MPD",
+                                 taxa_nm = "REPTILES",
+                                 plot = TRUE)
 
 # Save it:
 saveRDS(varimp_reptiles, here::here("transformed_data",
@@ -276,7 +282,10 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
 varimp_trees <- test.rf.model(rf_data = rf_mpd_trees_df,
-                              iteration_nb = 100)
+                              iteration_nb = 100,
+                              metric_nm = "PD_MPD",
+                              taxa_nm = "TREES",
+                              plot = TRUE)
 
 # Save it:
 saveRDS(varimp_trees, here::here("transformed_data",
