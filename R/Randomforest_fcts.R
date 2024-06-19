@@ -121,7 +121,7 @@ test.rf.model <- function(rf_data,
     for (var in variables) {
 
       # Get combined partial dependence data for the variable:
-      combined_pd <- plot.partial.dependence(rf_models, var, rf_data)
+      combined_pd <- plot.partial.dependence(rf_models, var, rf_data, iteration_nb)
 
       # Create a ggplot for the partial dependence data:
       p <- ggplot2::ggplot(combined_pd, ggplot2::aes(x = !!rlang::sym(var),
@@ -143,11 +143,11 @@ test.rf.model <- function(rf_data,
                                             "Partial_dependance_plots",
                                             paste0(metric_nm, sep = "_",
                                                    "50", sep = "_", taxa_nm,
-                                                   sep = "_", var, ".png")),
-                      device = "png",
-                      scale = 1,
-                      height = 550,
-                      width = 419,
+                                                   sep = "_", var, ".jpeg")),
+                      device = "jpeg",
+                      scale = 1.6,
+                      height = 1600,
+                      width = 1800,
                       units = "px",
                       dpi = 600)
 
@@ -175,7 +175,7 @@ test.rf.model <- function(rf_data,
 #' @export
 #'
 
-plot.partial.dependence <- function(models, var_name, data) {
+plot.partial.dependence <- function(models, var_name, data, iteration_nb) {
 
   # Generate partial dependence plots for each model and the studied variable:
   partial_plots <- lapply(models, function(model) {
