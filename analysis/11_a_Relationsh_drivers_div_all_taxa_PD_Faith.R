@@ -82,6 +82,7 @@ correl_70 <- subset(full_correl_pvalue_df, Correl > .70 & Correl != 1)
 
 # 4 - Relationship between synthetic variables for past stab and Faith PD ======
 
+
 # Note shapiro test: as sample sizes grow, increasingly trivial
 # ... departures from normality (which are almost always present in real data)
 # ... will result in small p-values.
@@ -125,7 +126,7 @@ birds_pastclim1_lm <- lm(ses_birds ~ PastClimStab_dim1,
 # General tests model:
 performance::check_model(birds_pastclim1_lm)
 # Test normality residuals: OK
-shapiro.test(rstandard(birds_pastclim1_lm))
+shapiro.test(rstandard(birds_pastclim1_lm)) # H0: normal distrib
 # QQplot:
 ggplot2::ggplot() +
   ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_pastclim1_lm))) +
@@ -150,6 +151,23 @@ ggplot2::ggplot() +
 # Model summary:
 summary(birds_pastclim2_lm)
 car::Anova(birds_pastclim2_lm)
+
+# Test Linear Regression - dim 1 + dim 2:
+birds_pastclim_lm <- lm(ses_birds ~ PastClimStab_dim1+
+                                    PastClimStab_dim2,
+                         data = relationsh_ses_faith_df)
+# General tests model:
+performance::check_model(birds_pastclim_lm)
+# Test normality residuals: OK
+shapiro.test(rstandard(birds_pastclim_lm))
+# QQplot:
+ggplot2::ggplot() +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_pastclim_lm))) +
+  ggplot2::geom_abline(color = "red") +
+  ggplot2::coord_fixed()
+# Model summary:
+summary(birds_pastclim_lm)
+car::Anova(birds_pastclim_lm)
 
 
 # REPTILES - GLM:
@@ -186,6 +204,23 @@ ggplot2::ggplot() +
 summary(reptiles_pastclim2_lm)
 car::Anova(reptiles_pastclim2_lm)
 
+# Test Linear Regression - dim 1 + dim 2:
+reptiles_pastclim_lm <- lm(ses_reptiles ~ PastClimStab_dim1+
+                          PastClimStab_dim2,
+                        data = relationsh_ses_faith_df)
+# General tests model:
+performance::check_model(reptiles_pastclim_lm)
+# Test normality residuals: OK
+shapiro.test(rstandard(reptiles_pastclim_lm))
+# QQplot:
+ggplot2::ggplot() +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_pastclim_lm))) +
+  ggplot2::geom_abline(color = "red") +
+  ggplot2::coord_fixed()
+# Model summary:
+summary(reptiles_pastclim_lm)
+car::Anova(reptiles_pastclim_lm)
+
 
 # TREES - GLM:
 
@@ -220,6 +255,24 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_pastclim2_lm)
 car::Anova(trees_pastclim2_lm)
+
+# Test Linear Regression - dim 1 + dim 2:
+trees_pastclim_lm <- lm(ses_trees ~ PastClimStab_dim1+
+                             PastClimStab_dim2,
+                           data = relationsh_ses_faith_df)
+# General tests model:
+performance::check_model(trees_pastclim_lm)
+# Test normality residuals: OK
+shapiro.test(rstandard(trees_pastclim_lm))
+# QQplot:
+ggplot2::ggplot() +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_pastclim_lm))) +
+  ggplot2::geom_abline(color = "red") +
+  ggplot2::coord_fixed()
+# Model summary:
+summary(trees_pastclim_lm)
+car::Anova(trees_pastclim_lm)
+
 
 
 # Conclusion: I can't use glm because models don't respect residuals
@@ -257,6 +310,17 @@ mgcv::gam.check(birds_pastclim2_gam)
 qqnorm(resid(birds_pastclim2_gam))
 qqline(resid(birds_pastclim2_gam))
 
+# Test GAMs - dim1 + dim2:
+# s() as modelise non-linear relationships:
+birds_pastclim_gam <- mgcv::gam(ses_birds ~ s(PastClimStab_dim1)+
+                                  s(PastClimStab_dim2),
+                                 data = relationsh_ses_faith_df)
+# Check model:
+plot(birds_pastclim_gam, pages = 1)  # Check smooth functions
+mgcv::gam.check(birds_pastclim_gam)
+qqnorm(resid(birds_pastclim_gam))
+qqline(resid(birds_pastclim_gam))
+
 
 # REPTILES - GAMs:
 
@@ -283,6 +347,18 @@ qqnorm(resid(reptiles_pastclim2_gam))
 qqline(resid(reptiles_pastclim2_gam))
 
 
+# Test GAMs - dim1 + dim2:
+# s() as modelise non-linear relationships:
+reptiles_pastclim_gam <- mgcv::gam(ses_reptiles ~ s(PastClimStab_dim1)+
+                                  s(PastClimStab_dim2),
+                                data = relationsh_ses_faith_df)
+# Check model:
+plot(reptiles_pastclim_gam, pages = 1)  # Check smooth functions
+mgcv::gam.check(reptiles_pastclim_gam)
+qqnorm(resid(reptiles_pastclim_gam))
+qqline(resid(reptiles_pastclim_gam))
+
+
 # TREES - GAMs:
 
 # Test GAMs - dim1:
@@ -306,4 +382,158 @@ plot(trees_pastclim2_gam, pages = 1)  # Check smooth functions
 mgcv::gam.check(trees_pastclim2_gam)
 qqnorm(resid(trees_pastclim2_gam))
 qqline(resid(trees_pastclim2_gam))
+
+
+# Test GAMs - dim1 + dim2:
+# s() as modelise non-linear relationships:
+trees_pastclim_gam <- mgcv::gam(ses_trees ~ s(PastClimStab_dim1)+
+                                     s(PastClimStab_dim2),
+                                   data = relationsh_ses_faith_df)
+# Check model:
+plot(trees_pastclim_gam, pages = 1)  # Check smooth functions
+mgcv::gam.check(trees_pastclim_gam)
+qqnorm(resid(trees_pastclim_gam))
+qqline(resid(trees_pastclim_gam))
+
+
+# 5 - Relationship between synthetic variables for present clim mean and Faith PD ======
+
+
+# Histograms for drivers var:
+hist(driv_db$PresentClimMean_dim1)
+hist(driv_db$PresentClimMean_dim2)
+
+# Histograms for PD Faith:
+hist(relationsh_ses_faith_df$ses_birds)
+hist(relationsh_ses_faith_df$ses_reptiles)
+hist(relationsh_ses_faith_df$ses_trees)
+
+
+# Plot against Faith's PD:
+# BIRDS:
+plot(relationsh_ses_faith_df$ses_birds,
+     relationsh_ses_faith_df$PresentClimMean_dim1)
+plot(relationsh_ses_faith_df$ses_birds,
+     relationsh_ses_faith_df$PresentClimMean_dim2)
+# REPTILES:
+plot(relationsh_ses_faith_df$ses_reptiles,
+     relationsh_ses_faith_df$PresentClimMean_dim1)
+plot(relationsh_ses_faith_df$ses_reptiles,
+     relationsh_ses_faith_df$PresentClimMean_dim2)
+# TREES:
+plot(relationsh_ses_faith_df$ses_trees,
+     relationsh_ses_faith_df$PresentClimMean_dim1)
+plot(relationsh_ses_faith_df$ses_trees,
+     relationsh_ses_faith_df$PresentClimMean_dim2)
+
+
+# BIRDS - GLM:
+
+# Test Linear Regression - dim 1 + dim 2:
+birds_presclimmean_lm <- lm(ses_birds ~ PresentClimMean_dim1 +
+                             PresentClimMean_dim2,
+                        data = relationsh_ses_faith_df)
+# General tests model:
+performance::check_model(birds_presclimmean_lm)
+# Test normality residuals: NO
+shapiro.test(rstandard(birds_presclimmean_lm))
+# QQplot:
+ggplot2::ggplot() +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_presclimmean_lm))) +
+  ggplot2::geom_abline(color = "red") +
+  ggplot2::coord_fixed()
+# Model summary:
+summary(birds_presclimmean_lm)
+car::Anova(birds_presclimmean_lm)
+
+
+# BIRDS - GAMs:
+
+# Test GAMs - dim1 + dim2:
+# s() as modelise non-linear relationships:
+birds_presclimmean_gam <- mgcv::gam(ses_birds ~ s(PresentClimMean_dim1)+
+                                  s(PresentClimMean_dim2),
+                                data = relationsh_ses_faith_df)
+# Check model:
+plot(birds_presclimmean_gam, pages = 1)  # Check smooth functions
+par(mfrow = c(2,2))
+mgcv::gam.check(birds_presclimmean_gam)
+par(mfrow = c(1,1))
+qqnorm(resid(birds_presclimmean_gam))
+qqline(resid(birds_presclimmean_gam))
+
+
+
+# REPTILES - GLM:
+
+# Test Linear Regression - dim 1 + dim 2:
+reptiles_presclimmean_lm <- lm(ses_reptiles ~ PresentClimMean_dim1 +
+                              PresentClimMean_dim2,
+                            data = relationsh_ses_faith_df)
+# General tests model:
+performance::check_model(reptiles_presclimmean_lm)
+# Test normality residuals: NO
+shapiro.test(rstandard(reptiles_presclimmean_lm))
+# QQplot:
+ggplot2::ggplot() +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_presclimmean_lm))) +
+  ggplot2::geom_abline(color = "red") +
+  ggplot2::coord_fixed()
+# Model summary:
+summary(reptiles_presclimmean_lm)
+car::Anova(reptiles_presclimmean_lm)
+
+
+# REPTILES - GAMs:
+
+# Test GAMs - dim1 + dim2:
+# s() as modelise non-linear relationships:
+reptiles_presclimmean_gam <- mgcv::gam(ses_reptiles ~ s(PresentClimMean_dim1)+
+                                      s(PresentClimMean_dim2),
+                                    data = relationsh_ses_faith_df)
+# Check model:
+plot(reptiles_presclimmean_gam, pages = 1)  # Check smooth functions
+par(mfrow = c(2,2))
+mgcv::gam.check(reptiles_presclimmean_gam)
+par(mfrow = c(1,1))
+qqnorm(resid(reptiles_presclimmean_gam))
+qqline(resid(reptiles_presclimmean_gam))
+
+
+# TREES - GLM:
+
+# Test Linear Regression - dim 1 + dim 2:
+trees_presclimmean_lm <- lm(ses_trees ~ PresentClimMean_dim1 +
+                                 PresentClimMean_dim2,
+                               data = relationsh_ses_faith_df)
+# General tests model:
+performance::check_model(trees_presclimmean_lm)
+# Test normality residuals: NO
+shapiro.test(rstandard(trees_presclimmean_lm))
+# QQplot:
+ggplot2::ggplot() +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_presclimmean_lm))) +
+  ggplot2::geom_abline(color = "red") +
+  ggplot2::coord_fixed()
+# Model summary:
+summary(trees_presclimmean_lm)
+car::Anova(trees_presclimmean_lm)
+
+
+# TREES - GAMs:
+
+# Test GAMs - dim1 + dim2:
+# s() as modelise non-linear relationships:
+trees_presclimmean_gam <- mgcv::gam(ses_trees ~ s(PresentClimMean_dim1)+
+                                         s(PresentClimMean_dim2),
+                                       data = relationsh_ses_faith_df)
+# Check model:
+plot(trees_presclimmean_gam, pages = 1)  # Check smooth functions
+par(mfrow = c(2,2))
+mgcv::gam.check(trees_presclimmean_gam)
+par(mfrow = c(1,1))
+qqnorm(resid(trees_presclimmean_gam))
+qqline(resid(trees_presclimmean_gam))
+
+
 
