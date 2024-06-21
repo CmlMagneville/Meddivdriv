@@ -3,7 +3,7 @@
 ## Function(s) to do the random forest analyses - n iteration of the rf model to
 ## ... test its performance
 ##
-## Adaptated from https://github.com/LoiseauN/Predict_productivity/blob/main/R/test_model.R
+## Camille Magneville
 ##
 ## 23/05/2024
 ##
