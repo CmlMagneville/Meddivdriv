@@ -227,7 +227,7 @@ present_lu_pca$var$contrib
 # Retrieve grid cells coordinates across 3 axes = new synthetic variables:
 syntvar_present_lu <- as.data.frame(present_lu_pca$ind$coord)
 # Rename columns:
-colnames(syntvar_present_lu) <- c("PresentLandUSe_dim1",
+colnames(syntvar_present_lu) <- c("PresentLandUse_dim1",
                                   "PresentLandUse_dim2",
                                   "PresentLandUse_dim3",
                                   "PresentLandUse_dim4")
@@ -263,7 +263,7 @@ past_lu_pca$var$contrib
 # Retrieve grid cells coordinates across 3 axes = new synthetic variables:
 syntvar_past_lu <- as.data.frame(past_lu_pca$ind$coord)
 # Rename columns:
-colnames(syntvar_past_lu) <- c("PastLandUSe_dim1",
+colnames(syntvar_past_lu) <- c("PastLandUse_dim1",
                                   "PastLandUse_dim2",
                                   "PastLandUse_dim3",
                                   "PastLandUse_dim4")
