@@ -28,23 +28,27 @@ sp_tr_BIRDS <- readRDS(here::here("transformed_data",
 # Check that traits are in the right format:
 str(sp_tr_BIRDS)
 
+# See missing values:
+# Change first column name for funbiogeo use:
+funbiogeo_df <- dplyr::rename(sp_tr_BIRDS, species = Species)
+
+# Get the percentage of completedness per traits:
+funbiogeo::fb_plot_number_species_by_trait(funbiogeo_df)
+
+# Get the percentage of species with for than 1, 2, 3 etc traits:
+funbiogeo::fb_plot_number_traits_by_species(funbiogeo_df)
+
 # Species as rownames:
 sp_tr_BIRDS <- tibble::column_to_rownames(sp_tr_BIRDS,
                                           "Species")
+
+
 
 
 # 3 - Impute traits based on Random Forest approach =====================
 
 
 set.seed(42)
-
-# Impute traits and check NRMSE - with missForest R pkge:
-imputed_traits_BIRDS <- missForest::missForest(sp_tr_BIRDS,
-                                                    maxiter = 100,
-                                                    ntree = 500)
-imputed_traits_table <- imputed_traits_BIRDS$ximp
-error <- imputed_traits_BIRDS$OOBerror
-
 
 # Impute traits and check quality - with mice pkge:
 ## Check missing traits:
@@ -79,14 +83,7 @@ iter_data <- mice::complete(init_test, action = "long")
 
 # Save imputed traits:
 saveRDS(complete_data, here::here("transformed_data",
-                                         "final_traits_BIRDS.rds"))
+                                  "final_traits_BIRDS.rds"))
 
-
-
-
-# 3 - Test if ok to impute traits - cross validation ===========================
-
-
-cross_val_results <- test.mf(raw_sp_tr = sp_tr_BIRDS)
 
 

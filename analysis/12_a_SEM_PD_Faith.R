@@ -4,7 +4,7 @@
 ##
 ## Camille Magneville
 ##
-## 16/05/2024
+## 16/05/2024 - 06/2024
 ##
 ## 11_a_Relationsh_drivers_diversity_all_taxa_PD_Faith.R
 ##
@@ -104,6 +104,12 @@ hist(relationsh_ses_faith_df$ses_trees)
 # BIRDS:
 plot(relationsh_ses_faith_df$ses_birds,
      relationsh_ses_faith_df$PastClimStab_dim1)
+ggplot2::ggplot(data = relationsh_ses_faith_df,
+                ggplot2::aes(x=ses_reptiles,
+                             y = PastClimStab_dim1)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_smooth()
+
 plot(relationsh_ses_faith_df$ses_birds,
      relationsh_ses_faith_df$PastClimStab_dim2)
 # REPTILES:
@@ -274,128 +280,6 @@ summary(trees_pastclim_lm)
 car::Anova(trees_pastclim_lm)
 
 
-
-# Conclusion: I can't use glm because models don't respect residuals
-#... normality for some of them + when I plot the data, don't look like
-# ... linear relationships are ok: Let's try GAMs!
-
-
-# Note GAMs: model non-linear relationships - model is additive in the sense
-# ... that the effects of the predictors are summed: each predictor can have
-# ... its own smooth function - GAMs do not assume a specific parametric form
-# ... for the relationship between predictors and the response -
-
-
-# BIRDS - GAMs:
-
-# Test GAMs - dim1:
-# s() as modelise non-linear relationships:
-birds_pastclim1_gam <- mgcv::gam(ses_birds ~ s(PastClimStab_dim1),
-                                 data = relationsh_ses_faith_df)
-# Check model:
-par(mfrow = c(2, 2))
-plot(birds_pastclim1_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(birds_pastclim1_gam)
-qqnorm(resid(birds_pastclim1_gam))
-qqline(resid(birds_pastclim1_gam))
-summary(birds_pastclim1_gam)
-
-# Test GAMs - dim2:
-# s() as modelise non-linear relationships:
-birds_pastclim2_gam <- mgcv::gam(ses_birds ~ s(PastClimStab_dim2),
-                                 data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_pastclim2_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(birds_pastclim2_gam)
-qqnorm(resid(birds_pastclim2_gam))
-qqline(resid(birds_pastclim2_gam))
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-birds_pastclim_gam <- mgcv::gam(ses_birds ~ s(PastClimStab_dim1)+
-                                  s(PastClimStab_dim2),
-                                 data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_pastclim_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(birds_pastclim_gam)
-qqnorm(resid(birds_pastclim_gam))
-qqline(resid(birds_pastclim_gam))
-
-
-# REPTILES - GAMs:
-
-# Test GAMs - dim1:
-# s() as modelise non-linear relationships:
-reptiles_pastclim1_gam <- mgcv::gam(ses_reptiles ~ s(PastClimStab_dim1),
-                                 data = relationsh_ses_faith_df)
-# Check model:
-par(mfrow = c(2, 2))
-plot(reptiles_pastclim1_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(reptiles_pastclim1_gam)
-qqnorm(resid(reptiles_pastclim1_gam))
-qqline(resid(reptiles_pastclim1_gam))
-summary(reptiles_pastclim1_gam)
-
-# Test GAMs - dim2:
-# s() as modelise non-linear relationships:
-reptiles_pastclim2_gam <- mgcv::gam(ses_reptiles ~ s(PastClimStab_dim2),
-                                 data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_pastclim2_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(reptiles_pastclim2_gam)
-qqnorm(resid(reptiles_pastclim2_gam))
-qqline(resid(reptiles_pastclim2_gam))
-
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-reptiles_pastclim_gam <- mgcv::gam(ses_reptiles ~ s(PastClimStab_dim1)+
-                                  s(PastClimStab_dim2),
-                                data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_pastclim_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(reptiles_pastclim_gam)
-qqnorm(resid(reptiles_pastclim_gam))
-qqline(resid(reptiles_pastclim_gam))
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1:
-# s() as modelise non-linear relationships:
-trees_pastclim1_gam <- mgcv::gam(ses_trees ~ s(PastClimStab_dim1),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-par(mfrow = c(2, 2))
-plot(trees_pastclim1_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(trees_pastclim1_gam)
-qqnorm(resid(trees_pastclim1_gam))
-qqline(resid(trees_pastclim1_gam))
-summary(trees_pastclim1_gam)
-
-# Test GAMs - dim2:
-# s() as modelise non-linear relationships:
-trees_pastclim2_gam <- mgcv::gam(ses_trees ~ s(PastClimStab_dim2),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_pastclim2_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(trees_pastclim2_gam)
-qqnorm(resid(trees_pastclim2_gam))
-qqline(resid(trees_pastclim2_gam))
-
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-trees_pastclim_gam <- mgcv::gam(ses_trees ~ s(PastClimStab_dim1)+
-                                     s(PastClimStab_dim2),
-                                   data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_pastclim_gam, pages = 1)  # Check smooth functions
-mgcv::gam.check(trees_pastclim_gam)
-qqnorm(resid(trees_pastclim_gam))
-qqline(resid(trees_pastclim_gam))
-
-
 # 5 - Relationship between synthetic variables for present clim mean and Faith PD ======
 
 
@@ -447,23 +331,6 @@ summary(birds_presclimmean_lm)
 car::Anova(birds_presclimmean_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-birds_presclimmean_gam <- mgcv::gam(ses_birds ~ s(PresentClimMean_dim1)+
-                                  s(PresentClimMean_dim2),
-                                data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_presclimmean_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_presclimmean_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_presclimmean_gam))
-qqline(resid(birds_presclimmean_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -484,22 +351,6 @@ summary(reptiles_presclimmean_lm)
 car::Anova(reptiles_presclimmean_lm)
 
 
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-reptiles_presclimmean_gam <- mgcv::gam(ses_reptiles ~ s(PresentClimMean_dim1)+
-                                      s(PresentClimMean_dim2),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_presclimmean_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_presclimmean_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_presclimmean_gam))
-qqline(resid(reptiles_presclimmean_gam))
-
-
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -518,23 +369,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_presclimmean_lm)
 car::Anova(trees_presclimmean_lm)
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-trees_presclimmean_gam <- mgcv::gam(ses_trees ~ s(PresentClimMean_dim1)+
-                                         s(PresentClimMean_dim2),
-                                       data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_presclimmean_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_presclimmean_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_presclimmean_gam))
-qqline(resid(trees_presclimmean_gam))
-
 
 
 # 6 - Relationship between synthetic variables for present clim sd and Faith PD ======
@@ -588,23 +422,6 @@ summary(birds_presclimsd_lm)
 car::Anova(birds_presclimsd_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-birds_presclimsd_gam <- mgcv::gam(ses_birds ~ s(PresentClimSd_dim1)+
-                                      s(PresentClimSd_dim2),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_presclimsd_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_presclimsd_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_presclimsd_gam))
-qqline(resid(birds_presclimsd_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -625,22 +442,6 @@ summary(reptiles_presclimsd_lm)
 car::Anova(reptiles_presclimsd_lm)
 
 
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-reptiles_presclimsd_gam <- mgcv::gam(ses_reptiles ~ s(PresentClimSd_dim1)+
-                                         s(PresentClimSd_dim2),
-                                       data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_presclimsd_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_presclimsd_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_presclimsd_gam))
-qqline(resid(reptiles_presclimsd_gam))
-
-
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -659,22 +460,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_presclimsd_lm)
 car::Anova(trees_presclimsd_lm)
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-trees_presclimsd_gam <- mgcv::gam(ses_trees ~ s(PresentClimSd_dim1)+
-                                      s(PresentClimSd_dim2),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_presclimsd_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_presclimsd_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_presclimsd_gam))
-qqline(resid(trees_presclimsd_gam))
 
 
 # 7 - Relationship between synthetic variables for hab mean and Faith PD ======
@@ -736,24 +521,6 @@ summary(birds_PresentHabMean_lm)
 car::Anova(birds_PresentHabMean_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3:
-# s() as modelise non-linear relationships:
-birds_PresentHabMean_gam <- mgcv::gam(ses_birds ~ s(PresentHabMean_dim1)+
-                                        s(PresentHabMean_dim2) +
-                                        s(PresentHabMean_dim3),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_PresentHabMean_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_PresentHabMean_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_PresentHabMean_gam))
-qqline(resid(birds_PresentHabMean_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
@@ -775,23 +542,6 @@ summary(reptiles_PresentHabMean_lm)
 car::Anova(reptiles_PresentHabMean_lm)
 
 
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3:
-# s() as modelise non-linear relationships:
-reptiles_PresentHabMean_gam <- mgcv::gam(ses_reptiles ~ s(PresentHabMean_dim1)+
-                                           s(PresentHabMean_dim2)+
-                                           s(PresentHabMean_dim3),
-                                       data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_PresentHabMean_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_PresentHabMean_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_PresentHabMean_gam))
-qqline(resid(reptiles_PresentHabMean_gam))
-
-
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
@@ -811,23 +561,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_PresentHabMean_lm)
 car::Anova(trees_PresentHabMean_lm)
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3:
-# s() as modelise non-linear relationships:
-trees_PresentHabMean_gam <- mgcv::gam(ses_trees ~ s(PresentHabMean_dim1)+
-                                        s(PresentHabMean_dim2) +
-                                        s(PresentHabMean_dim3),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_PresentHabMean_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_PresentHabMean_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_PresentHabMean_gam))
-qqline(resid(trees_PresentHabMean_gam))
 
 
 # 8 - Relationship between synthetic variables for hab sd and Faith PD ======
@@ -889,24 +622,6 @@ summary(birds_PresentHabSd_lm)
 car::Anova(birds_PresentHabSd_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3:
-# s() as modelise non-linear relationships:
-birds_PresentHabSd_gam <- mgcv::gam(ses_birds ~ s(PresentHabSd_dim1)+
-                                        s(PresentHabSd_dim2) +
-                                        s(PresentHabSd_dim3),
-                                      data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_PresentHabSd_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_PresentHabSd_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_PresentHabSd_gam))
-qqline(resid(birds_PresentHabSd_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
@@ -928,23 +643,6 @@ summary(reptiles_PresentHabSd_lm)
 car::Anova(reptiles_PresentHabSd_lm)
 
 
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3:
-# s() as modelise non-linear relationships:
-reptiles_PresentHabSd_gam <- mgcv::gam(ses_reptiles ~ s(PresentHabSd_dim1)+
-                                           s(PresentHabSd_dim2)+
-                                           s(PresentHabSd_dim3),
-                                         data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_PresentHabSd_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_PresentHabSd_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_PresentHabSd_gam))
-qqline(resid(reptiles_PresentHabSd_gam))
-
-
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
@@ -964,23 +662,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_PresentHabSd_lm)
 car::Anova(trees_PresentHabSd_lm)
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3:
-# s() as modelise non-linear relationships:
-trees_PresentHabSd_gam <- mgcv::gam(ses_trees ~ s(PresentHabSd_dim1)+
-                                        s(PresentHabSd_dim2) +
-                                        s(PresentHabSd_dim3),
-                                      data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_PresentHabSd_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_PresentHabSd_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_PresentHabSd_gam))
-qqline(resid(trees_PresentHabSd_gam))
 
 
 # 9 - Relationship between synthetic variables for fire and Faith PD ======
@@ -1033,24 +714,6 @@ ggplot2::ggplot() +
 summary(birds_fire_lm)
 car::Anova(birds_fire_lm)
 
-
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-birds_fire_gam <- mgcv::gam(ses_birds ~ s(Fire_dim1)+
-                                    s(Fire_dim2),
-                                  data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_fire_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_fire_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_fire_gam))
-qqline(resid(birds_fire_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -1071,22 +734,6 @@ summary(reptiles_fire_lm)
 car::Anova(reptiles_fire_lm)
 
 
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-reptiles_fire_gam <- mgcv::gam(ses_reptiles ~ s(Fire_dim1)+
-                                       s(Fire_dim2),
-                                     data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_fire_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_fire_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_fire_gam))
-qqline(resid(reptiles_fire_gam))
-
-
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -1105,23 +752,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_fire_lm)
 car::Anova(trees_fire_lm)
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-trees_fire_gam <- mgcv::gam(ses_trees ~ s(Fire_dim1)+
-                                    s(Fire_dim2),
-                                  data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_fire_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_fire_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_fire_gam))
-qqline(resid(trees_fire_gam))
-
 
 
 # 10 - Relationship between synthetic variables for present lu and Faith PD ======
@@ -1192,25 +822,6 @@ summary(birds_PresentLandUse_lm)
 car::Anova(birds_PresentLandUse_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3 + dim4:
-# s() as modelise non-linear relationships:
-birds_PresentLandUse_gam <- mgcv::gam(ses_birds ~ s(PresentLandUse_dim1)+
-                                      s(PresentLandUse_dim2) +
-                                      s(PresentLandUse_dim3) +
-                                      s(PresentLandUse_dim4),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_PresentLandUse_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_PresentLandUse_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_PresentLandUse_gam))
-qqline(resid(birds_PresentLandUse_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
@@ -1231,24 +842,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(reptiles_PresentLandUse_lm)
 car::Anova(reptiles_PresentLandUse_lm)
-
-
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3 + dim4:
-# s() as modelise non-linear relationships:
-reptiles_PresentLandUse_gam <- mgcv::gam(ses_reptiles ~ s(PresentLandUse_dim1)+
-                                         s(PresentLandUse_dim2)+
-                                         s(PresentLandUse_dim3)+
-                                         s(PresentLandUse_dim4),
-                                       data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_PresentLandUse_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_PresentLandUse_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_PresentLandUse_gam))
-qqline(resid(reptiles_PresentLandUse_gam))
 
 
 # TREES - GLM:
@@ -1272,23 +865,6 @@ ggplot2::ggplot() +
 summary(trees_PresentLandUse_lm)
 car::Anova(trees_PresentLandUse_lm)
 
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3 + dim4:
-# s() as modelise non-linear relationships:
-trees_PresentLandUse_gam <- mgcv::gam(ses_trees ~ s(PresentLandUse_dim1)+
-                                      s(PresentLandUse_dim2) +
-                                      s(PresentLandUse_dim3) +
-                                      s(PresentLandUse_dim4),
-                                    data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_PresentLandUse_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_PresentLandUse_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_PresentLandUse_gam))
-qqline(resid(trees_PresentLandUse_gam))
 
 
 # 11 - Relationship between synthetic variables for past lu and Faith PD ======
@@ -1359,25 +935,6 @@ summary(birds_PastLandUse_lm)
 car::Anova(birds_PastLandUse_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3 + dim4:
-# s() as modelise non-linear relationships:
-birds_PastLandUse_gam <- mgcv::gam(ses_birds ~ s(PastLandUse_dim1)+
-                                        s(PastLandUse_dim2) +
-                                        s(PastLandUse_dim3) +
-                                        s(PastLandUse_dim4),
-                                      data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_PastLandUse_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_PastLandUse_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_PastLandUse_gam))
-qqline(resid(birds_PastLandUse_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
@@ -1400,24 +957,6 @@ summary(reptiles_PastLandUse_lm)
 car::Anova(reptiles_PastLandUse_lm)
 
 
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3 + dim4:
-# s() as modelise non-linear relationships:
-reptiles_PastLandUse_gam <- mgcv::gam(ses_reptiles ~ s(PastLandUse_dim1)+
-                                           s(PastLandUse_dim2)+
-                                           s(PastLandUse_dim3)+
-                                           s(PastLandUse_dim4),
-                                         data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_PastLandUse_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_PastLandUse_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_PastLandUse_gam))
-qqline(resid(reptiles_PastLandUse_gam))
-
-
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3 + dim 4:
@@ -1438,24 +977,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_PastLandUse_lm)
 car::Anova(trees_PastLandUse_lm)
-
-
-# TREES - GAMs:
-
-# Test GAMs - dim1 + dim2 + dim3 + dim4:
-# s() as modelise non-linear relationships:
-trees_PastLandUse_gam <- mgcv::gam(ses_trees ~ s(PastLandUse_dim1)+
-                                        s(PastLandUse_dim2) +
-                                        s(PastLandUse_dim3) +
-                                        s(PastLandUse_dim4),
-                                      data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_PastLandUse_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_PastLandUse_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_PastLandUse_gam))
-qqline(resid(trees_PastLandUse_gam))
 
 
 # 12 - Relationship between synthetic variables for pop and Faith PD ======
@@ -1509,23 +1030,6 @@ summary(birds_fire_lm)
 car::Anova(birds_fire_lm)
 
 
-# BIRDS - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-birds_fire_gam <- mgcv::gam(ses_birds ~ s(Pr_Pop_2020_mean)+
-                              s(Pr_RatePop_2020_mean),
-                            data = relationsh_ses_faith_df)
-# Check model:
-plot(birds_fire_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(birds_fire_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(birds_fire_gam))
-qqline(resid(birds_fire_gam))
-
-
-
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
@@ -1544,22 +1048,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(reptiles_fire_lm)
 car::Anova(reptiles_fire_lm)
-
-
-# REPTILES - GAMs:
-
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-reptiles_fire_gam <- mgcv::gam(ses_reptiles ~ s(Pr_Pop_2020_mean)+
-                                 s(Pr_RatePop_2020_mean),
-                               data = relationsh_ses_faith_df)
-# Check model:
-plot(reptiles_fire_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(reptiles_fire_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(reptiles_fire_gam))
-qqline(resid(reptiles_fire_gam))
 
 
 # TREES - GLM:
@@ -1582,18 +1070,8 @@ summary(trees_fire_lm)
 car::Anova(trees_fire_lm)
 
 
-# TREES - GAMs:
+# 13 - SEM for Faith's PD ========================================================
 
-# Test GAMs - dim1 + dim2:
-# s() as modelise non-linear relationships:
-trees_fire_gam <- mgcv::gam(ses_trees ~ s(Pr_Pop_2020_mean)+
-                              s(Pr_RatePop_2020_mean),
-                            data = relationsh_ses_faith_df)
-# Check model:
-plot(trees_fire_gam, pages = 1)  # Check smooth functions
-par(mfrow = c(2,2))
-mgcv::gam.check(trees_fire_gam)
-par(mfrow = c(1,1))
-qqnorm(resid(trees_fire_gam))
-qqline(resid(trees_fire_gam))
+
+
 
