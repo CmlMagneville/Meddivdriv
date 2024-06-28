@@ -219,7 +219,7 @@ FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_BIRDS,
 
 fric_null_models <- FD_null_asb_list$fric
 fmpd_null_models <- FD_null_asb_list$fmpd
-fori_null_models <- PD_null_asb_list$fori
+fori_null_models <- FD_null_asb_list$fori
 
 saveRDS(fric_null_models, here::here("transformed_data",
                                       "div_values_null_models",
@@ -247,10 +247,10 @@ saveRDS(fori_null_models, here::here("transformed_data",
 # Load null model data:
 birds_null_model_fric <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
-                                             "FD_FRic_null_models_50km_BIRDS.rds"))
+                                            "FD_FRic_null_models_50km_BIRDS.rds"))
 birds_null_model_fmpd <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
-                                           "FD_FMPD_null_models_50km_BIRDS.rds"))
+                                            "FD_FMPD_null_models_50km_BIRDS.rds"))
 birds_null_model_fori <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
                                             "FD_FOri_null_models_50km_BIRDS.rds"))
