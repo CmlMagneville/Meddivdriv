@@ -167,6 +167,68 @@ birds_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_mntd_clean_
 # 2 b - Maps SES FD (FRic, FMPD, FOri) =========================================
 
 
+# Load diversity data:
+birds_ses_fric_df <- readRDS(here::here("transformed_data",
+                                        "div_values_null_models",
+                                         "FD_FRic_null_models_metrics_50km_BIRDS.rds"))
+birds_ses_fmpd_df <- readRDS(here::here("transformed_data",
+                                        "div_values_null_models",
+                                        "FD_FMPD_null_models_metrics_50km_BIRDS.rds"))
+birds_ses_fori_df <- readRDS(here::here("transformed_data",
+                                        "div_values_null_models",
+                                        "FD_FOri_null_models_metrics_50km_BIRDS.rds"))
+
+# Load grid data:
+grid_50km <- sf::st_read(here::here("integradiv_db",
+                                    "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
+# Rename the GRD_ID column as Idgrid:
+grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+
+# Transform the data frames to plot:
+birds_ses_fric_clean_df <- birds_ses_fric_df %>%
+  dplyr::select(c("Idgrid", "ses")) %>%
+  dplyr::rename(metric = "ses") %>%
+  dplyr::mutate(Grid = "50x50") %>%
+  dplyr::mutate(Taxon = "Birds") %>%
+  dplyr::select(c("Idgrid", "metric", "Grid", "Taxon"))
+birds_ses_fmpd_clean_df <- birds_ses_fmpd_df %>%
+  dplyr::select(c("Idgrid", "ses")) %>%
+  dplyr::rename(metric = "ses") %>%
+  dplyr::mutate(Grid = "50x50") %>%
+  dplyr::mutate(Taxon = "Birds") %>%
+  dplyr::select(c("Idgrid", "metric", "Grid", "Taxon"))
+birds_ses_fori_clean_df <- birds_ses_fori_df %>%
+  dplyr::select(c("Idgrid", "ses")) %>%
+  dplyr::rename(metric = "ses") %>%
+  dplyr::mutate(Grid = "50x50") %>%
+  dplyr::mutate(Taxon = "Birds") %>%
+  dplyr::select(c("Idgrid", "metric", "Grid", "Taxon"))
+
+
+# Map and save:
+birds_SES_fric_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_fric_clean_df,
+                                          div_facet_nm = "FD",
+                                          metric_nm = "SES FRic",
+                                          grid = grid_50km,
+                                          continuous = TRUE,
+                                          plot_title = TRUE,
+                                          save = TRUE)
+birds_SES_FMPD_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_fmpd_clean_df,
+                                        div_facet_nm = "FD",
+                                        metric_nm = "SES FMPD",
+                                        grid = grid_50km,
+                                        continuous = TRUE,
+                                        plot_title = TRUE,
+                                        save = TRUE)
+birds_SES_fori_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_fori_clean_df,
+                                         div_facet_nm = "FD",
+                                         metric_nm = "SES FOri",
+                                         grid = grid_50km,
+                                         continuous = TRUE,
+                                         plot_title = TRUE,
+                                         save = TRUE)
+
 
 # 3 - REPTILES #################################################################
 
