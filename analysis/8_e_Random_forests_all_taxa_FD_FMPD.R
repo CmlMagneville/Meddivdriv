@@ -1,14 +1,14 @@
 ################################################################################
 ##
 ## Script to compute one random forest with all variables for each taxas
-## ... - 5 random forests - to see which variable drive the most Fric FD.
+## ... - 5 random forests - to see which variable drive the most FMPD FD.
 ## ... Also compute partial dependance plots for each driver.
 ##
 ## Camille Magneville
 ##
-## 28/06/2024
+## 01/07/2024
 ##
-## 8_d_Random_forests_all_taxa_FD_FRic.R
+## 8_e_Random_forests_all_taxa_FD_FMPD.R
 ##
 ################################################################################
 
@@ -25,10 +25,10 @@
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
                                       "env_drivers_final_noNA_db.rds"))
 
-# Load SES FD - FRic
-fric_ses_birds_df <- readRDS(here::here("transformed_data",
-                                         "div_values_null_models",
-                                         "FD_FRic_null_models_metrics_50km_BIRDS.rds"))
+# Load SES FD - FMPD
+fmpd_ses_birds_df <- readRDS(here::here("transformed_data",
+                                        "div_values_null_models",
+                                        "FD_FMPD_null_models_metrics_50km_BIRDS.rds"))
 
 # Load the other taxa when ready here -----
 
@@ -52,9 +52,9 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
 
 # Get the names of the Idgrid to keep (diversity data for all taxa):
-cells_ok_birds <- unique(fric_ses_birds_df$Idgrid)
-cells_ok_reptiles <- unique(fric_ses_reptiles_df$Idgrid)
-cells_ok_trees <- unique(fric_ses_trees_df$Idgrid)
+cells_ok_birds <- unique(fmpd_ses_birds_df$Idgrid)
+cells_ok_reptiles <- unique(fmpd_ses_reptiles_df$Idgrid)
+cells_ok_trees <- unique(fmpd_ses_trees_df$Idgrid)
 cells_to_keep <- intersect(intersect(cells_ok_birds,
                                      cells_ok_reptiles),
                            cells_ok_trees)
@@ -62,31 +62,31 @@ locate.cells(cell_vect = cells_to_keep,
              grid = grid_50km)
 
 # Only keep these cells in the diversity df:
-fric_ses_birds_df <- fric_ses_birds_df %>%
+fmpd_ses_birds_df <- fmpd_ses_birds_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
-fric_ses_reptiles_df <- fric_ses_reptiles_df %>%
+fmpd_ses_reptiles_df <- fmpd_ses_reptiles_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
-fric_ses_trees_df <- fric_ses_trees_df %>%
+fmpd_ses_trees_df <- fmpd_ses_trees_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
 
 
 # Link the two tables (drivers + diversity):
-rf_fric_birds_df <- dplyr::left_join(envdriv_full_db,
-                                      fric_ses_birds_df[, c("Idgrid", "ses")],
-                                      by = "Idgrid")
-rf_fric_trees_df <- dplyr::left_join(envdriv_full_db,
-                                      fric_ses_trees_df[, c("Idgrid", "ses")],
-                                      by = "Idgrid")
-rf_fric_reptiles_df <- dplyr::left_join(envdriv_full_db,
-                                         fric_ses_reptiles_df[, c("Idgrid", "ses")],
-                                         by = "Idgrid")
+rf_fmpd_birds_df <- dplyr::left_join(envdriv_full_db,
+                                     fmpd_ses_birds_df[, c("Idgrid", "ses")],
+                                     by = "Idgrid")
+rf_fmpd_trees_df <- dplyr::left_join(envdriv_full_db,
+                                     fmpd_ses_trees_df[, c("Idgrid", "ses")],
+                                     by = "Idgrid")
+rf_fmpd_reptiles_df <- dplyr::left_join(envdriv_full_db,
+                                        fmpd_ses_reptiles_df[, c("Idgrid", "ses")],
+                                        by = "Idgrid")
 
 # Put Idgrid as rownames:
-rf_fric_birds_df <- rf_fric_birds_df %>%
+rf_fmpd_birds_df <- rf_fmpd_birds_df %>%
   tibble::column_to_rownames(var = "Idgrid")
-rf_fric_trees_df <- rf_fric_trees_df %>%
+rf_fmpd_trees_df <- rf_fmpd_trees_df %>%
   tibble::column_to_rownames(var = "Idgrid")
-rf_fric_reptiles_df <- rf_fric_reptiles_df %>%
+rf_fmpd_reptiles_df <- rf_fmpd_reptiles_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 
 
@@ -94,17 +94,17 @@ rf_fric_reptiles_df <- rf_fric_reptiles_df %>%
 
 
 # Check types of variables
-str(rf_fric_birds_df)
+str(rf_fmpd_birds_df)
 
 # Check that diversity metric doesn't have NA: it has some NA - because linked with env db
-rownames(rf_fric_birds_df[which(is.na(rf_fric_birds_df$ses) == TRUE), ])
+rownames(rf_fmpd_birds_df[which(is.na(rf_fmpd_birds_df$ses) == TRUE), ])
 
 # Remove these rows:
-rf_fric_birds_df <- rf_fric_birds_df[which(! is.na(rf_fric_birds_df$ses)), ]
-rownames(rf_fric_birds_df[which(is.na(rf_fric_birds_df$ses) == TRUE), ])
+rf_fmpd_birds_df <- rf_fmpd_birds_df[which(! is.na(rf_fmpd_birds_df$ses)), ]
+rownames(rf_fmpd_birds_df[which(is.na(rf_fmpd_birds_df$ses) == TRUE), ])
 
 # Change SES from names num to num:
-rf_fric_birds_df$ses <- as.numeric(rf_fric_birds_df$ses)
+rf_fmpd_birds_df$ses <- as.numeric(rf_fmpd_birds_df$ses)
 
 # Set seed for randomisation:
 set.seed(42)
@@ -112,7 +112,7 @@ set.seed(42)
 # See if 500 trees and mtry = 16 ok:
 # Run the random forest model mtry = 16 and 500 trees:
 rf_birds <- randomForest::randomForest(ses~.,
-                                       data = rf_fric_birds_df,
+                                       data = rf_fmpd_birds_df,
                                        ntree = 500,
                                        mtry = 16,
                                        importance = TRUE)
@@ -120,8 +120,8 @@ rf_birds <- randomForest::randomForest(ses~.,
 plot(rf_birds)
 
 # mtry:
-mtry <- randomForest::tuneRF(rf_fric_birds_df[-ncol(rf_fric_birds_df)],
-                             rf_fric_birds_df$ses,
+mtry <- randomForest::tuneRF(rf_fmpd_birds_df[-ncol(rf_fmpd_birds_df)],
+                             rf_fmpd_birds_df$ses,
                              mtryStart = 16,
                              ntreeTry = 500,
                              stepFactor = 1.5,
@@ -133,14 +133,14 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 # Compute 100 random forests and mean importance of each variable + part dep plot:
 # % Var explained around 50%
-varimp_birds <- test.rf.model(rf_data = rf_fric_birds_df,
+varimp_birds <- test.rf.model(rf_data = rf_fmpd_birds_df,
                               iteration_nb = 100,
-                              metric_nm = "FD_fric",
+                              metric_nm = "FD_fmpd",
                               taxa_nm = "BIRDS",
                               plot = TRUE)
 # Save it:
 saveRDS(varimp_birds, here::here("transformed_data",
-                                 "rf_birds_FD_fric_50.rds"))
+                                 "rf_birds_FD_fmpd_50.rds"))
 
 # Plot the variables importance:
 max(varimp_birds$mean_imp)
@@ -153,7 +153,7 @@ varimp_plot_birds <- varimp.plot(varimp_birds,
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_birds,
                 filename = here::here("outputs",
-                                      "varimp_FD_fric_50_BIRDS.FDf"),
+                                      "varimp_FD_fmpd_50_BIRDS.FDf"),
                 device = "pdf",
                 scale = 1,
                 height = 5000,
@@ -167,13 +167,13 @@ ggplot2::ggsave(plot = varimp_plot_birds,
 
 
 # Check types of variables
-str(rf_fric_reptiles_df)
+str(rf_fmpd_reptiles_df)
 
 # Check that diversity metric doesn't have NA:
-rownames(rf_fric_reptiles_df[which(is.na(rf_fric_reptiles_df$ses) == TRUE), ])
+rownames(rf_fmpd_reptiles_df[which(is.na(rf_fmpd_reptiles_df$ses) == TRUE), ])
 
 # Change SES from names num to num:
-rf_fric_reptiles_df$ses <- as.numeric(rf_fric_reptiles_df$ses)
+rf_fmpd_reptiles_df$ses <- as.numeric(rf_fmpd_reptiles_df$ses)
 
 # Set seed for randomisation:
 set.seed(42)
@@ -181,7 +181,7 @@ set.seed(42)
 # See if 500 trees and mtry = 16 ok:
 # Run the random forest model mtry = 16 and 500 trees:
 rf_reptiles <- randomForest::randomForest(ses~.,
-                                          data = rf_fric_reptiles_df,
+                                          data = rf_fmpd_reptiles_df,
                                           ntree = 500,
                                           mtry = 16,
                                           importance = TRUE)
@@ -189,8 +189,8 @@ rf_reptiles <- randomForest::randomForest(ses~.,
 plot(rf_reptiles)
 
 # mtry:
-mtry <- randomForest::tuneRF(rf_fric_reptiles_df[-ncol(rf_fric_reptiles_df)],
-                             rf_fric_reptiles_df$ses,
+mtry <- randomForest::tuneRF(rf_fmpd_reptiles_df[-ncol(rf_fmpd_reptiles_df)],
+                             rf_fmpd_reptiles_df$ses,
                              mtryStart = 16,
                              ntreeTry = 500,
                              stepFactor = 1.5,
@@ -202,15 +202,15 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 45%
-varimp_reptiles <- test.rf.model(rf_data = rf_fric_reptiles_df,
+varimp_reptiles <- test.rf.model(rf_data = rf_fmpd_reptiles_df,
                                  iteration_nb = 100,
-                                 metric_nm = "FD_fric",
+                                 metric_nm = "FD_fmpd",
                                  taxa_nm = "REPTILES",
                                  plot = TRUE)
 
 # Save it:
 saveRDS(varimp_reptiles, here::here("transformed_data",
-                                    "rf_reptiles_FD_fric_50.rds"))
+                                    "rf_reptiles_FD_fmpd_50.rds"))
 
 # Plot the variables importance:
 varimp_plot_reptiles <- varimp.plot(varimp_reptiles,
@@ -219,7 +219,7 @@ varimp_plot_reptiles <- varimp.plot(varimp_reptiles,
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_reptiles,
                 filename = here::here("outputs",
-                                      "varimp_FD_fric_50_REPTILES.FDf"),
+                                      "varimp_FD_fmpd_50_REPTILES.FDf"),
                 device = "pdf",
                 scale = 1,
                 height = 5000,
@@ -231,13 +231,13 @@ ggplot2::ggsave(plot = varimp_plot_reptiles,
 
 
 # Check types of variables
-str(rf_fric_trees_df)
+str(rf_fmpd_trees_df)
 
 # Check that diversity metric doesn't have NA:
-rownames(rf_fric_trees_df[which(is.na(rf_fric_trees_df$ses) == TRUE), ])
+rownames(rf_fmpd_trees_df[which(is.na(rf_fmpd_trees_df$ses) == TRUE), ])
 
 # Change SES from names num to num:
-rf_fric_trees_df$ses <- as.numeric(rf_fric_trees_df$ses)
+rf_fmpd_trees_df$ses <- as.numeric(rf_fmpd_trees_df$ses)
 
 # Set seed for randomisation:
 set.seed(42)
@@ -245,7 +245,7 @@ set.seed(42)
 # See if 500 trees and mtry = 16 ok:
 # Run the random forest model mtry = 16 and 500 trees:
 rf_trees <- randomForest::randomForest(ses~.,
-                                       data = rf_fric_trees_df,
+                                       data = rf_fmpd_trees_df,
                                        ntree = 500,
                                        mtry = 16,
                                        importance = TRUE)
@@ -253,8 +253,8 @@ rf_trees <- randomForest::randomForest(ses~.,
 plot(rf_trees)
 
 # mtry:
-mtry <- randomForest::tuneRF(rf_fric_trees_df[-ncol(rf_fric_trees_df)],
-                             rf_fric_trees_df$ses,
+mtry <- randomForest::tuneRF(rf_fmpd_trees_df[-ncol(rf_fmpd_trees_df)],
+                             rf_fmpd_trees_df$ses,
                              mtryStart = 16,
                              ntreeTry = 500,
                              stepFactor = 1.5,
@@ -266,15 +266,15 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
-varimp_trees <- test.rf.model(rf_data = rf_fric_trees_df,
+varimp_trees <- test.rf.model(rf_data = rf_fmpd_trees_df,
                               iteration_nb = 100,
-                              metric_nm = "FD_fric",
+                              metric_nm = "FD_fmpd",
                               taxa_nm = "TREES",
                               plot = TRUE)
 
 # Save it:
 saveRDS(varimp_trees, here::here("transformed_data",
-                                 "rf_trees_FD_fric_50.rds"))
+                                 "rf_trees_FD_fmpd_50.rds"))
 
 # Plot the variables importance:
 varimp_plot_trees <- varimp.plot(varimp_trees,
@@ -283,7 +283,7 @@ varimp_plot_trees <- varimp.plot(varimp_trees,
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_trees,
                 filename = here::here("outputs",
-                                      "varimp_FD_fric_50_TREES.FDf"),
+                                      "varimp_FD_fmpd_50_TREES.FDf"),
                 device = "pdf",
                 scale = 1,
                 height = 5000,
@@ -296,9 +296,9 @@ ggplot2::ggsave(plot = varimp_plot_trees,
 
 
 # a - Load rf data:
-birds_rf <- readRDS(here::here("transformed_data", "rf_birds_FD_fric_50.rds"))
-reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_FD_fric_50.rds"))
-trees_rf <- readRDS(here::here("transformed_data", "rf_trees_FD_fric_50.rds"))
+birds_rf <- readRDS(here::here("transformed_data", "rf_birds_FD_fmpd_50.rds"))
+reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_FD_fmpd_50.rds"))
+trees_rf <- readRDS(here::here("transformed_data", "rf_trees_FD_fmpd_50.rds"))
 
 rf_all_taxa_list <- list("birds_rf" = birds_rf,
                          "reptiles_rf" = reptiles_rf,
@@ -306,9 +306,9 @@ rf_all_taxa_list <- list("birds_rf" = birds_rf,
 
 # Plot and save (only colors, no nb):
 FD_heatmap_nonb <- heatmap.varimp(rf_all_taxa_list,
-                                  metric_nm = "fric FD",
+                                  metric_nm = "fmpd FD",
                                   plot_nb = FALSE)
 # Plot and save (plot also nb):
 FD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
-                                metric_nm = "fric FD",
+                                metric_nm = "fmpd FD",
                                 plot_nb = TRUE)

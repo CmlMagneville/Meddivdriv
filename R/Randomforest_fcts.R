@@ -51,7 +51,7 @@ test.rf.model <- function(rf_data,
   var_imp_final_df[, 1] <- colnames(rf_data)[-ncol(rf_data)]
   colnames(var_imp_final_df) <- "drivers"
 
-  # create a list that wil contains all rf results (from the n iterations):
+  # create a list that will contains all rf results (from the n iterations):
   rf_models <- vector("list", iteration_nb)
 
 
@@ -821,17 +821,21 @@ create.df.circular.plot <- function(rf_df_list,
 #'
 #' @param taxa_plot_df data frame from the \code{create.df.circular.plot} function
 #' @param drivers_nm_df a data frame containing shortened names of drivers
-#' @palette a color palette containing the color names of the category present
+#' @param palette a color palette containing the color names of the category present
 #' in the \code{taxa_plot_df}
+#' @param div_facet a character string referring to whether FD of PD is studied here.
+#' It could be either \code{"FD"} or \code{"PD"}.
 #'
 #' @return
+#'
 #' @export
 #'
 
 
 circular.drivers.plot <- function(taxa_plot_df,
                                   drivers_nm_df,
-                                  palette) {
+                                  palette,
+                                  div_facet) {
 
 
   # Set classes:
@@ -890,12 +894,24 @@ circular.drivers.plot <- function(taxa_plot_df,
   grid_data$start <- grid_data$start - 1
   grid_data <- grid_data[-1,]
 
-  # Prepare a dataframe for metrics labels # CHANGE WHEN METRICS CHANGED.
-  data_labmetric <- data.frame(x = c(8, 26, 44),
-                               y = c(-8, -8, -8),
-                               label = c("PD Dispersion",
-                                         "PD Originality",
-                                         "PD Richness"))
+  # Prepare a dataframe for metrics labels
+  if (div_facet == "PD") {
+    data_labmetric <- data.frame(x = c(8, 26, 44),
+                                 y = c(-8, -8, -8),
+                                 label = c("PD Dispersion",
+                                           "PD Originality",
+                                           "PD Richness"))
+  }
+  if (div_facet == "FD") {
+    data_labmetric <- data.frame(x = c(8, 26, 44),
+                                 y = c(-8, -8, -8),
+                                 label = c("FD Dispersion",
+                                           "FD Originality",
+                                           "FD Richness"))
+  }
+
+
+
 
   # Make the plot
   drivers_circ_plot <- ggplot2::ggplot(data = taxa_plot_df,
