@@ -4,9 +4,9 @@
 ##
 ## Camille Magneville
 ##
-## 24/04/2024
+## 24/04/2024 - 02/07/2024
 ##
-## 7_Clean_environnemental_var.R
+## 7_Clean_environmental_var.R
 ##
 ################################################################################
 
@@ -22,6 +22,7 @@
 # Habitat characteristics:
 soil_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/ENV_Soil.rds")
 topo_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/ENV_topography.rds")
+forest_conn_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/Environmental_data_Juan_LUPr_Fire_Pop.rds")
 
 # Present climate:
 present_clim_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/all_present_clim_var.rds")
@@ -62,8 +63,16 @@ topo_db <- topo_db %>%
   dplyr::filter(Metric %in% c("mean", "stdev")) %>%
   dplyr::rename(FinalVariableCode = Variable_code)
 
+forest_conn_db <- forest_conn_db %>%
+  dplyr::filter(Scale == "50") %>%
+  dplyr::filter(FinalVariableCode == "Pr_FCon_percentage") %>%
+  dplyr::filter(metric %in% c("percentage")) %>%
+  dplyr::rename(Metric = metric)
+forest_conn_db$Type <- rep("Forest", nrow(forest_conn_db))
+forest_conn_db <- forest_conn_db %>%
+  dplyr::select(colnames(soil_db))
 
-habitat_var_db <- rbind(soil_db, topo_db)
+habitat_var_db <- rbind(soil_db, topo_db, forest_conn_db)
 
 saveRDS(habitat_var_db, here::here("transformed_data",
                             "env_db",
@@ -295,7 +304,7 @@ present_pop_db <- readRDS(here::here("transformed_data",
                                      "present_pop_final_db.rds"))
 
 # Long format for all db:
-# Soil:
+# Soil - topo - forest connectivity:
 soil_topo_long_db <- soil_topo_db %>%
   dplyr::mutate("Full_metric_nm" = paste0(FinalVariableCode, sep = "_",
                                           Metric)) %>%
