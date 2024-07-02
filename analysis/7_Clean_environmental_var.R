@@ -33,7 +33,7 @@ past_clim_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc
 
 # Disturbance:
 fire_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/Environmental_data_Juan_Fire.rds")
-#herb_db # to come once mammal list updated by Manu
+herb_db <-  readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/herbivory.rds")
 
 # Human:
 pop_db <- readRDS("C:/Users/au749321/OneDrive - Aarhus universitet/Postdoc/3_Papers_and_associated_analyses/0_Environmental_var_retrieve/INT_Environmental/database/Environmental_data_Juan_Pop.rds")
@@ -104,7 +104,7 @@ saveRDS(past_clim_all_db, here::here("transformed_data",
                                         "past_veloc_heterog_final_db.rds"))
 
 
-# Disturbance: # CHANGE MEDIAN TO MEAN when Juan has computed it again (NA?)
+# Disturbance:
 fire_db <- fire_db %>%
   dplyr::filter(Scale == "50") %>%
   dplyr::filter(FinalVariableCode %in% c("Pr_FInt_2000-2023",
@@ -112,9 +112,15 @@ fire_db <- fire_db %>%
   dplyr::filter(metric %in% c("mean", "stdev", "pixels")) %>%
   dplyr::rename(Metric = metric)
 
-# Add herbivory when Manu has the mammals data ready and rbind the two db -------
+# Herbivory:
+herb_db <- herb_db %>%
+  dplyr::filter(Scale == "50") %>%
+  dplyr::filter(FinalVariableCode %in% c("HerbCons",
+                                         "HerbRichn"))
 
-saveRDS(fire_db, here::here("transformed_data",
+disturb_db <- rbind(fire_db, herb_db)
+
+saveRDS(disturb_db, here::here("transformed_data",
                                      "env_db",
                                      "fire_herb_final_db.rds"))
 
@@ -444,6 +450,8 @@ envdriv_full_db$Pr_FInt_2000_2023_mean <- as.numeric(envdriv_full_db$Pr_FInt_200
 envdriv_full_db$Pr_FInt_2000_2023_sd <- as.numeric(envdriv_full_db$Pr_FInt_2000_2023_sd)
 envdriv_full_db$Pr_FSurf_2000_2023_pixels <- as.numeric(envdriv_full_db$Pr_FSurf_2000_2023_pixels)
 
+# Change Herbivore richness to integer:
+envdriv_full_db$HerbRichn_sum <- as.integer(envdriv_full_db$HerbRichn_sum)
 
 # 6 - Create the final environmental db - only cells with occ data and pred values =============
 
