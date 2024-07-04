@@ -37,6 +37,12 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
 
+# Change type of variable to make sure they are quantitative:
+for (i in c(1:ncol(drivers_db))) {
+  drivers_db[, i] <- as.numeric(drivers_db[, i] )
+}
+
+
 # 2 - PCA for past climate stability ============================================
 
 
@@ -93,14 +99,14 @@ colnames(syntvar_present_clim_mean) <- c("PresentClimMean_dim1",
 
 # 4 - PCA for present habitat mean =============================================
 
-
 # Compute PCA and scale drivers (to avoid some variables to be dominant because of units):
 present_hab_mean_pca <- FactoMineR::PCA(drivers_db[,
                                                     c("Depth_mean",
                                                       "Elv_mean",
                                                       "OC_mean",
                                                       "pH_mean",
-                                                      "VWC_mean")],
+                                                      "VWC_mean",
+                                                      "Pr_FCon_percentage_percentage")],
                                          graph = TRUE,
                                          scale.unit = TRUE,
                                          ncp = 3)
@@ -172,36 +178,38 @@ colnames(syntvar_present_hab_sd) <- c("PresentHabSd_dim1",
                                       "PresentHabSd_dim3")
 
 
-# 7 - PCA for fire =============================================================
+# 7 - PCA for disturbances =============================================================
 
 
 # Compute PCA and scale drivers (to avoid some variables to be dominant because of units):
-fire_pca <- FactoMineR::PCA(drivers_db[,
+disturb_pca <- FactoMineR::PCA(drivers_db[,
                                        c("Pr_FInt_2000_2023_mean",
                                          "Pr_FInt_2000_2023_sd",
-                                         "Pr_FSurf_2000_2023_pixels")],
+                                         "Pr_FSurf_2000_2023_pixels",
+                                         "HerbCons_sum",
+                                         "HerbRichn_sum")],
                                         graph = TRUE,
                                         scale.unit = TRUE,
                                         ncp = 2)
 
 # Get percentage of variance explained by these two first axes: 99% ok
-fire_pca$eig
+disturb_pca$eig
 
 # Get variables contribution to the first two axes:
-fire_pca$var$contrib
+disturb_pca$var$contrib
 
 # Retrieve grid cells coordinates across 3 axes = new synthetic variables:
-syntvar_fire <- as.data.frame(fire_pca$ind$coord)
+syntvar_disturb <- as.data.frame(disturb_pca$ind$coord)
 # Rename columns:
-colnames(syntvar_fire) <- c("Fire_dim1",
-                            "Fire_dim2")
+colnames(syntvar_disturb) <- c("Disturbance_dim1",
+                            "Disturbance_dim2")
 
 
-# 8 - PCA for present land use =================================================
+# 8 - PCA for present human impact =============================================
 
 
 # Compute PCA and scale drivers (to avoid some variables to be dominant because of units):
-present_lu_pca <- FactoMineR::PCA(drivers_db[,
+present_hi_pca <- FactoMineR::PCA(drivers_db[,
                                        c("Present_Perc_croplands_Weighted_Mean",
                                          "Present_Perc_croplands_Weighted_Sd",
                                          "Present_Perc_dense_settlements_Weighted_Mean",
@@ -213,24 +221,26 @@ present_lu_pca <- FactoMineR::PCA(drivers_db[,
                                          "Present_Perc_villages_Weighted_Mean",
                                          "Present_Perc_villages_Weighted_Sd",
                                          "Present_Perc_wild_lands_Weighted_Mean",
-                                         "Present_Perc_wild_lands_Weighted_Sd")],
+                                         "Present_Perc_wild_lands_Weighted_Sd",
+                                         "Pr_Pop_2020_mean",
+                                         "Pr_RatePop_2020_mean")],
                             graph = TRUE,
                             scale.unit = TRUE,
                             ncp = 4)
 
 # Get percentage of variance explained by these two four axes: 74% ok
-present_lu_pca$eig
+present_hi_pca$eig
 
 # Get variables contribution to the first four axes:
-present_lu_pca$var$contrib
+present_hi_pca$var$contrib
 
 # Retrieve grid cells coordinates across 3 axes = new synthetic variables:
-syntvar_present_lu <- as.data.frame(present_lu_pca$ind$coord)
+syntvar_present_hi <- as.data.frame(present_hi_pca$ind$coord)
 # Rename columns:
-colnames(syntvar_present_lu) <- c("PresentLandUse_dim1",
-                                  "PresentLandUse_dim2",
-                                  "PresentLandUse_dim3",
-                                  "PresentLandUse_dim4")
+colnames(syntvar_present_hi) <- c("PresentHumanImpact_dim1",
+                                  "PresentHumanImpact_dim2",
+                                  "PresentHumanImpact_dim3",
+                                  "PresentHumanImpact_dim4")
 
 
 # 9 - PCA for past land use ====================================================
@@ -283,9 +293,9 @@ syntvar_present_hab_mean <- tibble::rownames_to_column(syntvar_present_hab_mean,
                                                      var = "Idgrid")
 syntvar_present_hab_sd <- tibble::rownames_to_column(syntvar_present_hab_sd,
                                                        var = "Idgrid")
-syntvar_fire <- tibble::rownames_to_column(syntvar_fire,
+syntvar_disturbance <- tibble::rownames_to_column(syntvar_disturb,
                                            var = "Idgrid")
-syntvar_present_lu <- tibble::rownames_to_column(syntvar_present_lu,
+syntvar_present_hi <- tibble::rownames_to_column(syntvar_present_hi,
                                                  var = "Idgrid")
 syntvar_past_lu <- tibble::rownames_to_column(syntvar_past_lu,
                                                  var = "Idgrid")
@@ -300,27 +310,12 @@ SEM_first_db <- syntvar_past_clim_stab %>%
                        by = "Idgrid") %>%
       dplyr::left_join(syntvar_present_hab_sd,
                        by = "Idgrid") %>%
-      dplyr::left_join(syntvar_fire,
+      dplyr::left_join(syntvar_disturbance,
                        by = "Idgrid") %>%
       dplyr::left_join(syntvar_past_lu,
                        by = "Idgrid") %>%
-      dplyr::left_join(syntvar_present_lu,
+      dplyr::left_join(syntvar_present_hi,
                        by = "Idgrid")
-
-
-# Add human population:
-human_pop_db <- drivers_db[, c("Pr_Pop_2020_mean",
-                               "Pr_RatePop_2020_mean")]
-# Cell id as column in the drivers_db:
-human_pop_db <- tibble::rownames_to_column(human_pop_db,
-                                         var = "Idgrid")
-# Link with synthetic var df:
-SEM_second_db <- SEM_first_db %>%
-  dplyr::left_join(human_pop_db,
-                   by = "Idgrid")
-
-# Add herbivore consumption: TO DO ONCE HERB CONSUMPTION IS USED !!!!!!!!!!!!!!!
-
 
 # Retrieve latitude and longitude from integradiv grid:
 # chose the centroid for each grid:
@@ -331,7 +326,7 @@ colnames(lat_long)[3] <- "longitude"
 
 
 # Add latitude and longitude (in meters):
-SEM_final_db <- SEM_second_db  %>%
+SEM_final_db <- SEM_first_db  %>%
   dplyr::left_join(lat_long,
                    by = "Idgrid") %>%
   dplyr::select(-"geometry")

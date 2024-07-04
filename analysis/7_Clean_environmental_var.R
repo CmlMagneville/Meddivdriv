@@ -500,7 +500,8 @@ envdriv_full_db <- envdriv_full_db %>%
 
 ## DRIVERS db
 
-# Then, remove cells which have NA for at last one predictor:
+# Then, remove cells which have NA for at least one predictor:
+envdriv_full_db[envdriv_full_db == "NaN"] <- NA
 noNA_envdriv_full_db <- na.omit(envdriv_full_db)
 
 ## Save this final environmental db:
