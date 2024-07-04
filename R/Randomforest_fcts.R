@@ -244,13 +244,16 @@ varimp.plot <- function(var_imp_df,
                                             "OC_stdev",
                                             "Elv_stdev",
                                             "Depth_stdev",
-                                            "VWC_stdev")) {
+                                            "VWC_stdev",
+                                            "Pr_FCon_percentage_percentage")) {
       var_imp_plot_df$cat[i] <- "Present Habitat Characteristics"
     }
 
     if (rownames(var_imp_plot_df)[i] %in% c("Pr_FInt_2000_2023_mean",
                                             "Pr_FInt_2000_2023_sd",
-                                            "Pr_FSurf_2000_2023_pixels")) {
+                                            "Pr_FSurf_2000_2023_pixels",
+                                            "HerbCons_sum",
+                                            "HerbRichn_sum")) {
       var_imp_plot_df$cat[i] <- "Disturbances"
     }
 
@@ -418,13 +421,16 @@ heatmap.varimp <- function(rf_all_taxa_list,
                                               "OC_mean",
                                               "Elv_mean",
                                               "Depth_mean",
-                                              "VWC_mean")) {
+                                              "VWC_mean",
+                                         "Pr_FCon_percentage_percentage")) {
         taxa_rf_df$Driver_cat[j] <- "Habitat characteristics mean"
       }
 
       if (taxa_rf_df$Driver_nm[j] %in% c("Pr_FInt_2000_2023_mean",
                                               "Pr_FInt_2000_2023_sd",
-                                              "Pr_FSurf_2000_2023_pixels")) {
+                                              "Pr_FSurf_2000_2023_pixels",
+                                         "HerbCons_sum",
+                                         "HerbRichn_sum")) {
         taxa_rf_df$Driver_cat[j] <- "Disturbances"
       }
 
