@@ -1,10 +1,11 @@
 ################################################################################
 ##
 ## Script to study the relationships between drivers and PD Faith for all taxa
+## and do SEM for birds and then for all taxa
 ##
 ## Camille Magneville
 ##
-## 16/05/2024 - 06/2024
+## 16/05/2024 - 07/2024
 ##
 ## 11_a_SEM_PD_Faith.R
 ##
@@ -981,7 +982,7 @@ summary(trees_PastLandUse_lm)
 car::Anova(trees_PastLandUse_lm)
 
 
-# 13 - SEM for Faith's PD ========================================================
+# 13 - SEM for Birds - Faith's PD ==============================================
 
 
 
