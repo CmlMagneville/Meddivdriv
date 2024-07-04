@@ -6,7 +6,7 @@
 ##
 ## 16/05/2024 - 06/2024
 ##
-## 11_a_Relationsh_drivers_diversity_all_taxa_PD_Faith.R
+## 11_a_SEM_PD_Faith.R
 ##
 ################################################################################
 
@@ -78,6 +78,8 @@ full_correl_pvalue_df <- dplyr::left_join(full_correl_df,
 
 # Get the most correlated variables: BE CAREFUL 1 pair + 2 rows
 correl_70 <- subset(full_correl_pvalue_df, Correl > .70 & Correl != 1)
+correl_neg70 <- subset(full_correl_pvalue_df, Correl < -.70 & Correl != -1)
+
 
 
 # 4 - Relationship between synthetic variables for past stab and Faith PD ======
@@ -664,12 +666,12 @@ summary(trees_PresentHabSd_lm)
 car::Anova(trees_PresentHabSd_lm)
 
 
-# 9 - Relationship between synthetic variables for fire and Faith PD ======
+# 9 - Relationship between synthetic variables for disturbance and Faith PD ======
 
 
 # Histograms for drivers var:
-hist(driv_db$Fire_dim1)
-hist(driv_db$Fire_dim2)
+hist(driv_db$Disturbance_dim1)
+hist(driv_db$Disturbance_dim2)
 
 # Histograms for PD Faith:
 hist(relationsh_ses_faith_df$ses_birds)
@@ -680,88 +682,88 @@ hist(relationsh_ses_faith_df$ses_trees)
 # Plot against Faith's PD:
 # BIRDS:
 plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$Fire_dim1)
+     relationsh_ses_faith_df$Disturbance_dim1)
 plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$Fire_dim2)
+     relationsh_ses_faith_df$Disturbance_dim2)
 # REPTILES:
 plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$Fire_dim1)
+     relationsh_ses_faith_df$Disturbance_dim1)
 plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$Fire_dim2)
+     relationsh_ses_faith_df$Disturbance_dim2)
 # TREES:
 plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$Fire_dim1)
+     relationsh_ses_faith_df$Disturbance_dim1)
 plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$Fire_dim2)
+     relationsh_ses_faith_df$Disturbance_dim2)
 
 
 # BIRDS - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
-birds_fire_lm <- lm(ses_birds ~ Fire_dim1 +
-                            Fire_dim2,
+birds_Disturbance_lm <- lm(ses_birds ~ Disturbance_dim1 +
+                            Disturbance_dim2,
                           data = relationsh_ses_faith_df)
 # General tests model:
-performance::check_model(birds_fire_lm)
+performance::check_model(birds_Disturbance_lm)
 # Test normality residuals: NO
-shapiro.test(rstandard(birds_fire_lm))
+shapiro.test(rstandard(birds_Disturbance_lm))
 # QQplot:
 ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_fire_lm))) +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_Disturbance_lm))) +
   ggplot2::geom_abline(color = "red") +
   ggplot2::coord_fixed()
 # Model summary:
-summary(birds_fire_lm)
-car::Anova(birds_fire_lm)
+summary(birds_Disturbance_lm)
+car::Anova(birds_Disturbance_lm)
 
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
-reptiles_fire_lm <- lm(ses_reptiles ~ Fire_dim1 +
-                               Fire_dim2,
+reptiles_Disturbance_lm <- lm(ses_reptiles ~ Disturbance_dim1 +
+                               Disturbance_dim2,
                              data = relationsh_ses_faith_df)
 # General tests model:
-performance::check_model(reptiles_fire_lm)
+performance::check_model(reptiles_Disturbance_lm)
 # Test normality residuals: NO
-shapiro.test(rstandard(reptiles_fire_lm))
+shapiro.test(rstandard(reptiles_Disturbance_lm))
 # QQplot:
 ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_fire_lm))) +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_Disturbance_lm))) +
   ggplot2::geom_abline(color = "red") +
   ggplot2::coord_fixed()
 # Model summary:
-summary(reptiles_fire_lm)
-car::Anova(reptiles_fire_lm)
+summary(reptiles_Disturbance_lm)
+car::Anova(reptiles_Disturbance_lm)
 
 
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2:
-trees_fire_lm <- lm(ses_trees ~ Fire_dim1 +
-                            Fire_dim2,
+trees_Disturbance_lm <- lm(ses_trees ~ Disturbance_dim1 +
+                            Disturbance_dim2,
                           data = relationsh_ses_faith_df)
 # General tests model:
-performance::check_model(trees_fire_lm)
+performance::check_model(trees_Disturbance_lm)
 # Test normality residuals: NO
-shapiro.test(rstandard(trees_fire_lm))
+shapiro.test(rstandard(trees_Disturbance_lm))
 # QQplot:
 ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_fire_lm))) +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_Disturbance_lm))) +
   ggplot2::geom_abline(color = "red") +
   ggplot2::coord_fixed()
 # Model summary:
-summary(trees_fire_lm)
-car::Anova(trees_fire_lm)
+summary(trees_Disturbance_lm)
+car::Anova(trees_Disturbance_lm)
 
 
-# 10 - Relationship between synthetic variables for present lu and Faith PD ======
+# 10 - Relationship between synthetic variables for present hi and Faith PD ======
 
 
 # Histograms for drivers var:
-hist(driv_db$PresentLandUse_dim1)
-hist(driv_db$PresentLandUse_dim2)
-hist(driv_db$PresentLandUse_dim3)
-hist(driv_db$PresentLandUse_dim4)
+hist(driv_db$PresentHumanImpact_dim1)
+hist(driv_db$PresentHumanImpact_dim2)
+hist(driv_db$PresentHumanImpact_dim3)
+hist(driv_db$PresentHumanImpact_dim4)
 
 
 # Histograms for PD Faith:
@@ -773,97 +775,97 @@ hist(relationsh_ses_faith_df$ses_trees)
 # Plot against Faith's PD:
 # BIRDS:
 plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$PresentLandUse_dim1)
+     relationsh_ses_faith_df$PresentHumanImpact_dim1)
 plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$PresentLandUse_dim2)
+     relationsh_ses_faith_df$PresentHumanImpact_dim2)
 plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$PresentLandUse_dim3)
+     relationsh_ses_faith_df$PresentHumanImpact_dim3)
 plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$PresentLandUse_dim4)
+     relationsh_ses_faith_df$PresentHumanImpact_dim4)
 # REPTILES:
 plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$PresentLandUse_dim1)
+     relationsh_ses_faith_df$PresentHumanImpact_dim1)
 plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$PresentLandUse_dim2)
+     relationsh_ses_faith_df$PresentHumanImpact_dim2)
 plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$PresentLandUse_dim3)
+     relationsh_ses_faith_df$PresentHumanImpact_dim3)
 plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$PresentLandUse_dim4)
+     relationsh_ses_faith_df$PresentHumanImpact_dim4)
 # TREES:
 plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$PresentLandUse_dim1)
+     relationsh_ses_faith_df$PresentHumanImpact_dim1)
 plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$PresentLandUse_dim2)
+     relationsh_ses_faith_df$PresentHumanImpact_dim2)
 plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$PresentLandUse_dim3)
+     relationsh_ses_faith_df$PresentHumanImpact_dim3)
 plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$PresentLandUse_dim4)
+     relationsh_ses_faith_df$PresentHumanImpact_dim4)
 
 
 # BIRDS - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3 + dim 4:
-birds_PresentLandUse_lm <- lm(ses_birds ~ PresentLandUse_dim1 +
-                              PresentLandUse_dim2 +
-                              PresentLandUse_dim3 +
-                              PresentLandUse_dim4,
+birds_PresentHumanImpact_lm <- lm(ses_birds ~ PresentHumanImpact_dim1 +
+                              PresentHumanImpact_dim2 +
+                              PresentHumanImpact_dim3 +
+                              PresentHumanImpact_dim4,
                             data = relationsh_ses_faith_df)
 # General tests model:
-performance::check_model(birds_PresentLandUse_lm)
+performance::check_model(birds_PresentHumanImpact_lm)
 # Test normality residuals: YES
-shapiro.test(rstandard(birds_PresentLandUse_lm))
+shapiro.test(rstandard(birds_PresentHumanImpact_lm))
 # QQplot:
 ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_PresentLandUse_lm))) +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_PresentHumanImpact_lm))) +
   ggplot2::geom_abline(color = "red") +
   ggplot2::coord_fixed()
 # Model summary:
-summary(birds_PresentLandUse_lm)
-car::Anova(birds_PresentLandUse_lm)
+summary(birds_PresentHumanImpact_lm)
+car::Anova(birds_PresentHumanImpact_lm)
 
 
 # REPTILES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3:
-reptiles_PresentLandUse_lm <- lm(ses_reptiles ~ PresentLandUse_dim1 +
-                                 PresentLandUse_dim2 +
-                                 PresentLandUse_dim3 +
-                                 PresentLandUse_dim4,
+reptiles_PresentHumanImpact_lm <- lm(ses_reptiles ~ PresentHumanImpact_dim1 +
+                                 PresentHumanImpact_dim2 +
+                                 PresentHumanImpact_dim3 +
+                                 PresentHumanImpact_dim4,
                                data = relationsh_ses_faith_df)
 # General tests model:
-performance::check_model(reptiles_PresentLandUse_lm)
+performance::check_model(reptiles_PresentHumanImpact_lm)
 # Test normality residuals: YES
-shapiro.test(rstandard(reptiles_PresentLandUse_lm))
+shapiro.test(rstandard(reptiles_PresentHumanImpact_lm))
 # QQplot:
 ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_PresentLandUse_lm))) +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_PresentHumanImpact_lm))) +
   ggplot2::geom_abline(color = "red") +
   ggplot2::coord_fixed()
 # Model summary:
-summary(reptiles_PresentLandUse_lm)
-car::Anova(reptiles_PresentLandUse_lm)
+summary(reptiles_PresentHumanImpact_lm)
+car::Anova(reptiles_PresentHumanImpact_lm)
 
 
 # TREES - GLM:
 
 # Test Linear Regression - dim 1 + dim 2 + dim 3 + dim 4:
-trees_PresentLandUse_lm <- lm(ses_trees ~ PresentLandUse_dim1 +
-                              PresentLandUse_dim2 +
-                              PresentLandUse_dim3 +
-                              PresentLandUse_dim4,
+trees_PresentHumanImpact_lm <- lm(ses_trees ~ PresentHumanImpact_dim1 +
+                              PresentHumanImpact_dim2 +
+                              PresentHumanImpact_dim3 +
+                              PresentHumanImpact_dim4,
                             data = relationsh_ses_faith_df)
 # General tests model:
-performance::check_model(trees_PresentLandUse_lm)
+performance::check_model(trees_PresentHumanImpact_lm)
 # Test normality residuals: NO
-shapiro.test(rstandard(trees_PresentLandUse_lm))
+shapiro.test(rstandard(trees_PresentHumanImpact_lm))
 # QQplot:
 ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_PresentLandUse_lm))) +
+  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_PresentHumanImpact_lm))) +
   ggplot2::geom_abline(color = "red") +
   ggplot2::coord_fixed()
 # Model summary:
-summary(trees_PresentLandUse_lm)
-car::Anova(trees_PresentLandUse_lm)
+summary(trees_PresentHumanImpact_lm)
+car::Anova(trees_PresentHumanImpact_lm)
 
 
 
@@ -977,97 +979,6 @@ ggplot2::ggplot() +
 # Model summary:
 summary(trees_PastLandUse_lm)
 car::Anova(trees_PastLandUse_lm)
-
-
-# 12 - Relationship between synthetic variables for pop and Faith PD ======
-
-
-# Histograms for drivers var:
-hist(driv_db$Pr_Pop_2020_mean)
-hist(driv_db$Pr_RatePop_2020_mean)
-
-# Histograms for PD Faith:
-hist(relationsh_ses_faith_df$ses_birds)
-hist(relationsh_ses_faith_df$ses_reptiles)
-hist(relationsh_ses_faith_df$ses_trees)
-
-
-# Plot against Faith's PD:
-# BIRDS:
-plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$Pr_Pop_2020_mean)
-plot(relationsh_ses_faith_df$ses_birds,
-     relationsh_ses_faith_df$Pr_RatePop_2020_mean)
-# REPTILES:
-plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$Pr_Pop_2020_mean)
-plot(relationsh_ses_faith_df$ses_reptiles,
-     relationsh_ses_faith_df$Pr_RatePop_2020_mean)
-# TREES:
-plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$Pr_Pop_2020_mean)
-plot(relationsh_ses_faith_df$ses_trees,
-     relationsh_ses_faith_df$Pr_RatePop_2020_mean)
-
-
-# BIRDS - GLM:
-
-# Test Linear Regression - dim 1 + dim 2:
-birds_fire_lm <- lm(ses_birds ~ Pr_Pop_2020_mean +
-                      Pr_RatePop_2020_mean,
-                    data = relationsh_ses_faith_df)
-# General tests model:
-performance::check_model(birds_fire_lm)
-# Test normality residuals: YES
-shapiro.test(rstandard(birds_fire_lm))
-# QQplot:
-ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(birds_fire_lm))) +
-  ggplot2::geom_abline(color = "red") +
-  ggplot2::coord_fixed()
-# Model summary:
-summary(birds_fire_lm)
-car::Anova(birds_fire_lm)
-
-
-# REPTILES - GLM:
-
-# Test Linear Regression - dim 1 + dim 2:
-reptiles_fire_lm <- lm(ses_reptiles ~ Pr_Pop_2020_mean +
-                         Pr_RatePop_2020_mean,
-                       data = relationsh_ses_faith_df)
-# General tests model:
-performance::check_model(reptiles_fire_lm)
-# Test normality residuals: NO
-shapiro.test(rstandard(reptiles_fire_lm))
-# QQplot:
-ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(reptiles_fire_lm))) +
-  ggplot2::geom_abline(color = "red") +
-  ggplot2::coord_fixed()
-# Model summary:
-summary(reptiles_fire_lm)
-car::Anova(reptiles_fire_lm)
-
-
-# TREES - GLM:
-
-# Test Linear Regression - dim 1 + dim 2:
-trees_fire_lm <- lm(ses_trees ~ Pr_Pop_2020_mean +
-                      Pr_RatePop_2020_mean,
-                    data = relationsh_ses_faith_df)
-# General tests model:
-performance::check_model(trees_fire_lm)
-# Test normality residuals: NO
-shapiro.test(rstandard(trees_fire_lm))
-# QQplot:
-ggplot2::ggplot() +
-  ggplot2::geom_qq(ggplot2::aes(sample = rstandard(trees_fire_lm))) +
-  ggplot2::geom_abline(color = "red") +
-  ggplot2::coord_fixed()
-# Model summary:
-summary(trees_fire_lm)
-car::Anova(trees_fire_lm)
 
 
 # 13 - SEM for Faith's PD ========================================================
