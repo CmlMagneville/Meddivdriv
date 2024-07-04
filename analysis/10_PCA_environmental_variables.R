@@ -178,11 +178,11 @@ colnames(syntvar_present_hab_sd) <- c("PresentHabSd_dim1",
                                       "PresentHabSd_dim3")
 
 
-# 7 - PCA for fires =============================================================
+# 7 - PCA for Fires =============================================================
 
 
 # Compute PCA and scale drivers (to avoid some variables to be dominant because of units):
-fire_pca <- FactoMineR::PCA(drivers_db[,
+Fire_pca <- FactoMineR::PCA(drivers_db[,
                                        c("Pr_FInt_2000_2023_mean",
                                          "Pr_FInt_2000_2023_sd",
                                          "Pr_FSurf_2000_2023_pixels")],
@@ -191,16 +191,16 @@ fire_pca <- FactoMineR::PCA(drivers_db[,
                                         ncp = 2)
 
 # Get percentage of variance explained by these two first axes: 99% ok
-fire_pca$eig
+Fire_pca$eig
 
 # Get variables contribution to the first two axes:
-fire_pca$var$contrib
+Fire_pca$var$contrib
 
 # Retrieve grid cells coordinates across 3 axes = new synthetic variables:
-syntvar_fire <- as.data.frame(fire_pca$ind$coord)
+syntvar_Fire <- as.data.frame(Fire_pca$ind$coord)
 # Rename columns:
-colnames(syntvar_fire) <- c("fire_dim1",
-                            "fire_dim2")
+colnames(syntvar_Fire) <- c("Fire_dim1",
+                            "Fire_dim2")
 
 
 # 8 - PCA for present human impact =============================================
@@ -289,7 +289,7 @@ syntvar_present_hab_mean <- tibble::rownames_to_column(syntvar_present_hab_mean,
                                                      var = "Idgrid")
 syntvar_present_hab_sd <- tibble::rownames_to_column(syntvar_present_hab_sd,
                                                        var = "Idgrid")
-syntvar_fire <- tibble::rownames_to_column(syntvar_fire,
+syntvar_Fire <- tibble::rownames_to_column(syntvar_Fire,
                                            var = "Idgrid")
 syntvar_present_lu <- tibble::rownames_to_column(syntvar_present_lu,
                                                  var = "Idgrid")
@@ -306,7 +306,7 @@ SEM_first_db <- syntvar_past_clim_stab %>%
                        by = "Idgrid") %>%
       dplyr::left_join(syntvar_present_hab_sd,
                        by = "Idgrid") %>%
-      dplyr::left_join(syntvar_fire,
+      dplyr::left_join(syntvar_Fire,
                        by = "Idgrid") %>%
       dplyr::left_join(syntvar_past_lu,
                        by = "Idgrid") %>%
