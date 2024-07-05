@@ -1,12 +1,14 @@
 ################################################################################
 ##
-## Script to compute one random forest with all variables for each taxas
+## Script to compute one random forest with all variables for each taxon
 ## ... - 5 random forests - to see which variable drive the most Faith PD.
-## ... Also compute partial dependance plots for each driver.
+## ... Also compute partial dependance plots for each driver. And add plots
+## ... to figure out if drivers are the same among taxa and disentangle the
+## ... effect of present/past/disturbance/land use and their directionality
 ##
 ## Camille Magneville
 ##
-## 14/05/2024
+## 14/05/2024 - 07//2024
 ##
 ## 8_a_Random_forests_all_taxa_PD_Faith.R
 ##
@@ -266,7 +268,7 @@ print(mtry) # mtry = 16 seems ok (after a few tries)
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
 varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
-                                 iteration_nb = 100,
+                              iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "TREES",
                               plot = TRUE)
@@ -311,3 +313,38 @@ PD_heatmap_nonb <- heatmap.varimp(rf_all_taxa_list,
 PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
                                   metric_nm = "Faith PD",
                                   plot_nb = TRUE)
+
+
+# 6 - Plot a variables importance based on their broader categories ============
+
+
+# a - Load data ----------------------------------------------------------------
+
+# Load rf data:
+birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_Faith_50.rds"))
+# Load the file which contain drivers shorter names:
+drivers_nm_df <- read.csv(here::here("env_db",
+                                     "Drivers_short_nm.csv"))
+
+# b - Plot the importance of broad drivers categories --------------------------
+
+# BIRDS:
+cat_imp_plot <- cat.distrib.plot(rf_df = birds_rf,
+                                 metric_nm = "Faith's PD - Birds",
+                                 palette = c("#88CCEE",
+                                             "#44AA99",
+                                             "#117733",
+                                             "#DDCC77",
+                                             "#CC6677",
+                                             "#882255"),
+                                 drivers_nm_df = drivers_nm_df)
+# Save it:
+ggplot2::ggsave(plot = cat_imp_plot,
+                filename = here::here("outputs",
+                                      "catimp_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)

@@ -83,13 +83,12 @@ rf_plot_reptiles_df <- create.df.circular.plot(rf_df_list = rf_df_list,
 
 # For birds: (palette according to which variables are chosen - put the colors
 # ... which are not represented at the end)
-palette <- c("darkslategray3",
-             "palegreen4",
-             "palegreen2",
-             "orchid4",
-             "orchid",
-             "plum2",
-             "tan1")
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
 circular_plot_birds <- circular.drivers.plot(taxa_plot_df = rf_plot_birds_df,
                                              drivers_nm_df = drivers_nm_df,
                                              palette = palette,
@@ -119,13 +118,12 @@ ggplot2::ggsave(plot = circular_plot_birds,
 
 # For reptiles: (palette according to which variables are chosen - put the colors
 # ... which are not represented at the end)
-palette <- c("darkslategray3",
-             "palegreen4",
-             "palegreen2",
-             "orchid4",
-             "orchid",
-             "plum2",
-             "tan1")
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
 circular_plot_reptiles <- circular.drivers.plot(taxa_plot_df = rf_plot_reptiles_df,
                                              drivers_nm_df = drivers_nm_df,
                                              palette = palette,
@@ -155,13 +153,12 @@ ggplot2::ggsave(plot = circular_plot_reptiles,
 # For trees: (palette according to which variables are chosen - put the colors
 # ... which are not represented at the end)
 unique(rf_plot_trees_df$Drivers_cat)
-palette <- c("darkslategray3",
-             "palegreen4",
-             "palegreen2",
-             "tan1",
-             "orchid4",
-             "orchid",
-             "plum2")
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
 circular_plot_trees <- circular.drivers.plot(taxa_plot_df = rf_plot_trees_df,
                                              drivers_nm_df = drivers_nm_df,
                                              palette = palette,
@@ -210,11 +207,11 @@ rf_plot_birds_df <- create.df.circular.plot(rf_df_list = rf_df_list,
 
 # For birds: (palette according to which variables are chosen - put the colors
 # ... which are not represented at the end)
-palette <- c("darkslategray3",
-             "palegreen4",
-             "palegreen2",
-             "orchid",
-             "plum2")
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#CC6677",
+             "#882255")
 circular_plot_birds <- circular.drivers.plot(taxa_plot_df = rf_plot_birds_df,
                                              drivers_nm_df = drivers_nm_df,
                                              palette = palette,

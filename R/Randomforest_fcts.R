@@ -217,79 +217,89 @@ varimp.plot <- function(var_imp_df,
   # Fill this new column:
   for (i in (1:nrow(var_imp_plot_df))) {
 
+
+    if (rownames(var_imp_plot_df)[j] %in% c("Past_CCVelHolocene_mean.voccMag",
+                                       "Past_CCVelLGM_mean.voccMag",
+                                       "Past_CCVelShortTerm_mean.voccMag",
+                                       "Past_CCVelYoungerDryas_mean.voccMag",
+                                       "Past_MAT_sd",
+                                       "Past_TAP_sd")) {
+      var_imp_plot_df$cat[j] <- "Past Climate Stability"
+    }
+
     if (rownames(var_imp_plot_df)[i] %in% c("Past_CCVelHolocene_mean.voccMag",
-                                            "Past_CCVelLGM_mean.voccMag",
-                                            "Past_CCVelShortTerm_mean.voccMag",
-                                            "Past_CCVelYoungerDryas_mean.voccMag",
-                                            "Past_MAT_sd",
-                                            "Past_TAP_sd")) {
+                                       "Past_CCVelLGM_mean.voccMag",
+                                       "Past_CCVelShortTerm_mean.voccMag",
+                                       "Past_CCVelYoungerDryas_mean.voccMag",
+                                       "Past_MAT_sd",
+                                       "Past_TAP_sd"
+    )) {
       var_imp_plot_df$cat[i] <- "Past Climate Stability"
     }
 
-    if (rownames(var_imp_plot_df)[i] %in% c("Present_AI_stdev",
-                                            "Present_MAT_stdev",
-                                            "Present_TAP_stdev",
-                                            "Present_AI_mean",
-                                            "Present_MAT_mean",
-                                            "Present_TAP_mean")) {
-      var_imp_plot_df$cat[i] <- "Present Climate"
+    if (rownames(var_imp_plot_df)[i] %in% c( "pH_mean",
+                                        "OC_mean",
+                                        "Elv_mean",
+                                        "Depth_mean",
+                                        "VWC_mean",
+                                        "Present_AI_mean",
+                                        "Present_MAT_mean",
+                                        "Present_TAP_mean",
+                                        "Pr_FCon_percentage_percentage"
+    )) {
+      var_imp_plot_df$cat[i] <- "Present Habitat"
     }
 
-    if (rownames(var_imp_plot_df)[i] %in% c("pH_mean",
-                                            "OC_mean",
-                                            "Elv_mean",
-                                            "Depth_mean",
-                                            "VWC_mean",
-                                            "pH_stdev",
-                                            "OC_stdev",
-                                            "Elv_stdev",
-                                            "Depth_stdev",
-                                            "VWC_stdev",
-                                            "Pr_FCon_percentage_percentage")) {
-      var_imp_plot_df$cat[i] <- "Present Habitat Characteristics"
+    if (rownames(var_imp_plot_df)[i] %in% c("Present_AI_stdev",
+                                       "Present_MAT_stdev",
+                                       "Present_TAP_stdev",
+                                       "pH_stdev",
+                                       "OC_stdev",
+                                       "Elv_stdev",
+                                       "Depth_stdev",
+                                       "VWC_stdev"
+    )) {
+      var_imp_plot_df$cat[i] <- "Present Habitat Heterogeneity"
     }
 
     if (rownames(var_imp_plot_df)[i] %in% c("Pr_FInt_2000_2023_mean",
-                                            "Pr_FInt_2000_2023_sd",
-                                            "Pr_FSurf_2000_2023_pixels",
-                                            "HerbCons_sum",
-                                            "HerbRichn_sum")) {
+                                       "Pr_FInt_2000_2023_sd",
+                                       "Pr_FSurf_2000_2023_pixels",
+                                       "HerbCons_sum",
+                                       "HerbRichn_sum")) {
       var_imp_plot_df$cat[i] <- "Disturbances"
     }
 
     if (rownames(var_imp_plot_df)[i] %in% c("Past_Perc_croplands_Weighted_Mean",
-                                            "Past_Perc_croplands_Weighted_Sd",
-                                            "Past_Perc_dense_settlements_Weighted_Mean",
-                                            "Past_Perc_dense_settlements_Weighted_Sd",
-                                            "Past_Perc_rangelands_Weighted_Mean",
-                                            "Past_Perc_rangelands_Weighted_Sd",
-                                            "Past_Perc_seminatural_lands_Weighted_Mean",
-                                            "Past_Perc_seminatural_lands_Weighted_Sd",
-                                            "Past_Perc_villages_Weighted_Mean",
-                                            "Past_Perc_villages_Weighted_Sd",
-                                            "Past_Perc_wild_lands_Weighted_Mean",
-                                            "Past_Perc_wild_lands_Weighted_Sd" )) {
+                                       "Past_Perc_croplands_Weighted_Sd",
+                                       "Past_Perc_dense_settlements_Weighted_Mean",
+                                       "Past_Perc_dense_settlements_Weighted_Sd",
+                                       "Past_Perc_rangelands_Weighted_Mean",
+                                       "Past_Perc_rangelands_Weighted_Sd",
+                                       "Past_Perc_seminatural_lands_Weighted_Mean",
+                                       "Past_Perc_seminatural_lands_Weighted_Sd",
+                                       "Past_Perc_villages_Weighted_Mean",
+                                       "Past_Perc_villages_Weighted_Sd",
+                                       "Past_Perc_wild_lands_Weighted_Mean",
+                                       "Past_Perc_wild_lands_Weighted_Sd" )) {
       var_imp_plot_df$cat[i] <- "Past Land Use"
     }
 
     if (rownames(var_imp_plot_df)[i] %in% c("Present_Perc_croplands_Weighted_Mean",
-                                            "Present_Perc_croplands_Weighted_Sd",
-                                            "Present_Perc_dense_settlements_Weighted_Mean",
-                                            "Present_Perc_dense_settlements_Weighted_Sd",
-                                            "Present_Perc_rangelands_Weighted_Mean",
-                                            "Present_Perc_rangelands_Weighted_Sd",
-                                            "Present_Perc_seminatural_lands_Weighted_Mean",
-                                            "Present_Perc_seminatural_lands_Weighted_Sd",
-                                            "Present_Perc_villages_Weighted_Mean",
-                                            "Present_Perc_villages_Weighted_Sd",
-                                            "Present_Perc_wild_lands_Weighted_Mean",
-                                            "Present_Perc_wild_lands_Weighted_Sd")) {
-      var_imp_plot_df$cat[i] <- "Present Land Use"
-    }
-
-    if (rownames(var_imp_plot_df)[i] %in% c("Pr_Pop_2020_mean",
-                                            "Pr_RatePop_2020_mean")) {
-      var_imp_plot_df$cat[i] <- "Present Population"
+                                       "Present_Perc_croplands_Weighted_Sd",
+                                       "Present_Perc_dense_settlements_Weighted_Mean",
+                                       "Present_Perc_dense_settlements_Weighted_Sd",
+                                       "Present_Perc_rangelands_Weighted_Mean",
+                                       "Present_Perc_rangelands_Weighted_Sd",
+                                       "Present_Perc_seminatural_lands_Weighted_Mean",
+                                       "Present_Perc_seminatural_lands_Weighted_Sd",
+                                       "Present_Perc_villages_Weighted_Mean",
+                                       "Present_Perc_villages_Weighted_Sd",
+                                       "Present_Perc_wild_lands_Weighted_Mean",
+                                       "Present_Perc_wild_lands_Weighted_Sd",
+                                       "Pr_Pop_2020_mean",
+                                       "Pr_RatePop_2020_mean")) {
+      var_imp_plot_df$cat[i] <- "Present Human Direct Impact"
     }
 
   }
@@ -313,12 +323,11 @@ varimp.plot <- function(var_imp_df,
   # Order drivers column:
   var_imp_plot_df$cat <- factor(var_imp_plot_df$cat,
                                   levels = c("Past Climate Stability",
-                                             "Present Climate",
-                                             "Present Habitat Characteristics",
+                                             "Present Habitat",
+                                             "Present Habitat Heterogeneity",
                                              "Disturbances",
                                              "Past Land Use",
-                                             "Present Land Use",
-                                             "Present Population"))
+                                             "Present Human Direct Impact"))
 
 
   # Plot:
@@ -326,13 +335,12 @@ varimp.plot <- function(var_imp_df,
                                  x = "drivers",
                                  y = "mean_imp",
                                  color = "cat",
-                                 palette = c("darkslategray3",
-                                             "paleturquoise",
-                                             "palegreen2",
-                                             "tan1",
-                                             "orchid4",
-                                             "orchid",
-                                             "plum2"),
+                                 palette = c("#88CCEE",
+                                             "#44AA99",
+                                             "#117733",
+                                             "#DDCC77",
+                                             "#CC6677",
+                                             "#882255"),
                                  shape = "var",
                                  sorting = "descending",
                                  rotate = TRUE,
@@ -403,71 +411,81 @@ heatmap.varimp <- function(rf_all_taxa_list,
         taxa_rf_df$Driver_cat[j] <- "Past Climate Stability"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Present_AI_stdev",
-                                              "Present_MAT_stdev",
-                                              "Present_TAP_stdev",
-                                              "pH_stdev",
-                                              "OC_stdev",
-                                              "Elv_stdev",
-                                              "Depth_stdev",
-                                              "VWC_stdev")) {
-        taxa_rf_df$Driver_cat[j] <- "Habitat characteristics variation"
+      if (taxa_rf_df$Driver_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
+                                          "Past_CCVelLGM_mean.voccMag",
+                                          "Past_CCVelShortTerm_mean.voccMag",
+                                          "Past_CCVelYoungerDryas_mean.voccMag",
+                                          "Past_MAT_sd",
+                                          "Past_TAP_sd"
+      )) {
+        taxa_rf_df$Driver_cat[i] <- "Past Climate Stability"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Present_AI_mean",
-                                              "Present_MAT_mean",
-                                              "Present_TAP_mean",
-                                              "pH_mean",
-                                              "OC_mean",
-                                              "Elv_mean",
-                                              "Depth_mean",
-                                              "VWC_mean",
-                                         "Pr_FCon_percentage_percentage")) {
-        taxa_rf_df$Driver_cat[j] <- "Habitat characteristics mean"
+      if (taxa_rf_df$Driver_nm[i] %in% c( "pH_mean",
+                                           "OC_mean",
+                                           "Elv_mean",
+                                           "Depth_mean",
+                                           "VWC_mean",
+                                           "Present_AI_mean",
+                                           "Present_MAT_mean",
+                                           "Present_TAP_mean",
+                                           "Pr_FCon_percentage_percentage"
+      )) {
+        taxa_rf_df$Driver_cat[i] <- "Present Habitat"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_FInt_2000_2023_mean",
-                                              "Pr_FInt_2000_2023_sd",
-                                              "Pr_FSurf_2000_2023_pixels",
-                                         "HerbCons_sum",
-                                         "HerbRichn_sum")) {
-        taxa_rf_df$Driver_cat[j] <- "Disturbances"
+      if (taxa_rf_df$Driver_nm[i] %in% c("Present_AI_stdev",
+                                          "Present_MAT_stdev",
+                                          "Present_TAP_stdev",
+                                          "pH_stdev",
+                                          "OC_stdev",
+                                          "Elv_stdev",
+                                          "Depth_stdev",
+                                          "VWC_stdev"
+      )) {
+        taxa_rf_df$Driver_cat[i] <- "Present Habitat Heterogeneity"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Past_Perc_croplands_Weighted_Mean",
-                                              "Past_Perc_croplands_Weighted_Sd",
-                                              "Past_Perc_dense_settlements_Weighted_Mean",
-                                              "Past_Perc_dense_settlements_Weighted_Sd",
-                                              "Past_Perc_rangelands_Weighted_Mean",
-                                              "Past_Perc_rangelands_Weighted_Sd",
-                                              "Past_Perc_seminatural_lands_Weighted_Mean",
-                                              "Past_Perc_seminatural_lands_Weighted_Sd",
-                                              "Past_Perc_villages_Weighted_Mean",
-                                              "Past_Perc_villages_Weighted_Sd",
-                                              "Past_Perc_wild_lands_Weighted_Mean",
-                                              "Past_Perc_wild_lands_Weighted_Sd" )) {
-        taxa_rf_df$Driver_cat[j] <- "Past Land Use"
+      if (taxa_rf_df$Driver_nm[i] %in% c("Pr_FInt_2000_2023_mean",
+                                          "Pr_FInt_2000_2023_sd",
+                                          "Pr_FSurf_2000_2023_pixels",
+                                          "HerbCons_sum",
+                                          "HerbRichn_sum")) {
+        taxa_rf_df$Driver_cat[i] <- "Disturbances"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Present_Perc_croplands_Weighted_Mean",
-                                              "Present_Perc_croplands_Weighted_Sd",
-                                              "Present_Perc_dense_settlements_Weighted_Mean",
-                                              "Present_Perc_dense_settlements_Weighted_Sd",
-                                              "Present_Perc_rangelands_Weighted_Mean",
-                                              "Present_Perc_rangelands_Weighted_Sd",
-                                              "Present_Perc_seminatural_lands_Weighted_Mean",
-                                              "Present_Perc_seminatural_lands_Weighted_Sd",
-                                              "Present_Perc_villages_Weighted_Mean",
-                                              "Present_Perc_villages_Weighted_Sd",
-                                              "Present_Perc_wild_lands_Weighted_Mean",
-                                              "Present_Perc_wild_lands_Weighted_Sd")) {
-        taxa_rf_df$Driver_cat[j] <- "Present Land Use"
+      if (taxa_rf_df$Driver_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
+                                          "Past_Perc_croplands_Weighted_Sd",
+                                          "Past_Perc_dense_settlements_Weighted_Mean",
+                                          "Past_Perc_dense_settlements_Weighted_Sd",
+                                          "Past_Perc_rangelands_Weighted_Mean",
+                                          "Past_Perc_rangelands_Weighted_Sd",
+                                          "Past_Perc_seminatural_lands_Weighted_Mean",
+                                          "Past_Perc_seminatural_lands_Weighted_Sd",
+                                          "Past_Perc_villages_Weighted_Mean",
+                                          "Past_Perc_villages_Weighted_Sd",
+                                          "Past_Perc_wild_lands_Weighted_Mean",
+                                          "Past_Perc_wild_lands_Weighted_Sd" )) {
+        taxa_rf_df$Driver_cat[i] <- "Past Land Use"
       }
 
-      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_Pop_2020_mean",
-                                         "Pr_RatePop_2020_mean")) {
-        taxa_rf_df$Driver_cat[j] <- "Present Population"
+      if (taxa_rf_df$Driver_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
+                                          "Present_Perc_croplands_Weighted_Sd",
+                                          "Present_Perc_dense_settlements_Weighted_Mean",
+                                          "Present_Perc_dense_settlements_Weighted_Sd",
+                                          "Present_Perc_rangelands_Weighted_Mean",
+                                          "Present_Perc_rangelands_Weighted_Sd",
+                                          "Present_Perc_seminatural_lands_Weighted_Mean",
+                                          "Present_Perc_seminatural_lands_Weighted_Sd",
+                                          "Present_Perc_villages_Weighted_Mean",
+                                          "Present_Perc_villages_Weighted_Sd",
+                                          "Present_Perc_wild_lands_Weighted_Mean",
+                                          "Present_Perc_wild_lands_Weighted_Sd",
+                                          "Pr_Pop_2020_mean",
+                                          "Pr_RatePop_2020_mean")) {
+        taxa_rf_df$Driver_cat[i] <- "Present Human Direct Impact"
       }
+
 
     } # end loop drivers category
 
@@ -490,12 +508,11 @@ heatmap.varimp <- function(rf_all_taxa_list,
   # Class drivers category/taxa as factor:
   var_imp_df$Driver_cat <- factor(var_imp_df$Driver_cat,
                                   levels = c("Past Climate Stability",
-                                             "Habitat characteristics mean",
-                                             "Habitat characteristics variation",
+                                             "Present Habitat",
+                                             "Present Habitat Heterogeneity",
                                              "Disturbances",
                                              "Past Land Use",
-                                             "Present Land Use",
-                                             "Present Population"))
+                                             "Present Human Direct Impact"))
   var_imp_df$Taxa <- as.factor(var_imp_df$Taxa)
 
 
@@ -653,67 +670,79 @@ create.df.circular.plot <- function(rf_df_list,
   # Fill this new column:
   for (i in (1:nrow(final_df))) {
 
-    if (final_df$Drivers_nm[i] %in% c("Present_AI_stdev",
-                                      "Present_MAT_stdev",
-                                      "Present_TAP_stdev",
-                                      "pH_stdev",
-                                      "OC_stdev",
-                                      "Elv_stdev",
-                                      "Depth_stdev",
-                                      "VWC_stdev")) {
-      final_df$Drivers_cat[i] <- "Present Habitat variations"
+    if (final_df$Drivers_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
+                                     "Past_CCVelLGM_mean.voccMag",
+                                     "Past_CCVelShortTerm_mean.voccMag",
+                                     "Past_CCVelYoungerDryas_mean.voccMag",
+                                     "Past_MAT_sd",
+                                     "Past_TAP_sd"
+    )) {
+      final_df$Drivers_cat[i] <- "Past Climate Stability"
     }
 
-    if (final_df$Drivers_nm[i] %in% c("pH_mean",
+    if (final_df$Drivers_nm[i] %in% c( "pH_mean",
                                       "OC_mean",
                                       "Elv_mean",
                                       "Depth_mean",
                                       "VWC_mean",
                                       "Present_AI_mean",
                                       "Present_MAT_mean",
-                                      "Present_TAP_mean")) {
-      final_df$Drivers_cat[i] <- "Present Habitat mean"
+                                      "Present_TAP_mean",
+                                      "Pr_FCon_percentage_percentage"
+    )) {
+      final_df$Drivers_cat[i] <- "Present Habitat"
+    }
+
+    if (final_df$Drivers_nm[i] %in% c("Present_AI_stdev",
+                                     "Present_MAT_stdev",
+                                     "Present_TAP_stdev",
+                                     "pH_stdev",
+                                     "OC_stdev",
+                                     "Elv_stdev",
+                                     "Depth_stdev",
+                                     "VWC_stdev"
+    )) {
+      final_df$Drivers_cat[i] <- "Present Habitat Heterogeneity"
     }
 
     if (final_df$Drivers_nm[i] %in% c("Pr_FInt_2000_2023_mean",
-                                      "Pr_FInt_2000_2023_sd",
-                                      "Pr_FSurf_2000_2023_pixels")) {
+                                     "Pr_FInt_2000_2023_sd",
+                                     "Pr_FSurf_2000_2023_pixels",
+                                     "HerbCons_sum",
+                                     "HerbRichn_sum")) {
       final_df$Drivers_cat[i] <- "Disturbances"
     }
 
     if (final_df$Drivers_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
-                                      "Past_Perc_croplands_Weighted_Sd",
-                                      "Past_Perc_dense_settlements_Weighted_Mean",
-                                      "Past_Perc_dense_settlements_Weighted_Sd",
-                                      "Past_Perc_rangelands_Weighted_Mean",
-                                      "Past_Perc_rangelands_Weighted_Sd",
-                                      "Past_Perc_seminatural_lands_Weighted_Mean",
-                                      "Past_Perc_seminatural_lands_Weighted_Sd",
-                                      "Past_Perc_villages_Weighted_Mean",
-                                      "Past_Perc_villages_Weighted_Sd",
-                                      "Past_Perc_wild_lands_Weighted_Mean",
-                                      "Past_Perc_wild_lands_Weighted_Sd" )) {
+                                     "Past_Perc_croplands_Weighted_Sd",
+                                     "Past_Perc_dense_settlements_Weighted_Mean",
+                                     "Past_Perc_dense_settlements_Weighted_Sd",
+                                     "Past_Perc_rangelands_Weighted_Mean",
+                                     "Past_Perc_rangelands_Weighted_Sd",
+                                     "Past_Perc_seminatural_lands_Weighted_Mean",
+                                     "Past_Perc_seminatural_lands_Weighted_Sd",
+                                     "Past_Perc_villages_Weighted_Mean",
+                                     "Past_Perc_villages_Weighted_Sd",
+                                     "Past_Perc_wild_lands_Weighted_Mean",
+                                     "Past_Perc_wild_lands_Weighted_Sd" )) {
       final_df$Drivers_cat[i] <- "Past Land Use"
     }
 
     if (final_df$Drivers_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
-                                      "Present_Perc_croplands_Weighted_Sd",
-                                      "Present_Perc_dense_settlements_Weighted_Mean",
-                                      "Present_Perc_dense_settlements_Weighted_Sd",
-                                      "Present_Perc_rangelands_Weighted_Mean",
-                                      "Present_Perc_rangelands_Weighted_Sd",
-                                      "Present_Perc_seminatural_lands_Weighted_Mean",
-                                      "Present_Perc_seminatural_lands_Weighted_Sd",
-                                      "Present_Perc_villages_Weighted_Mean",
-                                      "Present_Perc_villages_Weighted_Sd",
-                                      "Present_Perc_wild_lands_Weighted_Mean",
-                                      "Present_Perc_wild_lands_Weighted_Sd")) {
-      final_df$Drivers_cat[i] <- "Present Land Use"
-    }
-
-    if (final_df$Drivers_nm[i] %in% c("Pr_Pop_2020_mean",
-                                      "Pr_RatePop_2020_mean")) {
-      final_df$Drivers_cat[i] <- "Present Population"
+                                     "Present_Perc_croplands_Weighted_Sd",
+                                     "Present_Perc_dense_settlements_Weighted_Mean",
+                                     "Present_Perc_dense_settlements_Weighted_Sd",
+                                     "Present_Perc_rangelands_Weighted_Mean",
+                                     "Present_Perc_rangelands_Weighted_Sd",
+                                     "Present_Perc_seminatural_lands_Weighted_Mean",
+                                     "Present_Perc_seminatural_lands_Weighted_Sd",
+                                     "Present_Perc_villages_Weighted_Mean",
+                                     "Present_Perc_villages_Weighted_Sd",
+                                     "Present_Perc_wild_lands_Weighted_Mean",
+                                     "Present_Perc_wild_lands_Weighted_Sd",
+                                     "Pr_Pop_2020_mean",
+                                     "Pr_RatePop_2020_mean")) {
+      final_df$Drivers_cat[i] <- "Present Human Direct Impact"
     }
 
   }
@@ -742,67 +771,79 @@ create.df.circular.plot <- function(rf_df_list,
     # Fill this new column:
     for (i in (1:nrow(temp_df))) {
 
-      if (temp_df$Drivers_nm[i] %in% c("Present_AI_stdev",
-                                        "Present_MAT_stdev",
-                                        "Present_TAP_stdev",
-                                        "pH_stdev",
-                                        "OC_stdev",
-                                        "Elv_stdev",
-                                        "Depth_stdev",
-                                        "VWC_stdev")) {
-        temp_df$Drivers_cat[i] <- "Present Habitat variations"
+      if (temp_df$Drivers_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
+                                          "Past_CCVelLGM_mean.voccMag",
+                                          "Past_CCVelShortTerm_mean.voccMag",
+                                          "Past_CCVelYoungerDryas_mean.voccMag",
+                                          "Past_MAT_sd",
+                                          "Past_TAP_sd"
+      )) {
+        temp_df$Drivers_cat[i] <- "Past Climate Stability"
       }
 
-      if (temp_df$Drivers_nm[i] %in% c("pH_mean",
-                                        "OC_mean",
-                                        "Elv_mean",
-                                        "Depth_mean",
-                                        "VWC_mean",
-                                        "Present_AI_mean",
-                                        "Present_MAT_mean",
-                                        "Present_TAP_mean")) {
-        temp_df$Drivers_cat[i] <- "Present Habitat mean"
+      if (temp_df$Drivers_nm[i] %in% c( "pH_mean",
+                                           "OC_mean",
+                                           "Elv_mean",
+                                           "Depth_mean",
+                                           "VWC_mean",
+                                           "Present_AI_mean",
+                                           "Present_MAT_mean",
+                                           "Present_TAP_mean",
+                                           "Pr_FCon_percentage_percentage"
+      )) {
+        temp_df$Drivers_cat[i] <- "Present Habitat"
+      }
+
+      if (temp_df$Drivers_nm[i] %in% c("Present_AI_stdev",
+                                          "Present_MAT_stdev",
+                                          "Present_TAP_stdev",
+                                          "pH_stdev",
+                                          "OC_stdev",
+                                          "Elv_stdev",
+                                          "Depth_stdev",
+                                          "VWC_stdev"
+      )) {
+        temp_df$Drivers_cat[i] <- "Present Habitat Heterogeneity"
       }
 
       if (temp_df$Drivers_nm[i] %in% c("Pr_FInt_2000_2023_mean",
-                                        "Pr_FInt_2000_2023_sd",
-                                        "Pr_FSurf_2000_2023_pixels")) {
+                                          "Pr_FInt_2000_2023_sd",
+                                          "Pr_FSurf_2000_2023_pixels",
+                                          "HerbCons_sum",
+                                          "HerbRichn_sum")) {
         temp_df$Drivers_cat[i] <- "Disturbances"
       }
 
       if (temp_df$Drivers_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
-                                        "Past_Perc_croplands_Weighted_Sd",
-                                        "Past_Perc_dense_settlements_Weighted_Mean",
-                                        "Past_Perc_dense_settlements_Weighted_Sd",
-                                        "Past_Perc_rangelands_Weighted_Mean",
-                                        "Past_Perc_rangelands_Weighted_Sd",
-                                        "Past_Perc_seminatural_lands_Weighted_Mean",
-                                        "Past_Perc_seminatural_lands_Weighted_Sd",
-                                        "Past_Perc_villages_Weighted_Mean",
-                                        "Past_Perc_villages_Weighted_Sd",
-                                        "Past_Perc_wild_lands_Weighted_Mean",
-                                        "Past_Perc_wild_lands_Weighted_Sd" )) {
+                                          "Past_Perc_croplands_Weighted_Sd",
+                                          "Past_Perc_dense_settlements_Weighted_Mean",
+                                          "Past_Perc_dense_settlements_Weighted_Sd",
+                                          "Past_Perc_rangelands_Weighted_Mean",
+                                          "Past_Perc_rangelands_Weighted_Sd",
+                                          "Past_Perc_seminatural_lands_Weighted_Mean",
+                                          "Past_Perc_seminatural_lands_Weighted_Sd",
+                                          "Past_Perc_villages_Weighted_Mean",
+                                          "Past_Perc_villages_Weighted_Sd",
+                                          "Past_Perc_wild_lands_Weighted_Mean",
+                                          "Past_Perc_wild_lands_Weighted_Sd" )) {
         temp_df$Drivers_cat[i] <- "Past Land Use"
       }
 
       if (temp_df$Drivers_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
-                                        "Present_Perc_croplands_Weighted_Sd",
-                                        "Present_Perc_dense_settlements_Weighted_Mean",
-                                        "Present_Perc_dense_settlements_Weighted_Sd",
-                                        "Present_Perc_rangelands_Weighted_Mean",
-                                        "Present_Perc_rangelands_Weighted_Sd",
-                                        "Present_Perc_seminatural_lands_Weighted_Mean",
-                                        "Present_Perc_seminatural_lands_Weighted_Sd",
-                                        "Present_Perc_villages_Weighted_Mean",
-                                        "Present_Perc_villages_Weighted_Sd",
-                                        "Present_Perc_wild_lands_Weighted_Mean",
-                                        "Present_Perc_wild_lands_Weighted_Sd")) {
-        temp_df$Drivers_cat[i] <- "Present Land Use"
-      }
-
-      if (temp_df$Drivers_nm[i] %in% c("Pr_Pop_2020_mean",
-                                        "Pr_RatePop_2020_mean")) {
-        temp_df$Drivers_cat[i] <- "Present Population"
+                                          "Present_Perc_croplands_Weighted_Sd",
+                                          "Present_Perc_dense_settlements_Weighted_Mean",
+                                          "Present_Perc_dense_settlements_Weighted_Sd",
+                                          "Present_Perc_rangelands_Weighted_Mean",
+                                          "Present_Perc_rangelands_Weighted_Sd",
+                                          "Present_Perc_seminatural_lands_Weighted_Mean",
+                                          "Present_Perc_seminatural_lands_Weighted_Sd",
+                                          "Present_Perc_villages_Weighted_Mean",
+                                          "Present_Perc_villages_Weighted_Sd",
+                                          "Present_Perc_wild_lands_Weighted_Mean",
+                                          "Present_Perc_wild_lands_Weighted_Sd",
+                                          "Pr_Pop_2020_mean",
+                                          "Pr_RatePop_2020_mean")) {
+        temp_df$Drivers_cat[i] <- "Present Human Direct Impact"
       }
 
     }
@@ -851,12 +892,11 @@ circular.drivers.plot <- function(taxa_plot_df,
   # Order drivers column:
   taxa_plot_df$Drivers_cat <- factor(taxa_plot_df$Drivers_cat,
                                      levels = c("Past Climate Stability",
-                                                "Present Habitat mean",
-                                                "Present Habitat variations",
+                                                "Present Habitat",
+                                                "Present Habitat Heterogeneity",
                                                 "Disturbances",
                                                 "Past Land Use",
-                                                "Present Land Use",
-                                                "Present Population"))
+                                                "Present Human Direct Impact"))
 
   # Decreasing variable importance:
   taxa_plot_df <- taxa_plot_df %>%
@@ -1010,3 +1050,164 @@ circular.drivers.plot <- function(taxa_plot_df,
   return(drivers_circ_plot)
 
 }
+
+
+#' Function to plot violin plots of variables importance based on their category
+#'
+#' @param rf_df the data frame gathering random forests results from the
+#' \code{test.rf.model} function.
+#' @param metric_nm character string referring to the studied metric
+#' @param palette a color palette containing the color names of the broad
+#' categories of the drivers present in the \code{taxa_plot_df}
+#' @param drivers_nm_df a data frame containing shortened names of drivers
+#'
+#' @return
+#' @export
+#'
+
+cat.distrib.plot <- function(rf_df,
+                                       metric_nm,
+                                       palette,
+                                       drivers_nm_df) {
+
+
+  # Format longer the rf data frame:
+  rf_longer_df <- rf_df %>%
+    tibble::rownames_to_column(var = "Drivers_nm") %>%
+    tidyr::pivot_longer(cols = colnames(rf_df)[-c(ncol(rf_df), ncol(rf_df) - 1)],
+                        names_to = "Repetition_nb",
+                        values_to = "Value") %>%
+    dplyr::select(-c("mean_imp", "sd_imp"))
+
+  # Now add the broad category for each driver:
+  rf_plot_df <- rf_longer_df
+  rf_plot_df$Drivers_cat <- rep(NA, nrow(rf_plot_df))
+
+  # Fill this Category column:
+  for (i in (1:nrow(rf_plot_df))) {
+
+    print(i)
+    print(rf_plot_df$Drivers_nm[i])
+
+    if (rf_plot_df$Drivers_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
+                                        "Past_CCVelLGM_mean.voccMag",
+                                        "Past_CCVelShortTerm_mean.voccMag",
+                                        "Past_CCVelYoungerDryas_mean.voccMag",
+                                        "Past_MAT_sd",
+                                        "Past_TAP_sd"
+    )) {
+      rf_plot_df$Drivers_cat[i] <- "Past Climate Stability"
+    }
+
+    if (rf_plot_df$Drivers_nm[i] %in% c( "pH_mean",
+                                     "OC_mean",
+                                     "Elv_mean",
+                                     "Depth_mean",
+                                     "VWC_mean",
+                                     "Present_AI_mean",
+                                     "Present_MAT_mean",
+                                     "Present_TAP_mean",
+                                     "Pr_FCon_percentage_percentage"
+                                     )) {
+      rf_plot_df$Drivers_cat[i] <- "Present Habitat"
+    }
+
+    if (rf_plot_df$Drivers_nm[i] %in% c("Present_AI_stdev",
+                                        "Present_MAT_stdev",
+                                        "Present_TAP_stdev",
+                                        "pH_stdev",
+                                        "OC_stdev",
+                                        "Elv_stdev",
+                                        "Depth_stdev",
+                                        "VWC_stdev"
+    )) {
+      rf_plot_df$Drivers_cat[i] <- "Present Habitat Heterogeneity"
+    }
+
+    if (rf_plot_df$Drivers_nm[i] %in% c("Pr_FInt_2000_2023_mean",
+                                     "Pr_FInt_2000_2023_sd",
+                                     "Pr_FSurf_2000_2023_pixels",
+                                     "HerbCons_sum",
+                                     "HerbRichn_sum")) {
+      rf_plot_df$Drivers_cat[i] <- "Disturbances"
+    }
+
+    if (rf_plot_df$Drivers_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
+                                     "Past_Perc_croplands_Weighted_Sd",
+                                     "Past_Perc_dense_settlements_Weighted_Mean",
+                                     "Past_Perc_dense_settlements_Weighted_Sd",
+                                     "Past_Perc_rangelands_Weighted_Mean",
+                                     "Past_Perc_rangelands_Weighted_Sd",
+                                     "Past_Perc_seminatural_lands_Weighted_Mean",
+                                     "Past_Perc_seminatural_lands_Weighted_Sd",
+                                     "Past_Perc_villages_Weighted_Mean",
+                                     "Past_Perc_villages_Weighted_Sd",
+                                     "Past_Perc_wild_lands_Weighted_Mean",
+                                     "Past_Perc_wild_lands_Weighted_Sd" )) {
+      rf_plot_df$Drivers_cat[i] <- "Past Land Use"
+    }
+
+    if (rf_plot_df$Drivers_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
+                                     "Present_Perc_croplands_Weighted_Sd",
+                                     "Present_Perc_dense_settlements_Weighted_Mean",
+                                     "Present_Perc_dense_settlements_Weighted_Sd",
+                                     "Present_Perc_rangelands_Weighted_Mean",
+                                     "Present_Perc_rangelands_Weighted_Sd",
+                                     "Present_Perc_seminatural_lands_Weighted_Mean",
+                                     "Present_Perc_seminatural_lands_Weighted_Sd",
+                                     "Present_Perc_villages_Weighted_Mean",
+                                     "Present_Perc_villages_Weighted_Sd",
+                                     "Present_Perc_wild_lands_Weighted_Mean",
+                                     "Present_Perc_wild_lands_Weighted_Sd",
+                                     "Pr_Pop_2020_mean",
+                                     "Pr_RatePop_2020_mean")) {
+      rf_plot_df$Drivers_cat[i] <- "Present Human Direct Impact"
+    }
+
+  }
+
+  # Order drivers column:
+  rf_plot_df$Drivers_cat <- factor(rf_plot_df$Drivers_cat,
+                                     levels = c("Past Climate Stability",
+                                                "Present Habitat",
+                                                "Present Habitat Heterogeneity",
+                                                "Disturbances",
+                                                "Past Land Use",
+                                                "Present Human Direct Impact"))
+
+
+  # Create the plot:
+  distrib_plot <- ggplot2::ggplot(data = rf_plot_df,
+                                 ggplot2::aes(x = Drivers_cat,
+                                              y = Value,
+                                              fill = Drivers_cat)) +
+    ggplot2::geom_jitter(alpha = 0.1, size = 1,
+                         ggplot2::aes(color = Drivers_cat)) +
+
+    ggplot2::geom_violin(alpha = 0.7,
+                         ggplot2::aes(color = Drivers_cat,
+                                      fill = Drivers_cat)) +
+
+    ggplot2::geom_boxplot(width=0.1, color="white",
+                          alpha = 0.2) +
+
+    ggplot2::scale_color_manual(values = palette) +
+
+    ggplot2::scale_fill_manual(values = palette) +
+
+    ggplot2::ylab("Drivers importance") +
+
+    ggplot2::ggtitle(metric_nm) +
+
+    ggplot2::theme_minimal() +
+
+    ggplot2::theme(
+      legend.position = "none",
+      axis.text.x = ggplot2::element_text(angle = 90),
+      axis.title.x = ggplot2::element_blank())
+
+
+  return(distrib_plot)
+
+}
+

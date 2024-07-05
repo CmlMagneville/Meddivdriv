@@ -50,3 +50,6 @@ Present_Perc_wild_lands_Weighted_Mean,Pres.% wildlands mean
 Present_Perc_wild_lands_Weighted_Sd,Pres.% wildlands sd
 Pr_Pop_2020_mean,Human pop 
 Pr_RatePop_2020_mean,Growth rate pop
+HerbCons_sum,Herbivores Consumption
+HerbRichn_sum,Herbivores Richness
+Pr_FCon_percentage_percentage,Forest Connectivity
