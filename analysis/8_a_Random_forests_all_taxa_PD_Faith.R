@@ -8,7 +8,7 @@
 ##
 ## Camille Magneville
 ##
-## 14/05/2024 - 07//2024
+## 14/05/2024 - 07/2024
 ##
 ## 8_a_Random_forests_all_taxa_PD_Faith.R
 ##
@@ -364,14 +364,16 @@ ggplot2::ggsave(plot = cat_imp[[2]],
                 dpi = 600)
 
 
-# 7 - Direction of the effect for each category ================================
+# 8 - Direction of the effect for each category ================================
 
 # Note: For each driver's category, we chose the first variables that ...
 # ... had the highest importance to study in which direction they are driving
 # ... PD Faith
 
-# Load environmental drivers (with no NA for predictors and only cells which
-# .. have values for all the studied taxa):
+# Load data --------------------------------------------------------------------
+
+# Load env drivers (with no NA for predictors and only cells which
+# .. have values for all the studied taxa)
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
                                       "env_drivers_final_noNA_db.rds"))
 
@@ -392,8 +394,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the file which contain drivers shorter names:
+drivers_nm_df <- read.csv(here::here("env_db",
+                                     "Drivers_short_nm.csv"))
 
-# 2 - Subset diversity db and link the two databases (diversity + drivers) =====
+# Subset diversity db and link the two databases (diversity + drivers) ---------
 
 
 # NOTE: If joining drivers db and diversity db, the final db would have
@@ -432,27 +437,37 @@ faith_ses_trees_df <- faith_ses_trees_df %>%
 
 
 # Link the two tables (drivers + diversity):
-rf_faith_birds_df <- dplyr::left_join(envdriv_full_db,
+var_faith_birds_df <- dplyr::left_join(envdriv_full_db,
                                       faith_ses_birds_df[, c("Idgrid", "ses")],
                                       by = "Idgrid")
-rf_faith_trees_df <- dplyr::left_join(envdriv_full_db,
+var_faith_trees_df <- dplyr::left_join(envdriv_full_db,
                                       faith_ses_trees_df[, c("Idgrid", "ses")],
                                       by = "Idgrid")
-rf_faith_reptiles_df <- dplyr::left_join(envdriv_full_db,
+var_faith_reptiles_df <- dplyr::left_join(envdriv_full_db,
                                          faith_ses_reptiles_df[, c("Idgrid", "ses")],
                                          by = "Idgrid")
 
 # Put Idgrid as rownames:
-rf_faith_birds_df <- rf_faith_birds_df %>%
+var_faith_birds_df <- var_faith_birds_df %>%
   tibble::column_to_rownames(var = "Idgrid")
-rf_faith_trees_df <- rf_faith_trees_df %>%
+var_faith_trees_df <- var_faith_trees_df %>%
   tibble::column_to_rownames(var = "Idgrid")
-rf_faith_reptiles_df <- rf_faith_reptiles_df %>%
+var_faith_reptiles_df <- var_faith_reptiles_df %>%
   tibble::column_to_rownames(var = "Idgrid")
-
 
 # For BIRDS --------------------------------------------------------------------
 
-# Past Climate Stability:
+# Note: The idea is to focus on the n variable(s) that impact the most each
+# ... category to see in which direction it impacts diversity values:
+# ... simply plot the data and try to fit a linear model
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+metric_nm <- "Faith's PD - Birds"
+drivers_nm_df <- drivers_nm_df
+ses_var_df <- var_faith_birds_df
 
 

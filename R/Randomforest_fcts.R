@@ -1269,3 +1269,140 @@ cat.distrib.plot <- function(rf_df,
 
 }
 
+
+
+
+#' Plot six groups of relationships between drivers and diversity - one group per
+#' category of drivers
+#'
+#' @param ses_var_df the data frame for each cell, values of each driver and
+#' value of studied SES.
+#' @param metric_nm character string referring to the studied metric
+#' @param palette a color palette containing the color names of the broad
+#' categories of the drivers present in the \code{taxa_plot_df}
+#' @param drivers_nm_df a data frame containing shortened names of drivers
+#'
+#' @return six ggplot objects in a list - in each object are represented the
+#' relationships between diversity facets and specific drivers belonging to a
+#' given category, each individual driver being represented as a ggplot2 facet
+#'
+#' @export
+#'
+
+relationships.plot <- function(ses_var_df,
+                               metric_nm,
+                               palette,
+                               drivers_nm_df) {
+
+  # Make sure each variable is numeric:
+  ses_var_df <- ses_var_df %>%
+    dplyr::mutate_if(is.character,as.numeric) %>%
+    dplyr::mutate_if(is.double, as.numeric)
+
+  # Format longer the rf data frame:
+  ses_longer_df <- ses_var_df %>%
+    tibble::rownames_to_column(var = "Idgrid") %>%
+    tidyr::pivot_longer(cols = colnames(ses_var_df)[-ncol(ses_var_df)],
+                        names_to = "Drivers_nm",
+                        values_to = "Drivers_value")
+
+
+  # Now add the broad category for each driver:
+  ses_plot_df <- ses_longer_df
+  ses_plot_df$Drivers_cat <- rep(NA, nrow(ses_plot_df))
+
+  # Fill this Category column:
+  for (i in (1:nrow(ses_plot_df))) {
+
+
+    if (ses_plot_df$Drivers_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
+                                        "Past_CCVelLGM_mean.voccMag",
+                                        "Past_CCVelShortTerm_mean.voccMag",
+                                        "Past_CCVelYoungerDryas_mean.voccMag",
+                                        "Past_MAT_sd",
+                                        "Past_TAP_sd"
+    )) {
+      ses_plot_df$Drivers_cat[i] <- "Past Climate Stability"
+    }
+
+    if (ses_plot_df$Drivers_nm[i] %in% c( "pH_mean",
+                                         "OC_mean",
+                                         "Elv_mean",
+                                         "Depth_mean",
+                                         "VWC_mean",
+                                         "Present_AI_mean",
+                                         "Present_MAT_mean",
+                                         "Present_TAP_mean",
+                                         "Pr_FCon_percentage_percentage"
+    )) {
+      ses_plot_df$Drivers_cat[i] <- "Present Habitat"
+    }
+
+    if (ses_plot_df$Drivers_nm[i] %in% c("Present_AI_stdev",
+                                        "Present_MAT_stdev",
+                                        "Present_TAP_stdev",
+                                        "pH_stdev",
+                                        "OC_stdev",
+                                        "Elv_stdev",
+                                        "Depth_stdev",
+                                        "VWC_stdev"
+    )) {
+      ses_plot_df$Drivers_cat[i] <- "Present Habitat Heterogeneity"
+    }
+
+    if (ses_plot_df$Drivers_nm[i] %in% c("Pr_FInt_2000_2023_mean",
+                                        "Pr_FInt_2000_2023_sd",
+                                        "Pr_FSurf_2000_2023_pixels",
+                                        "HerbCons_sum",
+                                        "HerbRichn_sum")) {
+      ses_plot_df$Drivers_cat[i] <- "Disturbances"
+    }
+
+    if (ses_plot_df$Drivers_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
+                                        "Past_Perc_croplands_Weighted_Sd",
+                                        "Past_Perc_dense_settlements_Weighted_Mean",
+                                        "Past_Perc_dense_settlements_Weighted_Sd",
+                                        "Past_Perc_rangelands_Weighted_Mean",
+                                        "Past_Perc_rangelands_Weighted_Sd",
+                                        "Past_Perc_seminatural_lands_Weighted_Mean",
+                                        "Past_Perc_seminatural_lands_Weighted_Sd",
+                                        "Past_Perc_villages_Weighted_Mean",
+                                        "Past_Perc_villages_Weighted_Sd",
+                                        "Past_Perc_wild_lands_Weighted_Mean",
+                                        "Past_Perc_wild_lands_Weighted_Sd" )) {
+      ses_plot_df$Drivers_cat[i] <- "Past Land Use"
+    }
+
+    if (ses_plot_df$Drivers_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
+                                        "Present_Perc_croplands_Weighted_Sd",
+                                        "Present_Perc_dense_settlements_Weighted_Mean",
+                                        "Present_Perc_dense_settlements_Weighted_Sd",
+                                        "Present_Perc_rangelands_Weighted_Mean",
+                                        "Present_Perc_rangelands_Weighted_Sd",
+                                        "Present_Perc_seminatural_lands_Weighted_Mean",
+                                        "Present_Perc_seminatural_lands_Weighted_Sd",
+                                        "Present_Perc_villages_Weighted_Mean",
+                                        "Present_Perc_villages_Weighted_Sd",
+                                        "Present_Perc_wild_lands_Weighted_Mean",
+                                        "Present_Perc_wild_lands_Weighted_Sd",
+                                        "Pr_Pop_2020_mean",
+                                        "Pr_RatePop_2020_mean")) {
+      ses_plot_df$Drivers_cat[i] <- "Present Human Direct Impact"
+    }
+
+  }
+
+  # Order drivers column:
+  ses_plot_df$Drivers_cat <- factor(ses_plot_df$Drivers_cat,
+                                   levels = c("Past Climate Stability",
+                                              "Present Habitat",
+                                              "Present Habitat Heterogeneity",
+                                              "Disturbances",
+                                              "Past Land Use",
+                                              "Present Human Direct Impact"))
+
+
+
+
+
+}
