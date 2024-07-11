@@ -2,7 +2,7 @@
 ##
 ## Script to compute one random forest with all variables for each taxon
 ## ... - 5 random forests - to see which variable drive the most Faith PD.
-## ... Also compute partial dependance plots for each driver. And add plots
+## ... Also compute partial dependance plots for each driver. And add plots/tests
 ## ... to figure out if drivers are the same among taxa and disentangle the
 ## ... effect of present/past/disturbance/land use and their directionality
 ##
@@ -315,7 +315,7 @@ PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
                                   plot_nb = TRUE)
 
 
-# 6 - Plot a variables importance based on their broader categories ============
+# 7 - Broad categories importance: plot and test ===============================
 
 
 # a - Load data ----------------------------------------------------------------
@@ -329,22 +329,130 @@ drivers_nm_df <- read.csv(here::here("env_db",
 # b - Plot the importance of broad drivers categories --------------------------
 
 # BIRDS:
-cat_imp_plot <- cat.distrib.plot(rf_df = birds_rf,
-                                 metric_nm = "Faith's PD - Birds",
-                                 palette = c("#88CCEE",
-                                             "#44AA99",
-                                             "#117733",
-                                             "#DDCC77",
-                                             "#CC6677",
-                                             "#882255"),
-                                 drivers_nm_df = drivers_nm_df)
+cat_imp <- cat.distrib.plot(rf_df = birds_rf,
+                            metric_nm = "Faith's PD - Birds",
+                            palette = c("#88CCEE",
+                                        "#44AA99",
+                                        "#117733",
+                                        "#DDCC77",
+                                        "#CC6677",
+                                        "#882255"),
+                            drivers_nm_df = drivers_nm_df)
+# Plot categories importance:
+cat_imp[[1]]
+# Plot with stats:
+cat_imp[2]
+
 # Save it:
-ggplot2::ggsave(plot = cat_imp_plot,
+ggplot2::ggsave(plot = cat_imp[[1]],
                 filename = here::here("outputs",
                                       "catimp_PD_Faith_50_BIRDS.jpeg"),
                 device = "jpeg",
-                scale = 1,
+                scale = 0.8,
                 height = 5000,
                 width = 8000,
                 units = "px",
                 dpi = 600)
+ggplot2::ggsave(plot = cat_imp[[2]],
+                filename = here::here("outputs",
+                                      "catimp_PD_Faith_withstats_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# 7 - Direction of the effect for each category ================================
+
+# Note: For each driver's category, we chose the first variables that ...
+# ... had the highest importance to study in which direction they are driving
+# ... PD Faith
+
+# Load environmental drivers (with no NA for predictors and only cells which
+# .. have values for all the studied taxa):
+envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
+                                      "env_drivers_final_noNA_db.rds"))
+
+# Load SES PD - Faith:
+faith_ses_birds_df <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
+                                         "PD_Faith_null_models_metrics_50km_BIRDS.rds"))
+faith_ses_trees_df <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
+                                         "PD_Faith_null_models_metrics_50km_TREES.rds"))
+faith_ses_reptiles_df <- readRDS(here::here("transformed_data",
+                                            "div_values_null_models",
+                                            "PD_Faith_null_models_metrics_50km_REPTILES.rds"))
+
+# Load grid data(for locating grid cells):
+grid_50km <- sf::st_read(here::here("integradiv_db",
+                                    "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
+# Rename the GRD_ID column as Idgrid:
+grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+
+# 2 - Subset diversity db and link the two databases (diversity + drivers) =====
+
+
+# NOTE: If joining drivers db and diversity db, the final db would have
+# ... 671 rows (grid cells) but for some of these grid cells, we don't have
+# ... occurrence data for now : (birds 664 grid cells, reptiles 624 grid cells,
+# ... trees 667 grid cells)
+# ... SO: Only keep the grid cells for which I have occ information for all taxa
+# ... already done for the environmental db (cf 7_Clean_environmental_var.R)
+
+# Load SES PD - Faith:
+faith_ses_birds_df <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
+                                         "PD_Faith_null_models_metrics_50km_BIRDS.rds"))
+faith_ses_trees_df <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
+                                         "PD_Faith_null_models_metrics_50km_TREES.rds"))
+faith_ses_reptiles_df <- readRDS(here::here("transformed_data",
+                                            "div_values_null_models",
+                                            "PD_Faith_null_models_metrics_50km_REPTILES.rds"))
+
+# Get the names of the Idgrid to keep (diversity data for all taxa):
+cells_ok_birds <- unique(faith_ses_birds_df$Idgrid)
+cells_ok_reptiles <- unique(faith_ses_reptiles_df$Idgrid)
+cells_ok_trees <- unique(faith_ses_trees_df$Idgrid)
+cells_to_keep <- intersect(intersect(cells_ok_birds,
+                                     cells_ok_reptiles),
+                           cells_ok_trees)
+
+# Only keep these cells in the diversity df:
+faith_ses_birds_df <- faith_ses_birds_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+faith_ses_reptiles_df <- faith_ses_reptiles_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+faith_ses_trees_df <- faith_ses_trees_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+
+
+# Link the two tables (drivers + diversity):
+rf_faith_birds_df <- dplyr::left_join(envdriv_full_db,
+                                      faith_ses_birds_df[, c("Idgrid", "ses")],
+                                      by = "Idgrid")
+rf_faith_trees_df <- dplyr::left_join(envdriv_full_db,
+                                      faith_ses_trees_df[, c("Idgrid", "ses")],
+                                      by = "Idgrid")
+rf_faith_reptiles_df <- dplyr::left_join(envdriv_full_db,
+                                         faith_ses_reptiles_df[, c("Idgrid", "ses")],
+                                         by = "Idgrid")
+
+# Put Idgrid as rownames:
+rf_faith_birds_df <- rf_faith_birds_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_faith_trees_df <- rf_faith_trees_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_faith_reptiles_df <- rf_faith_reptiles_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+
+
+# For BIRDS --------------------------------------------------------------------
+
+# Past Climate Stability:
+
+

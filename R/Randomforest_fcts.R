@@ -217,16 +217,6 @@ varimp.plot <- function(var_imp_df,
   # Fill this new column:
   for (i in (1:nrow(var_imp_plot_df))) {
 
-
-    if (rownames(var_imp_plot_df)[j] %in% c("Past_CCVelHolocene_mean.voccMag",
-                                       "Past_CCVelLGM_mean.voccMag",
-                                       "Past_CCVelShortTerm_mean.voccMag",
-                                       "Past_CCVelYoungerDryas_mean.voccMag",
-                                       "Past_MAT_sd",
-                                       "Past_TAP_sd")) {
-      var_imp_plot_df$cat[j] <- "Past Climate Stability"
-    }
-
     if (rownames(var_imp_plot_df)[i] %in% c("Past_CCVelHolocene_mean.voccMag",
                                        "Past_CCVelLGM_mean.voccMag",
                                        "Past_CCVelShortTerm_mean.voccMag",
@@ -1053,6 +1043,7 @@ circular.drivers.plot <- function(taxa_plot_df,
 
 
 #' Function to plot violin plots of variables importance based on their category
+#' and return one plot with statistics and Kruskall Wallis test
 #'
 #' @param rf_df the data frame gathering random forests results from the
 #' \code{test.rf.model} function.
@@ -1061,14 +1052,17 @@ circular.drivers.plot <- function(taxa_plot_df,
 #' categories of the drivers present in the \code{taxa_plot_df}
 #' @param drivers_nm_df a data frame containing shortened names of drivers
 #'
-#' @return
+#' @return two plots in a list, one with stats and mean and the other without
+#' and print the result of a Kruskall-Wallis test to see if there is a
+#' significant difference of median variables importance between drivers categories
+#'
 #' @export
 #'
 
 cat.distrib.plot <- function(rf_df,
-                                       metric_nm,
-                                       palette,
-                                       drivers_nm_df) {
+                             metric_nm,
+                             palette,
+                             drivers_nm_df) {
 
 
   # Format longer the rf data frame:
@@ -1086,8 +1080,6 @@ cat.distrib.plot <- function(rf_df,
   # Fill this Category column:
   for (i in (1:nrow(rf_plot_df))) {
 
-    print(i)
-    print(rf_plot_df$Drivers_nm[i])
 
     if (rf_plot_df$Drivers_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
                                         "Past_CCVelLGM_mean.voccMag",
@@ -1206,8 +1198,74 @@ cat.distrib.plot <- function(rf_df,
       axis.text.x = ggplot2::element_text(angle = 90),
       axis.title.x = ggplot2::element_blank())
 
+  # Compute statistics for the statistical plot (Dunn test btw cat):
+  # using `pairwise_comparisons()` function to create a data frame with results
+  stat_df <- ggstatsplot::pairwise_comparisons(rf_plot_df, Drivers_cat, Value,
+                                          type = "np") %>%
+    dplyr::mutate(groups = purrr::pmap(.l = list(group1, group2), .f = c)) %>%
+    dplyr::arrange(group1)
 
-  return(distrib_plot)
+  # Create a vector to gather y positions of significant bracket:
+  y_pos_values <- c(max(rf_plot_df$Value))
+  # Create an index to fill this vector (as some pairs are not signif
+  # ... i can not be used)
+  j <- 1
+  # Create a column for asterisks labels and fill it + y positions:
+  stat_df$asterisk_label <- rep(NA, nrow(stat_df))
+  for (i in c(1:nrow(stat_df))){
+    if (stat_df$p.value[i] < 0.05) {
+      stat_df$asterisk_label[i] <- "*"
+      if (i >= 2) {
+        j <- j + 1
+        y_pos_values[j] <- y_pos_values[j-1] + 1
+      }
+    }
+    if (stat_df$p.value[i] < 0.01) {
+      stat_df$asterisk_label[i] <- "**"
+      if (i >= 2) {
+        j <- j + 1
+        y_pos_values[j] <- y_pos_values[j-1] + 1
+      }
+    }
+    if (stat_df$p.value[i] < 0.001) {
+      stat_df$asterisk_label[i] <- "***"
+      if (i >= 2) {
+        j <- j + 1
+        y_pos_values[j] <- y_pos_values[j-1] + 1
+      }
+    }
+  }
+
+  stat_plot <- ggstatsplot::ggbetweenstats(data = rf_plot_df,
+                                           x = Drivers_cat,
+                                           y = Value,
+                                           type = "np",
+                                           mean.size = 2,
+                                           mean.color = "grey60",
+                                           title = metric_nm,
+                                           xlab = "",
+                                           ylab = "Variables importance",
+                                           results.subtitle = FALSE,
+                                           pairwise.display = "none") +
+    ggplot2::scale_color_manual(values = palette) +
+
+    # Add asterisks:
+    ggsignif::geom_signif(
+      comparisons = stat_df$groups,
+      map_signif_level = TRUE,
+      annotations = stat_df$asterisk_label,
+      y_position = y_pos_values,
+      vjust = 0.50,
+      test = NULL,
+      color = "grey60",
+      na.rm = TRUE)
+
+  # Do a Kruskall Wallis test and print result:
+  krustall_test <- rstatix::kruskal_test(data = rf_plot_df,
+                                         Value ~ Drivers_cat)
+  print(krustall_test)
+
+  return(list(distrib_plot, stat_plot))
 
 }
 

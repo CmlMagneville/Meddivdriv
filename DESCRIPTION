@@ -21,6 +21,8 @@ Imports:
     FactoMineR,
     funbiogeo,
     ggplot2,
+    ggsignif,
+    ggstatsplot,
     here,
     mgcv,
     miceRanger,
