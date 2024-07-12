@@ -1282,9 +1282,11 @@ cat.distrib.plot <- function(rf_df,
 #' categories of the drivers present in the \code{taxa_plot_df}
 #' @param drivers_nm_df a data frame containing shortened names of drivers
 #'
-#' @return six ggplot objects in a list - in each object are represented the
+#' @return eight ggplot objects in a list - in each object are represented the
 #' relationships between diversity facets and specific drivers belonging to a
-#' given category, each individual driver being represented as a ggplot2 facet
+#' given category (but 2 plots for past land use and present human impact as
+#' too many variables otherwise), each individual driver being represented as a
+#' ggplot2 facet
 #'
 #' @export
 #'
@@ -1392,6 +1394,13 @@ relationships.plot <- function(ses_var_df,
 
   }
 
+  # Add shortened names of drivers and remove old ones:
+  ses_plot_df <- dplyr::left_join(ses_plot_df,
+                                   drivers_nm_df,
+                                   by = "Drivers_nm") %>%
+    dplyr::select(-c(Drivers_nm)) %>%
+    dplyr::rename(Drivers_nm = Drivers_short_nm)
+
   # Order drivers column:
   ses_plot_df$Drivers_cat <- factor(ses_plot_df$Drivers_cat,
                                    levels = c("Past Climate Stability",
@@ -1401,8 +1410,233 @@ relationships.plot <- function(ses_var_df,
                                               "Past Land Use",
                                               "Present Human Direct Impact"))
 
+  # Plot smooth line for each driver - category past climate stability:
+  past_stability_plot <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Past Climate Stability"), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[1],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free")  +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  past_stability_plot
 
 
+  # Plot smooth line for each driver - category present habitat:
+  present_hab_plot <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Present Habitat"), ]) +
 
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[2],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  present_hab_plot
+
+
+  # Plot smooth line for each driver - category present habitat heterogeneity:
+  present_hab_heterog_plot <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Present Habitat Heterogeneity"), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[3],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  present_hab_heterog_plot
+
+  # Plot smooth line for each driver - category disturb:
+  disturb_plot <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Disturbances"), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[4],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  disturb_plot
+
+  # Plot smooth line for each driver - category past land use:
+  past_lu_plot1 <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Past Land Use" &
+                                                            ses_plot_df$Drivers_nm %in%
+                                                              c("Past % croplands mean",
+                                                                "Past % settlements mean",
+                                                                "Past % rangelands mean",
+                                                                "Past % seminat mean",
+                                                                "Past % villages mean",
+                                                                "Past % wildlands mean")), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[5],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  past_lu_plot1
+
+  past_lu_plot2 <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Past Land Use" &
+                                                              ses_plot_df$Drivers_nm %in%
+                                                              c("Past % croplands sd",
+                                                                "Past % settlements sd",
+                                                                "Past % rangelands sd",
+                                                                "Past % seminat sd",
+                                                                "Past % villages sd",
+                                                                "Past % wildlands sd")), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[5],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  past_lu_plot2
+
+  # Plot smooth line for each driver - category past land use:
+  pr_hum_plot1 <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Present Human Direct Impact" &
+                                                              ses_plot_df$Drivers_nm %in%
+                                                              c("Pres. % croplands mean",
+                                                                "Pres.% settlements mean",
+                                                                "Pres.% rangelands mean",
+                                                                "Pres.% seminat mean",
+                                                                "Pres.% villages mean",
+                                                                "Pres.% wildlands mean",
+                                                                "Human pop ")), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[6],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  pr_hum_plot1
+
+  pr_hum_plot2 <- ggplot2::ggplot(data = ses_plot_df[which(ses_plot_df$Drivers_cat == "Present Human Direct Impact" &
+                                                             ses_plot_df$Drivers_nm %in%
+                                                             c("Pres.% croplands sd",
+                                                               "Pres.% settlements sd",
+                                                               "Pres.% rangelands sd",
+                                                               "Pres.% seminat sd",
+                                                               "Pres.% villages sd",
+                                                               "Pres.% wildlands sd",
+                                                               "Growth rate pop")), ]) +
+
+    ggplot2::geom_point(ggplot2::aes(x = Drivers_value,
+                                     y = ses),
+                        color = "grey80",
+                        alpha = 0.6) +
+    ggplot2::geom_smooth(ggplot2::aes(x = Drivers_value,
+                                      y = ses),
+                         color = palette[6],
+                         fill = "grey60",
+                         method = "lm") +
+
+    ggplot2::facet_grid(cols = ggplot2::vars(Drivers_nm),
+                        scales = "free") +
+
+    ggplot2::xlab("") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "grey90"),
+                   panel.grid.major = ggplot2::element_line(colour = "grey90")) +
+    ggplot2::ggtitle(metric_nm)
+  pr_hum_plot2
+
+  return(list("past_stab" = past_stability_plot,
+         "present_hab" = present_hab_plot,
+         "present_hab_heterog" = present_hab_heterog_plot,
+         "disturb" = disturb_plot,
+         "past_lu1" = past_lu_plot1, "past_lu2" = past_lu_plot2,
+         "pr_hum_imp1" = pr_hum_plot1, "pr_hum_imp2" = pr_hum_plot2))
 
 }

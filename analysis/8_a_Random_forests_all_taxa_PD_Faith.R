@@ -460,14 +460,94 @@ var_faith_reptiles_df <- var_faith_reptiles_df %>%
 # Note: The idea is to focus on the n variable(s) that impact the most each
 # ... category to see in which direction it impacts diversity values:
 # ... simply plot the data and try to fit a linear model
-palette <- c("#88CCEE",
-             "#44AA99",
-             "#117733",
-             "#DDCC77",
-             "#CC6677",
-             "#882255")
-metric_nm <- "Faith's PD - Birds"
-drivers_nm_df <- drivers_nm_df
-ses_var_df <- var_faith_birds_df
+direction_plots <- relationships.plot(ses_var_df = var_faith_birds_df,
+                               metric_nm =  "Faith's PD - Birds",
+                               palette =  c("#88CCEE",
+                                            "#44AA99",
+                                            "#117733",
+                                            "#DDCC77",
+                                            "#CC6677",
+                                            "#882255"),
+                               drivers_nm_df = drivers_nm_df)
+direction_plots$past_stab
+direction_plots$present_hab
+direction_plots$present_hab_heterog
+direction_plots$disturb
+direction_plots$past_lu1
+direction_plots$past_lu2
+direction_plots$pr_hum_imp1
+direction_plots$pr_hum_imp2
 
-
+# Save them:
+ggplot2::ggsave(plot = direction_plots$past_stab,
+                filename = here::here("outputs",
+                                      "direction_past_stab_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab_heterog,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_het_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$disturb,
+                filename = here::here("outputs",
+                                      "direction_disturb_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu1,
+                filename = here::here("outputs",
+                                      "direction_past_lu1_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu2,
+                filename = here::here("outputs",
+                                      "direction_past_lu2_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp1,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp1_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp2_PD_Faith_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
