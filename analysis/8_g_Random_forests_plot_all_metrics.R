@@ -210,8 +210,10 @@ rf_plot_birds_df <- create.df.circular.plot(rf_df_list = rf_df_list,
 palette <- c("#88CCEE",
              "#44AA99",
              "#117733",
+             "#DDCC77",
              "#CC6677",
              "#882255")
+
 circular_plot_birds <- circular.drivers.plot(taxa_plot_df = rf_plot_birds_df,
                                              drivers_nm_df = drivers_nm_df,
                                              palette = palette,
