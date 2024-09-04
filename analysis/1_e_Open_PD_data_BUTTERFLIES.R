@@ -1,13 +1,13 @@
 ################################################################################
 ##
 ## Script open the phylogeny from the integradiv database and check for
-## ... potential issues - for REPTILES
+## ... potential issues - for BUTTERFLIES
 ##
 ## Camille Magneville
 ##
-## 05/04/2024
+## 09/2024
 ##
-## 1_a_Open_PD_data_REPTILES.R
+## 1_a_Open_PD_data_BUTTERFLIES.R
 ##
 ################################################################################
 
@@ -22,19 +22,19 @@
 INTEGRADIV_occ_db <- read.csv(here::here("integradiv_db",
                                          "INTEGRADIV_occurrences_v3.csv"))
 
-# Only keep reptiles data:
-INTEGRADIV_reptiles_occ_df <- dplyr::filter(INTEGRADIV_occ_db,
-                                         Taxon == "Reptiles")
+# Only keep butterflies data:
+INTEGRADIV_butterflies_occ_df <- dplyr::filter(INTEGRADIV_occ_db,
+                                           Taxon == "Butterflies")
 
-# Number of species: 97
-length(unique(INTEGRADIV_reptiles_occ_df$Species))
+# Number of species: 233
+length(unique(INTEGRADIV_butterflies_occ_df$Species))
 
 # Only keep 50x50 assemblages ie cells:
-temp_reptiles_sp_asb_50km <- dplyr::filter(INTEGRADIV_reptiles_occ_df,
-                                        Grid == "50x50")
+temp_butterflies_sp_asb_50km <- dplyr::filter(INTEGRADIV_butterflies_occ_df,
+                                          Grid == "50x50")
 
 # Pivot wider so asb are columns:
-reptiles_sp_asb_50km <- temp_reptiles_sp_asb_50km %>%
+butterflies_sp_asb_50km <- temp_butterflies_sp_asb_50km %>%
   # Add a new column with 1 values (used for pivoting after):
   dplyr::mutate(Value = 1) %>%
   # Only keep interesting columns: species name, asb data and value:
@@ -55,9 +55,9 @@ reptiles_sp_asb_50km <- temp_reptiles_sp_asb_50km %>%
 
 
 # Save it:
-saveRDS(reptiles_sp_asb_50km,
+saveRDS(butterflies_sp_asb_50km,
         here::here("transformed_data",
-                   "sp_asb_50km_REPTILES.rds"))
+                   "sp_asb_50km_BUTTERFLIES.rds"))
 
 
 # 2 - Load and clean phylogenetic data ================================
@@ -67,25 +67,25 @@ saveRDS(reptiles_sp_asb_50km,
 INTEGRADIV_phylogenies <- readRDS(here::here("integradiv_db",
                                              "INTEGRADIV_phylogenies_v3.rds"))
 
-# Keep only the reptiles phylogeny:
-reptiles_phylogeny <- INTEGRADIV_phylogenies$Reptiles
-plot(reptiles_phylogeny)
+# Keep only the butterflies phylogeny:
+butterflies_phylogeny <- INTEGRADIV_phylogenies$Butterflies
+plot(butterflies_phylogeny)
 
 # Remove "_" between genus and species and add " " (same tr and occ data):
-reptiles_phylogeny$tip.label <- gsub("_", " ", reptiles_phylogeny$tip.label)
+butterflies_phylogeny$tip.label <- gsub("_", " ", butterflies_phylogeny$tip.label)
 
 
 # Check if all species in the occurrence df are in the phylogeny: YES :)
-setdiff(unique(INTEGRADIV_reptiles_occ_df$Species),
-        reptiles_phylogeny$tip.label)
+setdiff(unique(INTEGRADIV_butterflies_occ_df$Species),
+        butterflies_phylogeny$tip.label)
 
 # Check phylogeny only contains species in the occurrence df: YES :)
-setdiff(reptiles_phylogeny$tip.label,
-        unique(INTEGRADIV_reptiles_occ_df$Species))
+setdiff(butterflies_phylogeny$tip.label,
+        unique(INTEGRADIV_butterflies_occ_df$Species))
 
 
-# Save the reptiles phylogeny:
-ape::write.tree(reptiles_phylogeny,
+# Save the butterflies phylogeny:
+ape::write.tree(butterflies_phylogeny,
                 file = here::here("transformed_data",
-                                  "phylogeny_REPTILES.tree"))
+                                  "phylogeny_BUTTERFLIES.tree"))
 

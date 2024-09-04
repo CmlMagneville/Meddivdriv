@@ -20,7 +20,7 @@
 
 
 INTEGRADIV_occ_db <- read.csv(here::here("integradiv_db",
-                                         "INTEGRADIV_occurrences_v2.csv"))
+                                         "INTEGRADIV_occurrences_v3.csv"))
 
 # Only keep trees data:
 INTEGRADIV_birds_occ_df <- dplyr::filter(INTEGRADIV_occ_db,
@@ -64,11 +64,11 @@ saveRDS(birds_sp_asb_50km,
 
 
 # Load phylogeny data:
-INTEGRADIV_phylogenies <- ape::read.tree(file = here::here("integradiv_db",
-                                                           "INTEGRADIV_phylogenies_v2.tree"))
+INTEGRADIV_phylogenies <- readRDS(here::here("integradiv_db",
+                                             "INTEGRADIV_phylogenies_v3.rds"))
 
 # Keep only the trees phylogeny:
-birds_phylogeny <- INTEGRADIV_phylogenies[[2]]
+birds_phylogeny <- INTEGRADIV_phylogenies$Birds
 plot(birds_phylogeny)
 
 # Remove "_" between genus and species and add " " (same tr and occ data):
