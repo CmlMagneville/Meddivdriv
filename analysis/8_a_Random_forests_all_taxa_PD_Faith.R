@@ -2,13 +2,13 @@
 ##
 ## Script to compute one random forest with all variables for each taxon
 ## ... - 5 random forests - to see which variable drive the most Faith PD.
-## ... Also compute partial dependance plots for each driver. And add plots/tests
+## ... Also compute ALE plots for each driver. And add plots/tests
 ## ... to figure out if drivers are the same among taxa and disentangle the
 ## ... effect of present/past/disturbance/land use and their directionality
 ##
 ## Camille Magneville
 ##
-## 14/05/2024 - 07/2024
+## 14/05/2024 - 09/2024
 ##
 ## 8_a_Random_forests_all_taxa_PD_Faith.R
 ##
@@ -110,12 +110,12 @@ rf_faith_birds_df$ses <- as.numeric(rf_faith_birds_df$ses)
 # Set seed for randomisation:
 set.seed(42)
 
-# See if 500 trees and mtry = 16 ok:
-# Run the random forest model mtry = 16 and 500 trees:
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 16 and 300 trees:
 rf_birds <- randomForest::randomForest(ses~.,
                                        data = rf_faith_birds_df,
-                                       ntree = 500,
-                                       mtry = 16,
+                                       ntree = 300,
+                                       mtry = 17,
                                        importance = TRUE)
 # ntree:
 plot(rf_birds)
@@ -123,33 +123,43 @@ plot(rf_birds)
 # mtry:
 mtry <- randomForest::tuneRF(rf_faith_birds_df[-ncol(rf_faith_birds_df)],
                              rf_faith_birds_df$ses,
-                             mtryStart = 16,
-                             ntreeTry = 500,
+                             mtryStart = 17,
+                             ntreeTry = 300,
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 16 seems ok (after a few tries)
+print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
-# Compute 100 random forests and mean importance of each variable + part dep plot:
-# % Var explained around 50%
+# Compute 100 random forests and mean importance of each variable + ALE plots:
 varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "BIRDS",
                               plot = TRUE)
-# Save it:
-saveRDS(varimp_birds, here::here("transformed_data",
+# Variable importance:
+varimp_birds[[1]]
+# Std Variable importance:
+varimp_birds[[2]]
+# Mean R-squared: 0.4910139
+varimp_birds[[3]]
+# Sd R-squared: 0.004377582
+varimp_birds[[4]]
+
+# Save variable importance:
+saveRDS(varimp_birds[[1]], here::here("transformed_data",
                                  "rf_birds_PD_Faith_50.rds"))
 
-# Plot the variables importance:
-max(varimp_birds$mean_imp)
-# max(varimp_trees$mean_imp)
-# max(varimp_reptiles$mean_imp)
+# Save standardised variable importance:
+saveRDS(varimp_birds[[2]], here::here("transformed_data",
+                                      "std_rf_birds_PD_Faith_50.rds"))
 
-varimp_plot_birds <- varimp.plot(varimp_birds,
-                                 max = 22)
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_birds <- varimp.plot(varimp_birds[[2]])
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_birds,
@@ -179,12 +189,12 @@ rf_faith_reptiles_df$ses <- as.numeric(rf_faith_reptiles_df$ses)
 # Set seed for randomisation:
 set.seed(42)
 
-# See if 500 trees and mtry = 16 ok:
-# Run the random forest model mtry = 16 and 500 trees:
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
 rf_reptiles <- randomForest::randomForest(ses~.,
                                        data = rf_faith_reptiles_df,
-                                       ntree = 500,
-                                       mtry = 16,
+                                       ntree = 300,
+                                       mtry = 17,
                                        importance = TRUE)
 # ntree:
 plot(rf_reptiles)
@@ -192,30 +202,43 @@ plot(rf_reptiles)
 # mtry:
 mtry <- randomForest::tuneRF(rf_faith_reptiles_df[-ncol(rf_faith_reptiles_df)],
                              rf_faith_reptiles_df$ses,
-                             mtryStart = 16,
-                             ntreeTry = 500,
+                             mtryStart = 17,
+                             ntreeTry = 300,
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 16 seems ok (after a few tries)
+print(mtry) # mtry = 170.004377582 seems ok (after a few tries)
 
 
-# Compute 100 random forests and mean importance of each variable:
-# % Var explained around 45%
+# Compute 100 random forests and mean importance of each variable + ALE plots:
 varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "REPTILES",
                               plot = TRUE)
+# Variable importance:
+varimp_reptiles[[1]]
+# Std Variable importance:
+varimp_reptiles[[2]]
+# Mean R-squared: 0.4637845
+varimp_reptiles[[3]]
+# Sd R-squared: 0.004528529
+varimp_reptiles[[4]]
 
-# Save it:
-saveRDS(varimp_reptiles, here::here("transformed_data",
-                                    "rf_reptiles_PD_Faith_50.rds"))
+# Save variable importance:
+saveRDS(varimp_reptiles[[1]], here::here("transformed_data",
+                                      "rf_reptiles_PD_Faith_50.rds"))
 
-# Plot the variables importance:
-varimp_plot_reptiles <- varimp.plot(varimp_reptiles,
-                                    max = 22)
+# Save standardised variable importance:
+saveRDS(varimp_reptiles[[2]], here::here("transformed_data",
+                                      "std_rf_reptiles_PD_Faith_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_reptiles <- varimp.plot(varimp_reptiles[[2]])
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_reptiles,
@@ -243,12 +266,12 @@ rf_faith_trees_df$ses <- as.numeric(rf_faith_trees_df$ses)
 # Set seed for randomisation:
 set.seed(42)
 
-# See if 500 trees and mtry = 16 ok:
-# Run the random forest model mtry = 16 and 500 trees:
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
 rf_trees <- randomForest::randomForest(ses~.,
                                           data = rf_faith_trees_df,
-                                          ntree = 500,
-                                          mtry = 16,
+                                          ntree = 300,
+                                          mtry = 17,
                                           importance = TRUE)
 # ntree:
 plot(rf_trees)
@@ -256,8 +279,8 @@ plot(rf_trees)
 # mtry:
 mtry <- randomForest::tuneRF(rf_faith_trees_df[-ncol(rf_faith_trees_df)],
                              rf_faith_trees_df$ses,
-                             mtryStart = 16,
-                             ntreeTry = 500,
+                             mtryStart = 17,
+                             ntreeTry = 300,
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
@@ -265,21 +288,34 @@ mtry <- randomForest::tuneRF(rf_faith_trees_df[-ncol(rf_faith_trees_df)],
 print(mtry) # mtry = 16 seems ok (after a few tries)
 
 
-# Compute 100 random forests and mean importance of each variable:
-# % Var explained around 50%
+# Compute 100 random forests and mean importance of each variable + ALE plots:
 varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "TREES",
                               plot = TRUE)
+# Variable importance:
+varimp_trees[[1]]
+# Std Variable importance:
+varimp_trees[[2]]
+# Mean R-squared: 0.5119643
+varimp_trees[[3]]
+# Sd R-squared: 0.004710844
+varimp_trees[[4]]
 
-# Save it:
-saveRDS(varimp_trees, here::here("transformed_data",
-                                 "rf_trees_PD_Faith_50.rds"))
+# Save variable importance:
+saveRDS(varimp_trees[[1]], here::here("transformed_data",
+                                      "rf_trees_PD_Faith_50.rds"))
 
-# Plot the variables importance:
-varimp_plot_trees <- varimp.plot(varimp_trees,
-                                 max = 22)
+# Save standardised variable importance:
+saveRDS(varimp_trees[[2]], here::here("transformed_data",
+                                      "std_rf_trees_PD_Faith_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_trees <- varimp.plot(varimp_trees[[2]])
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_trees,
@@ -291,7 +327,6 @@ ggplot2::ggsave(plot = varimp_plot_trees,
                 width = 8000,
                 units = "px",
                 dpi = 600)
-
 
 # 6 - Plot a heatmap comparing variables importance across taxa ================
 
