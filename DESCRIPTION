@@ -16,6 +16,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
+    ale,
     ape,
     dplyr,
     FactoMineR,
@@ -24,6 +25,7 @@ Imports:
     ggsignif,
     ggstatsplot,
     here,
+    iml,
     mgcv,
     miceRanger,
     patchwork,
@@ -31,6 +33,7 @@ Imports:
     performance,
     picante,
     piecewiseSEM,
+    ranger,
     reshape,
     reshape2,
     stats,

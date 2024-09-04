@@ -14,7 +14,8 @@
 
 
 #' Compute n iteration of the random forest model to test its accuracy and
-#' variable importance and compute partial dependance plots
+#' variable importance (standardised and untandardised one) and compute
+#' ALE Plots.
 #'
 #' @param rf_data a data frame containing data to run the random forest - ie
 #' predictor variables in columns with the last column being the ses of a given
@@ -31,8 +32,13 @@
 #' @param plot a TRUE/FALSE value according to whether or not partial dependance
 #' are to be plotted and saved (it takes a lot of time)
 #'
-#' @return a data frame with variable importance for each rf and the mean/sd.
-#' It also returns partial dependance plot for each driver studied.
+#' @return a data frame with variable importance for each rf, another
+#' dataframe in the same format with std importance (so that the most
+#' important variable has a value of 1 and negative importances equal 0).
+#' These two dataframes contains the mean and sd for each variable importance
+#' across the n iterations of random forests. The function also returns the
+#' mean and sd R squared (explained variance of the model computed on the
+#' OOB data). Lastly, the funtion returns ALE plots for each driver studied.
 #'
 #' @export
 #'
@@ -51,9 +57,18 @@ test.rf.model <- function(rf_data,
   var_imp_final_df[, 1] <- colnames(rf_data)[-ncol(rf_data)]
   colnames(var_imp_final_df) <- "drivers"
 
+  # Same data frame but for standardised importance:
+  std_var_imp_final_df <- var_imp_final_df
+
   # create a list that will contains all rf results (from the n iterations):
   rf_models <- vector("list", iteration_nb)
 
+  # create a vector that will contain models R squared:
+  rsq_vect <- c()
+
+  # Make sure that rf_data is numerical:
+  rf_data <- rf_data %>%
+    dplyr::mutate_if(is.character, as.numeric)
 
   # Running random forest n times:
   for (i in c(1:iteration_nb)) {
@@ -64,39 +79,54 @@ test.rf.model <- function(rf_data,
     # train <- rsample::training(data_split)
     # test <- rsample::testing(data_split)
 
-    # Run the rf model on the training set:
-    rf_mod <- randomForest::randomForest(ses~ .,
-                          data = rf_data,
-                          mtry = 16,
-                          importance = TRUE,
-                          num.trees = 500)
+    # Run the rf model:
+    rf_mod <- ranger::ranger(ses ~.,
+                             data = rf_data,
+                             num.trees = 300,
+                             importance = 'sobolMDA',
+                             mtry = 17)
 
     # Put the output of the model in the rf vect:
     rf_models[[i]] <- rf_mod
 
-    # test the model with the testing set:
-    #score <- predict(rf_mod, test)
-
     # Get the variables importance:
-    var_imp_rf <- randomForest::importance(rf_mod)
+    var_imp_rf <- rf_mod$variable.importance
+    names(var_imp_rf) <- colnames(rf_data)[-ncol(rf_data)]
     var_imp_rf_df <- as.data.frame(var_imp_rf) %>%
       tibble::rownames_to_column() %>%
-      dplyr::rename("drivers" = rowname) %>%
-      dplyr::select(-c("IncNodePurity"))
+      dplyr::rename("drivers" = rowname)
 
-    # Print the model accuracy:
+    # Standardise the importance between 0 and 1:
+    std_var_imp_rf_df <- var_imp_rf_df
+    std_var_imp_rf_df$var_imp_rf <- std_var_imp_rf_df$var_imp_rf/max(std_var_imp_rf_df$var_imp_rf)
+    std_var_imp_rf_df$var_imp_rf[which(std_var_imp_rf_df$var_imp_rf < 0)] <- 0
+
+    # Get R squared - explained variance computed on OOB dataset:
+    Rsq <- rf_mod$r.squared
+
+    # Print the model details:
     print(rf_mod)
 
-    # Update the dataframes:
+    # Update the dataframes and lists:
     # Variable importance:
     var_imp_final_df <- dplyr::left_join(var_imp_final_df,
                                         var_imp_rf_df,
                                         by = "drivers")
+    # Standardised variable importance:
+    std_var_imp_final_df <- dplyr::left_join(std_var_imp_final_df,
+                                         std_var_imp_rf_df,
+                                         by = "drivers")
+
+    # R squared:
+    rsq_vect <- append(rsq_vect, Rsq)
 
 
     # Rename columns and remove NA rows if needed:
     if (i == iteration_nb) {
-      colnames(var_imp_final_df)[-1] <- paste0("%IncMSE", sep = "_",
+      colnames(var_imp_final_df)[-1] <- paste0("PropVar", sep = "_",
+                                               "rfmod", sep = "_",
+                                               c(1:iteration_nb))
+      colnames(std_var_imp_final_df)[-1] <- paste0("PropVar", sep = "_",
                                                "rfmod", sep = "_",
                                                c(1:iteration_nb))
     }
@@ -109,55 +139,78 @@ test.rf.model <- function(rf_data,
   var_imp_mean_df$mean_imp <- apply(var_imp_mean_df, 1, mean)
   var_imp_mean_df$sd_imp <- apply(var_imp_mean_df, 1, sd)
 
+  # Same for standardised importances:
+  std_var_imp_mean_df <- std_var_imp_final_df %>%
+    tibble::column_to_rownames("drivers")
+  std_var_imp_mean_df$mean_imp <- apply(std_var_imp_mean_df, 1, mean)
+  std_var_imp_mean_df$sd_imp <- apply(std_var_imp_mean_df, 1, sd)
+
+  # Get the mean Rsquared among all models:
+  mean_Rsq <- mean(rsq_vect)
+  sd_Rsq <- sd(rsq_vect)
+
 
   # If partial dependance plots are to be plotted and saved:
   if (plot == TRUE) {
 
-    # Do partial regression plot for each variable:
-    # Get the list of predictor variables:
-    variables <- names(rf_data)[names(rf_data) != "ses"]
+      # Create ALE plots with the last random forest computed:
+      # Get the function to make prediction:
+      pfun <- function(object, newdata) predict(object, data = newdata)$predictions
+      # Create an object which holds holds the rf model and the data to be used:
+      model <- iml::Predictor$new(rf_mod, data = rf_data[, -ncol(rf_data)],
+                                 y = rf_data$ses,
+                                 predict.fun = pfun)
+      # Compute Local Effects for first half (easier to read):
+      local_effect1 <- iml::FeatureEffects$new(model,
+                                        method = "ale",
+                                        features = colnames(rf_data)[1:28])
+      # Plot ALE plots for half features:
+      local_effect_plot1 <- plot(local_effect1)
+      local_effect_plot1
 
-    # Loop through each predictor variable:
-    for (var in variables) {
+      # Idem for the other half:
+      local_effect2 <- iml::FeatureEffects$new(model,
+                                               method = "ale",
+                                               features = colnames(rf_data)[29:54])
+      # Plot ALE plots the other half:
+      local_effect_plot2 <- plot(local_effect2)
+      local_effect_plot2
 
-      # Get combined partial dependence data for the variable:
-      combined_pd <- plot.partial.dependence(rf_models, var, rf_data, iteration_nb)
-
-      # Create a ggplot for the partial dependence data:
-      p <- ggplot2::ggplot(combined_pd, ggplot2::aes(x = !!rlang::sym(var),
-                                                     y = yhat,
-                                                     group = Iteration)) +
-        # Plot lines with transparency for each iteration:
-        ggplot2::geom_line(alpha = 0.2, color = "aquamarine2") +
-
-        ggplot2::labs(title = paste("Partial Dependence of", var),
-                      x = var, y = "Partial Dependence") +
-        ggplot2::theme_minimal() +
-        # Remove legend:
-        ggplot2::theme(legend.position = "none")
-
-      print(p)
-
-      ggplot2::ggsave(plot = p,
+      # Save them:
+      ggplot2::ggsave(plot = local_effect_plot1,
                       filename = here::here("outputs",
-                                            "Partial_dependance_plots",
-                                            paste0(metric_nm, sep = "_",
+                                            "ALE_plots",
+                                            paste0("1", sep = "_",
+                                                   metric_nm, sep = "_",
                                                    "50", sep = "_", taxa_nm,
-                                                   sep = "_", var, ".jpeg")),
+                                                   ".jpeg")),
                       device = "jpeg",
-                      scale = 1.6,
-                      height = 1600,
-                      width = 1800,
+                      scale = 2.5,
+                      height = 1700,
+                      width = 2000,
                       units = "px",
-                      dpi = 600)
+                      dpi = 700)
+      ggplot2::ggsave(plot = local_effect_plot2,
+                      filename = here::here("outputs",
+                                            "ALE_plots",
+                                            paste0("2", sep = "_",
+                                                   metric_nm, sep = "_",
+                                                   "50", sep = "_", taxa_nm,
+                                                   ".jpeg")),
+                      device = "jpeg",
+                      scale = 2.5,
+                      height = 1700,
+                      width = 2000,
+                      units = "px",
+                      dpi = 700)
+
 
   }
 
-
-
-  }
-
-  return(var_imp_mean_df)
+  return(list(var_imp_mean_df,
+              std_var_imp_mean_df,
+              mean_Rsq,
+              sd_Rsq))
 
 }
 
@@ -197,17 +250,13 @@ plot.partial.dependence <- function(models, var_name, data, iteration_nb) {
 #'
 #' @param var_imp_df output of the \code{test.rf.model} function.
 #'
-#' @param max a number referring to the maximal value that the x axis should take
-#' ie. max over the five taxa of interest for one metric.
-#'
 #' @return a lollipop plot with drivers on columns and mean %IncMSE on x axis
 #' with colors referring to drivers category
 #'
 #' @export
 #'
 
-varimp.plot <- function(var_imp_df,
-                        max) {
+varimp.plot <- function(var_imp_df) {
 
 
   # Add a new column that will refer to drivers categories:
@@ -338,8 +387,8 @@ varimp.plot <- function(var_imp_df,
                                  dot.size = 3.5,
                                  alpha = 0.6) +
 
-    ggplot2::ylim(0, max) +
-    ggplot2::ylab("mean %IncMSE over 100 repetitions") +
+    ggplot2::ylim(0, 1) +
+    ggplot2::ylab("mean standardised importance over 100 repetitions") +
 
     ggplot2::theme(ggpubr::theme_pubr()) +
 
