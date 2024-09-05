@@ -5,7 +5,7 @@
 ##
 ## Camille Magneville
 ##
-## 08/04/2024
+## 08/04/2024 - 09/2024
 ##
 ## 3_a_Open_FD_data_BIRDS.R
 ##
@@ -26,9 +26,9 @@ INTEGRADIV_birds_occ_df <- readRDS(here::here("transformed_data",
 # 2 - Load and clean traits data ================================
 
 
-# Load phylogeny data:
+# Load  traits data:
 INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
-                                                "INTEGRADIV_traits_v3.csv"))
+                                                "INTEGRADIV_traits_v4.csv"))
 
 # Only keep TREE data:
 birds_traits <- dplyr::filter(INTEGRADIV_traits,
@@ -38,7 +38,7 @@ birds_traits <- dplyr::filter(INTEGRADIV_traits,
 setdiff(colnames(INTEGRADIV_birds_occ_df),
         unique(birds_traits$Species))
 
-# Check traits db only contains species in the occurrence df: NO :/
+# Check traits db only contains species in the occurrence df: YES :)
 setdiff(unique(birds_traits$Species),
         colnames(INTEGRADIV_birds_occ_df))
 
@@ -51,59 +51,27 @@ birds_traits_df <- birds_traits %>%
 
 # Select the traits that will be used:
 birds_traits_df <- dplyr::select(birds_traits_df,
-                                 c("Species",
-                                   "Beak.Length_Culmen",
-                                   "Beak.Width",
-                                   "Age of first breeding",
-                                   "Mass",
-                                   "Hand-Wing.Index",
-                                   "Migration",
-                                   "Tail.Length",
-                                   "Tarsus.Length",
-                                   "Clutch_MEAN",
-                                   "Broods per year",
-                                   "Life span",
-                                   "Fledging period"))
-
-
-# Making a new variable: Beak_Ratio = depth/width:
-birds_traits_df$Beak.Width <- as.numeric(birds_traits_df$Beak.Width)
-birds_traits_df$Beak.Length_Culmen <- as.numeric(birds_traits_df$Beak.Length_Culmen)
-
-birds_traits_df <- birds_traits_df %>%
-  dplyr::mutate(Beak.Ratio = round(Beak.Length_Culmen / Beak.Width, 3)) %>%
-  dplyr::select(-c("Beak.Length_Culmen", "Beak.Width"))
-
-
-# Give new names to the traits:
-birds_traits_df <- birds_traits_df %>%
-  dplyr::rename(Age_First_Breeding = "Age of first breeding") %>%
-  dplyr::rename(Hand_Wing_Index = "Hand-Wing.Index") %>%
-  dplyr::rename(Tail_Length = "Tail.Length") %>%
-  dplyr::rename(Tarsus_Length = "Tarsus.Length") %>%
-  dplyr::rename(Clutch_Mean = "Clutch_MEAN") %>%
-  dplyr::rename(Broods_Per_Year = "Broods per year") %>%
-  dplyr::rename(Life_Span = "Life span") %>%
-  dplyr::rename(Fledging_Period = "Fledging period") %>%
-  dplyr::rename(Beak_Ratio = "Beak.Ratio")
+                                 -c("LongevityMax"))
 
 
 # Format the traits:
-birds_traits_df$Age_First_Breeding <- ordered(birds_traits_df$Age_First_Breeding,
+birds_traits_df$FirstBreedingAge <- ordered(birds_traits_df$FirstBreedingAge,
                                                levels = c("1", "2", "3", "4", "5", "6"))
-birds_traits_df$Mass <- as.numeric(birds_traits_df$Mass)
-birds_traits_df$Hand_Wing_Index <- as.numeric(birds_traits_df$Hand_Wing_Index)
+birds_traits_df$BodyMass <- as.numeric(birds_traits_df$BodyMass)
+birds_traits_df$HandWingIndex <- as.numeric(birds_traits_df$HandWingIndex)
 birds_traits_df$Migration <- ordered(birds_traits_df$Migration,
-                                 levels = c("1", "2", "3"))
-birds_traits_df$Tail_Length <- as.numeric(birds_traits_df$Tail_Length)
-birds_traits_df$Tarsus_Length <- as.numeric(birds_traits_df$Tarsus_Length)
-birds_traits_df$Clutch_Mean <- as.numeric(birds_traits_df$Clutch_Mean)
-birds_traits_df$Broods_Per_Year <- ordered(birds_traits_df$Broods_Per_Year,
+                                 levels = c("1_sedentary", "2_intermediate",
+                                            "3_migratory"))
+birds_traits_df$TailLength <- as.numeric(birds_traits_df$TailLength)
+birds_traits_df$TarsusLength <- as.numeric(birds_traits_df$TarsusLength)
+birds_traits_df$OffspringPerRepro <- as.numeric(birds_traits_df$OffspringPerRepro)
+birds_traits_df$ReproPerYear <- ordered(birds_traits_df$ReproPerYear,
                                          levels = c("1", "1.5", "2", "2.5",
                                                     "3", "4.5"))
-birds_traits_df$Life_Span <- as.numeric(birds_traits_df$Life_Span)
-birds_traits_df$Fledging_Period <- as.numeric(birds_traits_df$Fledging_Period)
-birds_traits_df$Beak_Ratio <- as.numeric(birds_traits_df$Beak_Ratio)
+birds_traits_df$GenerationLength <- round(as.numeric(birds_traits_df$GenerationLength), 2)
+birds_traits_df$FledgingPeriod <- as.numeric(birds_traits_df$FledgingPeriod)
+birds_traits_df$BeakRatio <- as.numeric(birds_traits_df$BeakRatio)
+birds_traits_df$BeakLengthCulmen <- as.numeric(birds_traits_df$BeakLengthCulmen)
 
 
 # Save the traits:

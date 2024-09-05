@@ -5,7 +5,7 @@
 ##
 ## Camille Magneville
 ##
-## 08/04/2024
+## 08/04/2024 - 09/2024
 ##
 ## 3_a_Open_FD_data_TREES.R
 ##
@@ -28,7 +28,7 @@ INTEGRADIV_trees_occ_df <- readRDS(here::here("transformed_data",
 
 # Load phylogeny data:
 INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
-                                                "INTEGRADIV_traits_v3.csv"))
+                                                "INTEGRADIV_traits_v4.csv"))
 
 # Only keep TREE data:
 trees_traits <- dplyr::filter(INTEGRADIV_traits,
@@ -57,7 +57,9 @@ trees_traits_df <- trees_traits_corrected %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
-# All traits of this dataframe will be used for the analysis, keep them all :)
+# Keep only the 11 traits needed: MAY BE ADD BLOOMBREADTH CIRCULAR
+trees_traits_df <- trees_traits_df %>%
+  dplyr::select(-c("BloomPosition", "LeafMargin", "DispMode"))
 
 
 # Traits with the right format:
@@ -66,6 +68,23 @@ trees_traits_df$SeedMass <- as.numeric(trees_traits_df$SeedMass)
 trees_traits_df$SLA <- as.numeric(trees_traits_df$SLA)
 trees_traits_df$StemSpecDens <- as.numeric(trees_traits_df$StemSpecDens)
 trees_traits_df$HeightMax <- as.numeric(trees_traits_df$HeightMax)
+trees_traits_df$BloomBreadth <- as.factor(trees_traits_df$BloomBreadth)
+trees_traits_df$DispDist <- ordered(trees_traits_df$DispDist,
+                                    levels = c("1_very_low", "2_low",
+                                               "3_intermediate", "4_high",
+                                               "5_very_high"))
+trees_traits_df$LeafOutline <- ordered(trees_traits_df$LeafOutline,
+                                       levels = c("1_entire", "2_lobed",
+                                                  "3_compound"))
+trees_traits_df$LeafPhenology <- ordered(trees_traits_df$LeafPhenology,
+                                         levels = c("1_deciduous",
+                                                    "2_intermediate",
+                                                    "3_evergreen"))
+trees_traits_df$Pollination <- ordered(trees_traits_df$Pollination,
+                                       levels = c("1_abiotic",
+                                                  "2_mixte",
+                                                  "3_biotic"))
+trees_traits_df$SexualSystem <- as.factor(trees_traits_df$SexualSystem)
 
 
 # Save the traits:
