@@ -423,7 +423,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
 
   # Create a big data frame containing data for all the taxa studied:
   var_imp_df <- as.data.frame(matrix(ncol = 4, nrow = 1, NA))
-  colnames(var_imp_df) <- c("Driver_nm", "Taxa", "Driver_cat", "mean%IncMSE")
+  colnames(var_imp_df) <- c("Driver_nm", "Taxa", "Driver_cat", "Mean_std_imp")
 
 
   # Fill it:
@@ -450,17 +450,17 @@ heatmap.varimp <- function(rf_all_taxa_list,
         taxa_rf_df$Driver_cat[j] <- "Past Climate Stability"
       }
 
-      if (taxa_rf_df$Driver_nm[i] %in% c("Past_CCVelHolocene_mean.voccMag",
+      if (taxa_rf_df$Driver_nm[j] %in% c("Past_CCVelHolocene_mean.voccMag",
                                           "Past_CCVelLGM_mean.voccMag",
                                           "Past_CCVelShortTerm_mean.voccMag",
                                           "Past_CCVelYoungerDryas_mean.voccMag",
                                           "Past_MAT_sd",
                                           "Past_TAP_sd"
       )) {
-        taxa_rf_df$Driver_cat[i] <- "Past Climate Stability"
+        taxa_rf_df$Driver_cat[j] <- "Past Climate Stability"
       }
 
-      if (taxa_rf_df$Driver_nm[i] %in% c( "pH_mean",
+      if (taxa_rf_df$Driver_nm[j] %in% c( "pH_mean",
                                            "OC_mean",
                                            "Elv_mean",
                                            "Depth_mean",
@@ -470,10 +470,10 @@ heatmap.varimp <- function(rf_all_taxa_list,
                                            "Present_TAP_mean",
                                            "Pr_FCon_percentage_percentage"
       )) {
-        taxa_rf_df$Driver_cat[i] <- "Present Habitat"
+        taxa_rf_df$Driver_cat[j] <- "Present Habitat"
       }
 
-      if (taxa_rf_df$Driver_nm[i] %in% c("Present_AI_stdev",
+      if (taxa_rf_df$Driver_nm[j] %in% c("Present_AI_stdev",
                                           "Present_MAT_stdev",
                                           "Present_TAP_stdev",
                                           "pH_stdev",
@@ -482,18 +482,18 @@ heatmap.varimp <- function(rf_all_taxa_list,
                                           "Depth_stdev",
                                           "VWC_stdev"
       )) {
-        taxa_rf_df$Driver_cat[i] <- "Present Habitat Heterogeneity"
+        taxa_rf_df$Driver_cat[j] <- "Present Habitat Heterogeneity"
       }
 
-      if (taxa_rf_df$Driver_nm[i] %in% c("Pr_FInt_2000_2023_mean",
+      if (taxa_rf_df$Driver_nm[j] %in% c("Pr_FInt_2000_2023_mean",
                                           "Pr_FInt_2000_2023_sd",
                                           "Pr_FSurf_2000_2023_pixels",
                                           "HerbCons_sum",
                                           "HerbRichn_sum")) {
-        taxa_rf_df$Driver_cat[i] <- "Disturbances"
+        taxa_rf_df$Driver_cat[j] <- "Disturbances"
       }
 
-      if (taxa_rf_df$Driver_nm[i] %in% c("Past_Perc_croplands_Weighted_Mean",
+      if (taxa_rf_df$Driver_nm[j] %in% c("Past_Perc_croplands_Weighted_Mean",
                                           "Past_Perc_croplands_Weighted_Sd",
                                           "Past_Perc_dense_settlements_Weighted_Mean",
                                           "Past_Perc_dense_settlements_Weighted_Sd",
@@ -505,10 +505,10 @@ heatmap.varimp <- function(rf_all_taxa_list,
                                           "Past_Perc_villages_Weighted_Sd",
                                           "Past_Perc_wild_lands_Weighted_Mean",
                                           "Past_Perc_wild_lands_Weighted_Sd" )) {
-        taxa_rf_df$Driver_cat[i] <- "Past Land Use"
+        taxa_rf_df$Driver_cat[j] <- "Past Land Use"
       }
 
-      if (taxa_rf_df$Driver_nm[i] %in% c("Present_Perc_croplands_Weighted_Mean",
+      if (taxa_rf_df$Driver_nm[j] %in% c("Present_Perc_croplands_Weighted_Mean",
                                           "Present_Perc_croplands_Weighted_Sd",
                                           "Present_Perc_dense_settlements_Weighted_Mean",
                                           "Present_Perc_dense_settlements_Weighted_Sd",
@@ -522,7 +522,7 @@ heatmap.varimp <- function(rf_all_taxa_list,
                                           "Present_Perc_wild_lands_Weighted_Sd",
                                           "Pr_Pop_2020_mean",
                                           "Pr_RatePop_2020_mean")) {
-        taxa_rf_df$Driver_cat[i] <- "Present Human Direct Impact"
+        taxa_rf_df$Driver_cat[j] <- "Present Human Direct Impact"
       }
 
 
@@ -532,8 +532,8 @@ heatmap.varimp <- function(rf_all_taxa_list,
     # Put taxa_rf_df in the right format so can be added to var_imp_df:
     taxa_rf_df$Taxa <- rep(taxa_nm, nrow(taxa_rf_df))
     taxa_rf_df <- taxa_rf_df %>%
-      dplyr::rename("mean%IncMSE" = "mean_imp") %>%
-      dplyr::select("Driver_nm", "Taxa", "Driver_cat", "mean%IncMSE")
+      dplyr::rename("Mean_std_imp" = "mean_imp") %>%
+      dplyr::select("Driver_nm", "Taxa", "Driver_cat", "Mean_std_imp")
 
     # Add it to the final df:
     var_imp_df <- rbind(var_imp_df, taxa_rf_df)
@@ -558,12 +558,12 @@ heatmap.varimp <- function(rf_all_taxa_list,
   # For each driver, compute the mean imp value over all taxa (to order plot):
   mean_impval_taxa <- var_imp_df %>%
     dplyr::group_by(Driver_nm) %>%
-    dplyr::summarise(mean_over_taxa = mean(`mean%IncMSE`))
+    dplyr::summarise(mean_over_taxa = mean(`Mean_std_imp`))
 
   # Link with the final db:
   var_imp_df <- dplyr::left_join(var_imp_df, mean_impval_taxa)
 
-  # Order mean%IncMSE per driver per taxa according to mean values over taxa:
+  # Order mean std var imp per driver per taxa according to mean values over taxa:
   var_imp_df <- dplyr::arrange(var_imp_df,
                                by = desc(mean_over_taxa))
 
@@ -574,14 +574,14 @@ heatmap.varimp <- function(rf_all_taxa_list,
     heatmap_plot <- ggplot2::ggplot(data = var_imp_df,
                                     ggplot2::aes(x = `Taxa`,
                                                  y = `Driver_nm`,
-                                                 fill = `mean%IncMSE`)) +
+                                                 fill = `Mean_std_imp`)) +
       ggplot2::geom_raster() +
 
-      ggplot2::geom_text(ggplot2::aes(label = round(`mean%IncMSE`, 2)), color = "white",
+      ggplot2::geom_text(ggplot2::aes(label = round(`Mean_std_imp`, 2)), color = "white",
                          size = 3) +
 
-      ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`mean%IncMSE`),
-                                               max(var_imp_df$`mean%IncMSE`))) +
+      ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`Mean_std_imp`),
+                                               max(var_imp_df$`Mean_std_imp`))) +
 
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
                                                               colour = "grey83"),
@@ -626,11 +626,11 @@ heatmap.varimp <- function(rf_all_taxa_list,
     heatmap_plot <- ggplot2::ggplot(data = var_imp_df,
                                     ggplot2::aes(x = `Taxa`,
                                                  y = `Driver_nm`,
-                                                 fill = `mean%IncMSE`)) +
+                                                 fill = `Mean_std_imp`)) +
       ggplot2::geom_raster() +
 
-      ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`mean%IncMSE`),
-                                               max(var_imp_df$`mean%IncMSE`))) +
+      ggplot2::scale_fill_viridis_c(limits = c(min(var_imp_df$`Mean_std_imp`),
+                                               max(var_imp_df$`Mean_std_imp`))) +
 
       ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
                                                               colour = "grey83"),
@@ -982,14 +982,14 @@ circular.drivers.plot <- function(taxa_plot_df,
   # Prepare a dataframe for metrics labels
   if (div_facet == "PD") {
     data_labmetric <- data.frame(x = c(8, 26, 44),
-                                 y = c(-8, -8, -8),
+                                 y = c(-0.3, -0.3, -0.3),
                                  label = c("PD Dispersion",
                                            "PD Originality",
                                            "PD Richness"))
   }
   if (div_facet == "FD") {
     data_labmetric <- data.frame(x = c(8, 26, 44),
-                                 y = c(-8, -8, -8),
+                                 y = c(-0.3, -0.3, -0.3),
                                  label = c("FD Dispersion",
                                            "FD Originality",
                                            "FD Richness"))
@@ -1011,31 +1011,23 @@ circular.drivers.plot <- function(taxa_plot_df,
 
     ggplot2::scale_fill_manual(values = palette) +
 
-    # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
+    # Add a lines. I do it at the beginning to make sure barplots are OVER it.
     ggplot2::geom_segment(data = grid_data,
-                          ggplot2::aes(x = end, y = 80, xend = start, yend = 80),
+                          ggplot2::aes(x = end, y = 0.5, xend = start, yend = 0.5),
                           colour = "grey", alpha = 1, size = 0.3 ,
                           inherit.aes = FALSE ) +
     ggplot2::geom_segment(data = grid_data,
-                          ggplot2::aes(x = end, y = 60, xend = start, yend = 60),
-                          colour = "grey", alpha = 1, size = 0.3 ,
-                          inherit.aes = FALSE ) +
-    ggplot2::geom_segment(data = grid_data,
-                          ggplot2::aes(x = end, y = 40, xend = start, yend = 40),
-                          colour = "grey", alpha = 1, size = 0.3,
-                          inherit.aes = FALSE ) +
-    ggplot2::geom_segment(data = grid_data,
-                          ggplot2::aes(x = end, y = 20, xend = start, yend = 20),
+                          ggplot2::aes(x = end, y = 1, xend = start, yend = 1),
                           colour = "grey", alpha = 1, size = 0.3 ,
                           inherit.aes = FALSE ) +
 
     # Add text showing the value of lines
     ggplot2::annotate("text", x = c(max(taxa_plot_df$ind), max(taxa_plot_df$ind)),
-                      y = c(20, 40),
-                      label = c("20", "40"), color = "grey",
+                      y = c(0.5, 1),
+                      label = c("0.5", "1"), color = "grey",
                       size = 3, angle = 0, fontface = "bold", hjust = 1) +
 
-    ggplot2::ylim(-50,40) +
+    ggplot2::ylim(-2,1.5) +
 
     ggplot2::labs(fill = "Drivers category") +
 
@@ -1052,7 +1044,7 @@ circular.drivers.plot <- function(taxa_plot_df,
     ggplot2::coord_polar() +
 
     ggplot2::geom_text(data = label_data, ggplot2::aes(x = ind,
-                                                       y = mean_imp + 10,
+                                                       y = mean_imp + 0.1,
                                                        label = Drivers_short_nm,
                                                        hjust = hjust),
                        color = "black", alpha = 0.6, fontface = "bold",
@@ -1061,19 +1053,19 @@ circular.drivers.plot <- function(taxa_plot_df,
 
     # Add metrics retangles and name:
     ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = 16,
-                                    ymin = -15, ymax = -2),
+                                    ymin = -0.5, ymax = -0.05),
                        fill = "grey80",
                        alpha = 0.7,
                        color = "white",
                        size = 2) +
     ggplot2::geom_rect(ggplot2::aes(xmin = 18, xmax = 34,
-                                  ymin = -15, ymax = -2),
+                                  ymin = -0.5, ymax = -0.05),
                       fill = "grey80",
                       alpha = 0.7,
                       color = "white",
                       size = 2) +
     ggplot2::geom_rect(ggplot2::aes(xmin = 36, xmax = 52,
-                                  ymin = -15, ymax = -2),
+                                    ymin = -0.5, ymax = -0.05),
                       fill = "grey80",
                       alpha = 0.7,
                       color = "white",
@@ -1216,9 +1208,11 @@ cat.distrib.plot <- function(rf_df,
                                                 "Past Land Use",
                                                 "Present Human Direct Impact"))
 
+  # Remove all 0 values (negative importance):
+  rf_posit_plot_df <- rf_plot_df[which(rf_plot_df$Value > 0), ]
 
   # Create the plot:
-  distrib_plot <- ggplot2::ggplot(data = rf_plot_df,
+  distrib_plot <- ggplot2::ggplot(data = rf_posit_plot_df,
                                  ggplot2::aes(x = Drivers_cat,
                                               y = Value,
                                               fill = Drivers_cat)) +
@@ -1249,13 +1243,13 @@ cat.distrib.plot <- function(rf_df,
 
   # Compute statistics for the statistical plot (Dunn test btw cat):
   # using `pairwise_comparisons()` function to create a data frame with results
-  stat_df <- ggstatsplot::pairwise_comparisons(rf_plot_df, Drivers_cat, Value,
+  stat_df <- ggstatsplot::pairwise_comparisons(rf_posit_plot_df, Drivers_cat, Value,
                                           type = "np") %>%
     dplyr::mutate(groups = purrr::pmap(.l = list(group1, group2), .f = c)) %>%
     dplyr::arrange(group1)
 
   # Create a vector to gather y positions of significant bracket:
-  y_pos_values <- c(max(rf_plot_df$Value))
+  y_pos_values <- c(max(rf_posit_plot_df$Value))
   # Create an index to fill this vector (as some pairs are not signif
   # ... i can not be used)
   j <- 1
@@ -1266,26 +1260,26 @@ cat.distrib.plot <- function(rf_df,
       stat_df$asterisk_label[i] <- "*"
       if (i >= 2) {
         j <- j + 1
-        y_pos_values[j] <- y_pos_values[j-1] + 1
+        y_pos_values[j] <- y_pos_values[j-1] + 0.001
       }
     }
     if (stat_df$p.value[i] < 0.01) {
       stat_df$asterisk_label[i] <- "**"
       if (i >= 2) {
         j <- j + 1
-        y_pos_values[j] <- y_pos_values[j-1] + 1
+        y_pos_values[j] <- y_pos_values[j-1] + 0.001
       }
     }
     if (stat_df$p.value[i] < 0.001) {
       stat_df$asterisk_label[i] <- "***"
       if (i >= 2) {
         j <- j + 1
-        y_pos_values[j] <- y_pos_values[j-1] + 1
+        y_pos_values[j] <- y_pos_values[j-1] + 0.001
       }
     }
   }
 
-  stat_plot <- ggstatsplot::ggbetweenstats(data = rf_plot_df,
+  stat_plot <- ggstatsplot::ggbetweenstats(data = rf_posit_plot_df,
                                            x = Drivers_cat,
                                            y = Value,
                                            type = "np",

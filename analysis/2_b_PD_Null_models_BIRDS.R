@@ -84,13 +84,13 @@ mntd_null_models <- PD_null_asb_list$mntd
 
 saveRDS(faith_null_models, here::here("transformed_data",
                                       "div_values_null_models",
-                                      "PD_Faith_null_models_50km_BIRDS.rds"))
+                                      "PD_Faith_null_model_50km_BIRDS.rds"))
 saveRDS(mpd_null_models, here::here("transformed_data",
                                     "div_values_null_models",
-                                    "PD_MPD_null_models_50km_BIRDS.rds"))
+                                    "PD_MPD_null_model_50km_BIRDS.rds"))
 saveRDS(mntd_null_models, here::here("transformed_data",
                                      "div_values_null_models",
-                                     "PD_MNTD_null_models_50km_BIRDS.rds"))
+                                     "PD_MNTD_null_model_50km_BIRDS.rds"))
 
 
 # 4 - Compute SES ========================================================
@@ -106,18 +106,24 @@ saveRDS(mntd_null_models, here::here("transformed_data",
 
 # Load null model data:
 birds_null_model_faith <- readRDS(here::here("transformed_data",
-                                             "PD_Faith_null_models_50km_birds.rds"))
+                                             "div_values_null_models",
+                                             "PD_Faith_null_models_50km_BIRDS.rds"))
 birds_null_model_mpd <- readRDS(here::here("transformed_data",
-                                           "PD_MPD_null_models_50km_birds.rds"))
+                                           "div_values_null_models",
+                                           "PD_MPD_null_models_50km_BIRDS.rds"))
 birds_null_model_mntd <- readRDS(here::here("transformed_data",
-                                            "PD_MNTD_null_models_50km_birds.rds"))
+                                            "div_values_null_models",
+                                            "PD_MNTD_null_models_50km_BIRDS.rds"))
 
 # Load the actual values of PD indices:
 birds_PD_Faith_50km <- readRDS(here::here("transformed_data",
+                                          "div_values_null_models",
                                           "PD_Faith_50km_birds.rds"))
 birds_PD_MPD_50km <- readRDS(here::here("transformed_data",
+                                        "div_values_null_models",
                                         "PD_MPD_50km_birds.rds"))
 birds_PD_MNTD_50km <- readRDS(here::here("transformed_data",
+                                         "div_values_null_models",
                                          "PD_MNTD_50km_birds.rds"))
 
 

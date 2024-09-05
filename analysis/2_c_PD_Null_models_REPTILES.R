@@ -106,18 +106,24 @@ saveRDS(mntd_null_models, here::here("transformed_data",
 
 # Load null model data:
 reptiles_null_model_faith <- readRDS(here::here("transformed_data",
+                                                "div_values_null_models",
                                              "PD_Faith_null_models_50km_REPTILES.rds"))
 reptiles_null_model_mpd <- readRDS(here::here("transformed_data",
+                                              "div_values_null_models",
                                            "PD_MPD_null_models_50km_REPTILES.rds"))
 reptiles_null_model_mntd <- readRDS(here::here("transformed_data",
+                                               "div_values_null_models",
                                             "PD_MNTD_null_models_50km_REPTILES.rds"))
 
 # Load the actual values of PD indices:
 reptiles_PD_Faith_50km <- readRDS(here::here("transformed_data",
+                                             "div_values_null_models",
                                           "PD_Faith_50km_REPTILES.rds"))
 reptiles_PD_MPD_50km <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
                                         "PD_MPD_50km_REPTILES.rds"))
 reptiles_PD_MNTD_50km <- readRDS(here::here("transformed_data",
+                                            "div_values_null_models",
                                          "PD_MNTD_50km_REPTILES.rds"))
 
 

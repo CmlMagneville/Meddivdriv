@@ -5,7 +5,7 @@
 ##
 ## Camille Magneville
 ##
-## 04/06/2024
+## 04/06/2024 - 09/2024
 ##
 ## 8_d_Random_forests_plot_all_metrics.R
 ##
@@ -20,30 +20,30 @@
 
 
 # PD - Richness:
-birds_Faith_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_Faith_50.rds"))
-reptiles_Faith_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_Faith_50.rds"))
-trees_Faith_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_Faith_50.rds"))
+birds_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_Faith_50.rds"))
+reptiles_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_Faith_50.rds"))
+trees_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_Faith_50.rds"))
 
 # PD - Originality:
-birds_mntd_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_mntd_50.rds"))
-reptiles_mntd_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_mntd_50.rds"))
-trees_mntd_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_mntd_50.rds"))
+birds_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_mntd_50.rds"))
+reptiles_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_mntd_50.rds"))
+trees_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_mntd_50.rds"))
 
 # PD - Dispersion:
-birds_mpd_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_mpd_50.rds"))
-reptiles_mpd_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_mpd_50.rds"))
-trees_mpd_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_mpd_50.rds"))
+birds_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_mpd_50.rds"))
+reptiles_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_mpd_50.rds"))
+trees_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_mpd_50.rds"))
 
 # FD - Richness:
-birds_fric_rf <- readRDS(here::here("transformed_data", "rf_birds_FD_FRic_50.rds"))
+birds_fric_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_FRic_50.rds"))
 
 
 # FD - Originality:
-birds_fori_rf <- readRDS(here::here("transformed_data", "rf_birds_FD_fori_50.rds"))
+birds_fori_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_fori_50.rds"))
 
 
 # FD - Dispersion:
-birds_fmpd_rf <- readRDS(here::here("transformed_data", "rf_birds_FD_fmpd_50.rds"))
+birds_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_fmpd_50.rds"))
 
 
 # Load the file which contain drivers shorter names:

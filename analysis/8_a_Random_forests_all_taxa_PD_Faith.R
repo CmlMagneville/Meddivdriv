@@ -95,7 +95,7 @@ rf_faith_reptiles_df <- rf_faith_reptiles_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 
 
-# 4 - Random forest for birds ==================================================
+# 3 - Random forest for birds ==================================================
 
 
 # Check types of variables
@@ -142,9 +142,9 @@ varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
 varimp_birds[[1]]
 # Std Variable importance:
 varimp_birds[[2]]
-# Mean R-squared: 0.4910139
+# Mean R-squared: 0.5008923
 varimp_birds[[3]]
-# Sd R-squared: 0.004377582
+# Sd R-squared: 0.003966172
 varimp_birds[[4]]
 
 # Save variable importance:
@@ -221,9 +221,9 @@ varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
 varimp_reptiles[[1]]
 # Std Variable importance:
 varimp_reptiles[[2]]
-# Mean R-squared: 0.4637845
+# Mean R-squared: 0.4548656
 varimp_reptiles[[3]]
-# Sd R-squared: 0.004528529
+# Sd R-squared: 0.00453061
 varimp_reptiles[[4]]
 
 # Save variable importance:
@@ -298,9 +298,9 @@ varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.5119643
+# Mean R-squared: 0.4774934
 varimp_trees[[3]]
-# Sd R-squared: 0.004710844
+# Sd R-squared: 0.004706661
 varimp_trees[[4]]
 
 # Save variable importance:
@@ -332,9 +332,9 @@ ggplot2::ggsave(plot = varimp_plot_trees,
 
 
 # a - Load rf data:
-birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_Faith_50.rds"))
-reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_Faith_50.rds"))
-trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_Faith_50.rds"))
+birds_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_Faith_50.rds"))
+reptiles_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_Faith_50.rds"))
+trees_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_Faith_50.rds"))
 
 rf_all_taxa_list <- list("birds_rf" = birds_rf,
                       "reptiles_rf" = reptiles_rf,
@@ -357,6 +357,9 @@ PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
 
 # Load rf data:
 birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_Faith_50.rds"))
+reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_Faith_50.rds"))
+trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_Faith_50.rds"))
+
 # Load the file which contain drivers shorter names:
 drivers_nm_df <- read.csv(here::here("env_db",
                                      "Drivers_short_nm.csv"))
@@ -376,7 +379,7 @@ cat_imp <- cat.distrib.plot(rf_df = birds_rf,
 # Plot categories importance:
 cat_imp[[1]]
 # Plot with stats:
-cat_imp[2]
+cat_imp[[2]]
 
 # Save it:
 ggplot2::ggsave(plot = cat_imp[[1]],
@@ -391,6 +394,77 @@ ggplot2::ggsave(plot = cat_imp[[1]],
 ggplot2::ggsave(plot = cat_imp[[2]],
                 filename = here::here("outputs",
                                       "catimp_PD_Faith_withstats_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+# REPTILES:
+cat_imp <- cat.distrib.plot(rf_df = reptiles_rf,
+                            metric_nm = "Faith's PD - Reptiles",
+                            palette = c("#88CCEE",
+                                        "#44AA99",
+                                        "#117733",
+                                        "#DDCC77",
+                                        "#CC6677",
+                                        "#882255"),
+                            drivers_nm_df = drivers_nm_df)
+# Plot categories importance:
+cat_imp[[1]]
+# Plot with stats:
+cat_imp[[2]]
+
+# Save it:
+ggplot2::ggsave(plot = cat_imp[[1]],
+                filename = here::here("outputs",
+                                      "catimp_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = cat_imp[[2]],
+                filename = here::here("outputs",
+                                      "catimp_PD_Faith_withstats_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# TREES:
+cat_imp <- cat.distrib.plot(rf_df = trees_rf,
+                            metric_nm = "Faith's PD - Trees",
+                            palette = c("#88CCEE",
+                                        "#44AA99",
+                                        "#117733",
+                                        "#DDCC77",
+                                        "#CC6677",
+                                        "#882255"),
+                            drivers_nm_df = drivers_nm_df)
+# Plot categories importance:
+cat_imp[[1]]
+# Plot with stats:
+cat_imp[[2]]
+
+# Save it:
+ggplot2::ggsave(plot = cat_imp[[1]],
+                filename = here::here("outputs",
+                                      "catimp_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = cat_imp[[2]],
+                filename = here::here("outputs",
+                                      "catimp_PD_Faith_withstats_50_TREES.jpeg"),
                 device = "jpeg",
                 scale = 0.8,
                 height = 5000,
@@ -586,3 +660,199 @@ ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
                 width = 8000,
                 units = "px",
                 dpi = 600)
+
+# For REPTILES --------------------------------------------------------------------
+
+# Note: The idea is to focus on the n variable(s) that impact the most each
+# ... category to see in which direction it impacts diversity values:
+# ... simply plot the data and try to fit a linear model
+direction_plots <- relationships.plot(ses_var_df = var_faith_reptiles_df,
+                                      metric_nm =  "Faith's PD - Reptiles",
+                                      palette =  c("#88CCEE",
+                                                   "#44AA99",
+                                                   "#117733",
+                                                   "#DDCC77",
+                                                   "#CC6677",
+                                                   "#882255"),
+                                      drivers_nm_df = drivers_nm_df)
+direction_plots$past_stab
+direction_plots$present_hab
+direction_plots$present_hab_heterog
+direction_plots$disturb
+direction_plots$past_lu1
+direction_plots$past_lu2
+direction_plots$pr_hum_imp1
+direction_plots$pr_hum_imp2
+
+# Save them:
+ggplot2::ggsave(plot = direction_plots$past_stab,
+                filename = here::here("outputs",
+                                      "direction_past_stab_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab_heterog,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_het_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$disturb,
+                filename = here::here("outputs",
+                                      "direction_disturb_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu1,
+                filename = here::here("outputs",
+                                      "direction_past_lu1_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu2,
+                filename = here::here("outputs",
+                                      "direction_past_lu2_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp1,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp1_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp2_PD_Faith_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+# For TREES --------------------------------------------------------------------
+
+# Note: The idea is to focus on the n variable(s) that impact the most each
+# ... category to see in which direction it impacts diversity values:
+# ... simply plot the data and try to fit a linear model
+direction_plots <- relationships.plot(ses_var_df = var_faith_trees_df,
+                                      metric_nm =  "Faith's PD - Trees",
+                                      palette =  c("#88CCEE",
+                                                   "#44AA99",
+                                                   "#117733",
+                                                   "#DDCC77",
+                                                   "#CC6677",
+                                                   "#882255"),
+                                      drivers_nm_df = drivers_nm_df)
+direction_plots$past_stab
+direction_plots$present_hab
+direction_plots$present_hab_heterog
+direction_plots$disturb
+direction_plots$past_lu1
+direction_plots$past_lu2
+direction_plots$pr_hum_imp1
+direction_plots$pr_hum_imp2
+
+# Save them:
+ggplot2::ggsave(plot = direction_plots$past_stab,
+                filename = here::here("outputs",
+                                      "direction_past_stab_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab_heterog,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_het_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$disturb,
+                filename = here::here("outputs",
+                                      "direction_disturb_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu1,
+                filename = here::here("outputs",
+                                      "direction_past_lu1_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu2,
+                filename = here::here("outputs",
+                                      "direction_past_lu2_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp1,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp1_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp2_PD_Faith_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+

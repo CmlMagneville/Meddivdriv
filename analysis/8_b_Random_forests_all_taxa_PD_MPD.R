@@ -131,12 +131,12 @@ rf_mpd_birds_df$ses <- as.numeric(rf_mpd_birds_df$ses)
 # Set seed for randomisation:
 set.seed(42)
 
-# See if 500 trees and mtry = 16 ok:
-# Run the random forest model mtry = 16 and 500 trees:
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
 rf_birds <- randomForest::randomForest(ses~.,
                                        data = rf_mpd_birds_df,
-                                       ntree = 500,
-                                       mtry = 16,
+                                       ntree = 300,
+                                       mtry = 17,
                                        importance = TRUE)
 # ntree:
 plot(rf_birds)
@@ -144,13 +144,13 @@ plot(rf_birds)
 # mtry:
 mtry <- randomForest::tuneRF(rf_mpd_birds_df[-ncol(rf_mpd_birds_df)],
                              rf_mpd_birds_df$ses,
-                             mtryStart = 16,
-                             ntreeTry = 500,
+                             mtryStart = 17,
+                             ntreeTry = 300,
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 16 seems ok (after a few tries)
+print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
@@ -160,16 +160,29 @@ varimp_birds <- test.rf.model(rf_data = rf_mpd_birds_df,
                               metric_nm = "PD_MPD",
                               taxa_nm = "BIRDS",
                               plot = TRUE)
-# Save it:
-saveRDS(varimp_birds, here::here("transformed_data",
-                                 "rf_birds_PD_mpd_50.rds"))
 
-# Plot the variables importance:
-max(varimp_birds$mean_imp)
-# max(varimp_trees$mean_imp)
-# max(varimp_reptiles$mean_imp)
-varimp_plot_birds <- varimp.plot(varimp_birds,
-                                 max = 25)
+# Variable importance:
+varimp_birds[[1]]
+# Std Variable importance:
+varimp_birds[[2]]
+# Mean R-squared: 0.5083114
+varimp_birds[[3]]
+# Sd R-squared: 0.003843679
+varimp_birds[[4]]
+
+# Save variable importance:
+saveRDS(varimp_birds[[1]], here::here("transformed_data",
+                                      "rf_birds_PD_mpd_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_birds[[2]], here::here("transformed_data",
+                                      "std_rf_birds_PD_mpd_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_birds <- varimp.plot(varimp_birds[[2]])
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_birds,
@@ -181,7 +194,6 @@ ggplot2::ggsave(plot = varimp_plot_birds,
                 width = 8000,
                 units = "px",
                 dpi = 600)
-
 
 
 # 4 - Random forest for reptiles ==================================================
@@ -196,43 +208,58 @@ rf_mpd_reptiles_df$ses <- as.numeric(rf_mpd_reptiles_df$ses)
 # Set seed for randomisation:
 set.seed(42)
 
-# See if 500 trees and mtry = 16 ok:
-# Run the random forest model mtry = 16 and 500 trees:
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
 rf_reptiles <- randomForest::randomForest(ses~.,
-                                          data = rf_mpd_reptiles_df,
-                                          ntree = 500,
-                                          mtry = 16,
-                                          importance = TRUE)
+                                       data = rf_mpd_reptiles_df,
+                                       ntree = 300,
+                                       mtry = 17,
+                                       importance = TRUE)
 # ntree:
 plot(rf_reptiles)
 
 # mtry:
 mtry <- randomForest::tuneRF(rf_mpd_reptiles_df[-ncol(rf_mpd_reptiles_df)],
                              rf_mpd_reptiles_df$ses,
-                             mtryStart = 16,
-                             ntreeTry = 500,
+                             mtryStart = 17,
+                             ntreeTry = 300,
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 16 seems ok (after a few tries)
+print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
 # % Var explained around 50%
 varimp_reptiles <- test.rf.model(rf_data = rf_mpd_reptiles_df,
-                                 iteration_nb = 100,
-                                 metric_nm = "PD_MPD",
-                                 taxa_nm = "REPTILES",
-                                 plot = TRUE)
+                              iteration_nb = 100,
+                              metric_nm = "PD_MPD",
+                              taxa_nm = "REPTILES",
+                              plot = TRUE)
 
-# Save it:
-saveRDS(varimp_reptiles, here::here("transformed_data",
-                                    "rf_reptiles_PD_mpd_50.rds"))
+# Variable importance:
+varimp_reptiles[[1]]
+# Std Variable importance:
+varimp_reptiles[[2]]
+# Mean R-squared: 0.4844919
+varimp_reptiles[[3]]
+# Sd R-squared: 0.005431091
+varimp_reptiles[[4]]
 
-# Plot the variables importance:
-varimp_plot_reptiles <- varimp.plot(varimp_reptiles,
-                                    max = 25)
+# Save variable importance:
+saveRDS(varimp_reptiles[[1]], here::here("transformed_data",
+                                      "rf_reptiles_PD_mpd_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_reptiles[[2]], here::here("transformed_data",
+                                      "std_rf_reptiles_PD_mpd_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_reptiles <- varimp.plot(varimp_reptiles[[2]])
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_reptiles,
@@ -244,6 +271,7 @@ ggplot2::ggsave(plot = varimp_plot_reptiles,
                 width = 8000,
                 units = "px",
                 dpi = 600)
+
 
 # 5 - Random forest for trees ==================================================
 
@@ -257,12 +285,12 @@ rf_mpd_trees_df$ses <- as.numeric(rf_mpd_trees_df$ses)
 # Set seed for randomisation:
 set.seed(42)
 
-# See if 500 trees and mtry = 16 ok:
-# Run the random forest model mtry = 16 and 500 trees:
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
 rf_trees <- randomForest::randomForest(ses~.,
                                        data = rf_mpd_trees_df,
-                                       ntree = 500,
-                                       mtry = 16,
+                                       ntree = 300,
+                                       mtry = 17,
                                        importance = TRUE)
 # ntree:
 plot(rf_trees)
@@ -270,13 +298,13 @@ plot(rf_trees)
 # mtry:
 mtry <- randomForest::tuneRF(rf_mpd_trees_df[-ncol(rf_mpd_trees_df)],
                              rf_mpd_trees_df$ses,
-                             mtryStart = 16,
-                             ntreeTry = 500,
+                             mtryStart = 17,
+                             ntreeTry = 300,
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 16 seems ok (after a few tries)
+print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable:
@@ -287,13 +315,28 @@ varimp_trees <- test.rf.model(rf_data = rf_mpd_trees_df,
                               taxa_nm = "TREES",
                               plot = TRUE)
 
-# Save it:
-saveRDS(varimp_trees, here::here("transformed_data",
-                                 "rf_trees_PD_mpd_50.rds"))
+# Variable importance:
+varimp_trees[[1]]
+# Std Variable importance:
+varimp_trees[[2]]
+# Mean R-squared: 0.4928487
+varimp_trees[[3]]
+# Sd R-squared: 0.004610469
+varimp_trees[[4]]
 
-# Plot the variables importance:
-varimp_plot_trees <- varimp.plot(varimp_trees,
-                                 max = 25)
+# Save variable importance:
+saveRDS(varimp_trees[[1]], here::here("transformed_data",
+                                      "rf_trees_PD_mpd_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_trees[[2]], here::here("transformed_data",
+                                      "std_rf_trees_PD_mpd_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_trees <- varimp.plot(varimp_trees[[2]])
 
 # Save it:
 ggplot2::ggsave(plot = varimp_plot_trees,
@@ -311,9 +354,9 @@ ggplot2::ggsave(plot = varimp_plot_trees,
 
 
 # a - Load rf data:
-birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_mpd_50.rds"))
-reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_mpd_50.rds"))
-trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_mpd_50.rds"))
+birds_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_mpd_50.rds"))
+reptiles_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_mpd_50.rds"))
+trees_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_mpd_50.rds"))
 
 rf_all_taxa_list <- list("birds_rf" = birds_rf,
                          "reptiles_rf" = reptiles_rf,
@@ -336,6 +379,9 @@ PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
 
 # Load rf data:
 birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_MPD_50.rds"))
+reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_MPD_50.rds"))
+trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_MPD_50.rds"))
+
 # Load the file which contain drivers shorter names:
 drivers_nm_df <- read.csv(here::here("env_db",
                                      "Drivers_short_nm.csv"))
@@ -370,6 +416,77 @@ ggplot2::ggsave(plot = cat_imp[[1]],
 ggplot2::ggsave(plot = cat_imp[[2]],
                 filename = here::here("outputs",
                                       "catimp_PD_MPD_withstats_50_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+# REPTILES:
+cat_imp <- cat.distrib.plot(rf_df = reptiles_rf,
+                            metric_nm = "MPD PD - Reptiles",
+                            palette = c("#88CCEE",
+                                        "#44AA99",
+                                        "#117733",
+                                        "#DDCC77",
+                                        "#CC6677",
+                                        "#882255"),
+                            drivers_nm_df = drivers_nm_df)
+# Plot categories importance:
+cat_imp[[1]]
+# Plot with stats:
+cat_imp[[2]]
+
+# Save it:
+ggplot2::ggsave(plot = cat_imp[[1]],
+                filename = here::here("outputs",
+                                      "catimp_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = cat_imp[[2]],
+                filename = here::here("outputs",
+                                      "catimp_PD_MPD_withstats_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# TREES:
+cat_imp <- cat.distrib.plot(rf_df = trees_rf,
+                            metric_nm = "MPD PD - Trees",
+                            palette = c("#88CCEE",
+                                        "#44AA99",
+                                        "#117733",
+                                        "#DDCC77",
+                                        "#CC6677",
+                                        "#882255"),
+                            drivers_nm_df = drivers_nm_df)
+# Plot categories importance:
+cat_imp[[1]]
+# Plot with stats:
+cat_imp[[2]]
+
+# Save it:
+ggplot2::ggsave(plot = cat_imp[[1]],
+                filename = here::here("outputs",
+                                      "catimp_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = cat_imp[[2]],
+                filename = here::here("outputs",
+                                      "catimp_PD_MPD_withstats_50_TREES.jpeg"),
                 device = "jpeg",
                 scale = 0.8,
                 height = 5000,
@@ -565,3 +682,198 @@ ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
                 width = 8000,
                 units = "px",
                 dpi = 600)
+
+# For REPTILES --------------------------------------------------------------------
+
+# Note: The idea is to focus on the n variable(s) that impact the most each
+# ... category to see in which direction it impacts diversity values:
+# ... simply plot the data and try to fit a linear model
+direction_plots <- relationships.plot(ses_var_df = var_mpd_reptiles_df,
+                                      metric_nm =  "MPD PD - Reptiles",
+                                      palette =  c("#88CCEE",
+                                                   "#44AA99",
+                                                   "#117733",
+                                                   "#DDCC77",
+                                                   "#CC6677",
+                                                   "#882255"),
+                                      drivers_nm_df = drivers_nm_df)
+direction_plots$past_stab
+direction_plots$present_hab
+direction_plots$present_hab_heterog
+direction_plots$disturb
+direction_plots$past_lu1
+direction_plots$past_lu2
+direction_plots$pr_hum_imp1
+direction_plots$pr_hum_imp2
+
+# Save them:
+ggplot2::ggsave(plot = direction_plots$past_stab,
+                filename = here::here("outputs",
+                                      "direction_past_stab_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab_heterog,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_het_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$disturb,
+                filename = here::here("outputs",
+                                      "direction_disturb_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu1,
+                filename = here::here("outputs",
+                                      "direction_past_lu1_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu2,
+                filename = here::here("outputs",
+                                      "direction_past_lu2_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp1,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp1_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp2_PD_MPD_50_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+# For TREES --------------------------------------------------------------------
+
+# Note: The idea is to focus on the n variable(s) that impact the most each
+# ... category to see in which direction it impacts diversity values:
+# ... simply plot the data and try to fit a linear model
+direction_plots <- relationships.plot(ses_var_df = var_mpd_trees_df,
+                                      metric_nm =  "MPD PD - Trees",
+                                      palette =  c("#88CCEE",
+                                                   "#44AA99",
+                                                   "#117733",
+                                                   "#DDCC77",
+                                                   "#CC6677",
+                                                   "#882255"),
+                                      drivers_nm_df = drivers_nm_df)
+direction_plots$past_stab
+direction_plots$present_hab
+direction_plots$present_hab_heterog
+direction_plots$disturb
+direction_plots$past_lu1
+direction_plots$past_lu2
+direction_plots$pr_hum_imp1
+direction_plots$pr_hum_imp2
+
+# Save them:
+ggplot2::ggsave(plot = direction_plots$past_stab,
+                filename = here::here("outputs",
+                                      "direction_past_stab_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$present_hab_heterog,
+                filename = here::here("outputs",
+                                      "direction_pres_hab_het_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$disturb,
+                filename = here::here("outputs",
+                                      "direction_disturb_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu1,
+                filename = here::here("outputs",
+                                      "direction_past_lu1_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$past_lu2,
+                filename = here::here("outputs",
+                                      "direction_past_lu2_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp1,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp1_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = direction_plots$pr_hum_imp2,
+                filename = here::here("outputs",
+                                      "direction_pr_hum_imp2_PD_MPD_50_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.8,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
