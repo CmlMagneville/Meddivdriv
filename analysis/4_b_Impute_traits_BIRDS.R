@@ -4,7 +4,7 @@
 ##
 ## Camille Magneville
 ##
-## 15/04/2024
+## 15/04/2024 - 09/2024
 ##
 ## 4_a_Impute_traits_BIRDS.R
 ##
@@ -61,16 +61,13 @@ summary(init_test)
 complete_data <- mice::complete(init_test, 1)
 plot(init_test)
 
-## Compare the distributions - test for each variable with NA (need more than 1NA) -
-## ... should have a similar distrib:
-mice::densityplot(init_test, ~ Life_Span)
-mice::densityplot(init_test, ~ Age_First_Breeding)
-mice::densityplot(init_test, ~ Broods_Per_Year)
-# prefer for the imputed data to be plausible values, i.e. values that could
+# Prefer for the imputed data to be plausible values, i.e. values that could
 # ... have been observed if they had not been missing.
-mice::stripplot(init_test, Life_Span ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, Age_First_Breeding ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, Broods_Per_Year ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, LongevityMax ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, FirstBreedingAge ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, ReproPerYear ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, FledgingPeriod ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, OffspringPerRepro ~ .imp, pch = 20, cex = 2)
 mice::stripplot(init_test)
 
 # Get the imputed values for each iteration?

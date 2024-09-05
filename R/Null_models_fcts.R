@@ -20,6 +20,9 @@
 #' @param sp_faxes_coord the array with species coordinates of functional axes -
 #' with only the PC wanted. Saved in the \code{2_a_Compute_..._TD_FD_PD.R}.
 #'
+#' @param faxes_nm_vect vector containing the names of the functional axes to
+#' consider
+#'
 #' @param sp_asb_df a data frame with species in columns and asb (grid cells)
 #' in rows.
 #'
@@ -35,6 +38,7 @@
 #'
 
 compute.null.model.FD <- function(sp_faxes_coord,
+                                  faxes_nm_vect,
                           sp_asb_df,
                           nb_asb_rep) {
 
@@ -48,19 +52,19 @@ compute.null.model.FD <- function(sp_faxes_coord,
 
 
   # Build the data frames which will be outputs:
-  # For FDis:
-  fdis_df <- as.data.frame(matrix(ncol = nb_asb_rep,
+  # For FMPD:
+  fmpd_df <- as.data.frame(matrix(ncol = nb_asb_rep,
                                   nrow = nrow(sp_asb_df),
                                   NA))
-  colnames(fdis_df) <- paste0(rep("null_asb", nb_asb_rep), sep = "_",
+  colnames(fmpd_df) <- paste0(rep("null_asb", nb_asb_rep), sep = "_",
                               c(1:nb_asb_rep))
-  rownames(fdis_df) <- rownames(sp_asb_df)
+  rownames(fmpd_df) <- rownames(sp_asb_df)
 
   # For FOri:
-  fori_df <- fdis_df
+  fori_df <- fmpd_df
 
   # For FRic (in the end, it's reduced because some asb do not have enough sp):
-  fric_df <- fdis_df
+  fric_df <- fmpd_df
   # Remove asb that do not have enough species fpr FRic computation:
   sp_asb_subset_df <- sp_asb_df %>%
     as.data.frame() %>%
@@ -88,35 +92,35 @@ compute.null.model.FD <- function(sp_faxes_coord,
       dplyr::filter(rowSums(sp_null_asb_df) > ncol(sp_faxes_coord)) %>%
       as.matrix()
 
-    # Compute indices for FDis and FOri:
+    # Compute indices for fmpd and FOri:
     alpha_fd_indices_1 <- mFD::alpha.fd.multidim(
-          sp_faxes_coord   = sp_faxes_coord,
+          sp_faxes_coord   = sp_faxes_coord[, faxes_nm_vect],
           asb_sp_w         = sp_null_asb_df,
-          ind_vect         = c("fdis", "fori"),
+          ind_vect         = c("fmpd", "fori"),
           scaling          = TRUE,
           check_input      = TRUE,
           details_returned = TRUE,
-          verbose          = FALSE)
+          verbose          = TRUE)
     alpha_fd_indices_df <- alpha_fd_indices_1$functional_diversity_indices
 
     # Compute indices for FRic:
     alpha_fd_indices_2 <- mFD::alpha.fd.multidim(
-      sp_faxes_coord   = sp_faxes_coord,
+      sp_faxes_coord   = sp_faxes_coord[, faxes_nm_vect],
       asb_sp_w         = sp_null_asb_subset_df,
       ind_vect         = c("fric"),
       scaling          = TRUE,
       check_input      = TRUE,
       details_returned = TRUE,
-      verbose          = FALSE)
+      verbose          = TRUE)
     alpha_fric_indices_df <- alpha_fd_indices_2$functional_diversity_indices
 
 
-    # Fill the FDis df:
-    fdis_tmp <- alpha_fd_indices_df %>%
+    # Fill the fmpd df:
+    fmpd_tmp <- alpha_fd_indices_df %>%
       tibble::rownames_to_column(var = "Idgrid") %>%
-      dplyr::rename(metric = "fdis") %>%
+      dplyr::rename(metric = "fmpd") %>%
       dplyr::select(c("Idgrid", "metric"))
-    fdis_df[, i] <- fdis_tmp$metric
+    fmpd_df[, i] <- fmpd_tmp$metric
 
     # Fill the FOri df:
     fori_tmp <- alpha_fd_indices_df %>%
@@ -136,7 +140,7 @@ compute.null.model.FD <- function(sp_faxes_coord,
   } # end loop on null assemblage rep
 
 
-  return(list("fdis" = fdis_df,
+  return(list("fmpd" = fmpd_df,
               "fori" = fori_df,
               "fric" = fric_df))
 
@@ -443,7 +447,7 @@ compute.null.model.FD <- function(sp_faxes_coord,
       dplyr::filter(rowSums(sp_null_asb_df) > length(faxes_nm_vect)) %>%
       as.matrix()
 
-    # Compute indices for FDis and FOri:
+    # Compute indices for fmpd and FOri:
     alpha_fd_indices_1 <- mFD::alpha.fd.multidim(
       sp_faxes_coord   = sp_faxes_coord[, faxes_nm_vect],
       asb_sp_w         = sp_null_asb_df,
@@ -451,7 +455,7 @@ compute.null.model.FD <- function(sp_faxes_coord,
       scaling          = TRUE,
       check_input      = TRUE,
       details_returned = TRUE,
-      verbose          = FALSE)
+      verbose          = TRUE)
     alpha_fd_indices_df <- alpha_fd_indices_1$functional_diversity_indices
 
     # Compute indices for FRic:
@@ -462,7 +466,7 @@ compute.null.model.FD <- function(sp_faxes_coord,
       scaling          = TRUE,
       check_input      = TRUE,
       details_returned = TRUE,
-      verbose          = FALSE)
+      verbose          = TRUE)
     alpha_fric_indices_df <- alpha_fd_indices_2$functional_diversity_indices
 
 

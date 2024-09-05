@@ -4,7 +4,7 @@
 ##
 ## Camille Magneville
 ##
-## 23/04/2024 - 02/05/2024
+## 23/04/2024 - 09/2024
 ##
 ## 5_b_FD_Null_models_BIRDS.R
 ##
@@ -30,18 +30,19 @@ sp_occ_BIRDS <- readRDS(here::here("transformed_data",
 str(sp_tr_BIRDS)
 
 # Create traits category data frame:
-traits_nm <- c("Age_First_Breeding",
-               "Mass",
-               "Hand_Wing_Index",
-               "Migration",
-               "Tail_Length",
-               "Tarsus_Length",
-               "Clutch_Mean",
-               "Broods_Per_Year",
-               "Life_Span",
-               "Fledging_Period",
-               "Beak_Ratio")
-traits_cat <- c("O", "Q", "Q", "O", "Q", "Q", "Q", "O", "Q", "Q", "Q")
+traits_nm <- c("FirstBreedingAge",
+               "BeakLengthCulmen",
+               "BeakRatio",
+               "ReproPerYear",
+               "OffspringPerRepro",
+               "FledgingPeriod",
+               "HandWingIndex",
+               "LongevityMax" ,
+               "BodyMass" ,
+               "Migration" ,
+               "TailLength",
+               "TarsusLength")
+traits_cat <- c("O", "Q", "Q", "O", "Q", "Q", "Q", "Q", "Q", "O", "Q", "Q")
 trait_cat_df <- data.frame(traits_nm, traits_cat)
 colnames(trait_cat_df) <- c("trait_name", "trait_type")
 
@@ -108,7 +109,7 @@ mFD::quality.fspaces.plot(
 # Note: the 4D is ok (trade off number of species per asb and quality)
 
 
-# 5 - Test correlation between funactional axes and traits =====================
+# 5 - Test correlation between functional axes and traits =====================
 
 
 # Retrieve birds coordinates in the functional space:
@@ -153,7 +154,7 @@ fct_space_BIRDS <- mFD::funct.space.plot(
   fill_vert       = "turquoise",
   shape_vert      = 23,
   size_vert       = 1,
-  plot_sp_nm      = c("Aegypius monachus"),
+  plot_sp_nm      = NULL,
   nm_size         = 3,
   nm_color        = "black",
   nm_fontface     = "plain",

@@ -4,7 +4,7 @@
 ##
 ## Camille Magneville
 ##
-## 18/04/2024
+## 18/04/2024 - 09/2024
 ##
 ## 4_a_Impute_traits_REPTILES.R
 ##
@@ -28,46 +28,105 @@ sp_tr_REPTILES <- readRDS(here::here("transformed_data",
 # Check that traits are in the right format:
 str(sp_tr_REPTILES)
 
+# See missing values:
+# Change first column name for funbiogeo use:
+funbiogeo_df <- dplyr::rename(sp_tr_REPTILES, species = Species)
+
+# Get the percentage of completedness per traits:
+funbiogeo::fb_plot_number_species_by_trait(funbiogeo_df)
+
+# Get the percentage of species with for than 1, 2, 3 etc traits:
+funbiogeo::fb_plot_number_traits_by_species(funbiogeo_df)
+
 # Species as rownames:
 sp_tr_REPTILES <- tibble::column_to_rownames(sp_tr_REPTILES,
                                           "Species")
 
 
-# 3 - Impute traits based on Random Forest approach =====================
+
+# 3 - Impute traits based on Random Forest approach - non fuzzy ones ===========
 
 
 set.seed(42)
 
-# Impute traits and check NRMSE - with missForest R pkge:
-imputed_traits_REPTILES <- missForest::missForest(sp_tr_REPTILES,
-                                               maxiter = 100,
-                                               ntree = 500)
-imputed_traits_table <- imputed_traits_REPTILES$ximp
-error <- imputed_traits_REPTILES$OOBerror
-
+# Sp tr df with no fuzzy traits:
+sp_tr_no_fuzzy_REPTILES <- sp_tr_REPTILES[, c(1:11)]
 
 # Impute traits and check quality - with mice pkge:
 ## Check missing traits:
-mice::md.pattern(sp_tr_REPTILES)
+mice::md.pattern(sp_tr_no_fuzzy_REPTILES)
 ## Compute missing data:
-init_test <- mice::mice(sp_tr_REPTILES, ntree = 500,
-                        m = 6,
+init_test <- mice::mice(sp_tr_no_fuzzy_REPTILES, ntree = 300,
+                        m = 5,
                         meth = 'rf', seed = 42)
 summary(init_test)
-complete_data <- mice::complete(init_test, 1)
-plot(init_test)
 
-## Compare the distributions - test for each variable with NA (need more than 1NA) -
-## ... should have a similar distrib:
-mice::densityplot(init_test, ~ Life_Span)
-mice::densityplot(init_test, ~ Age_First_Breeding)
-mice::densityplot(init_test, ~ Broods_Per_Year)
-# prefer for the imputed data to be plausible values, i.e. values that could
+# How are the 5 imputation similar or dissimilar?
+# Have a look at which dataset is closer to the mean value of each variable?
+summary(sp_tr_no_fuzzy_REPTILES)
+init_test$imp$ActivitySeasonLength
+init_test$imp$FirstBreedingAge
+init_test$imp$BodyTemperature
+init_test$imp$ReproPerYear
+init_test$imp$LongevityMax
+init_test$imp$SVLMax
+init_test$imp$OffspringPerRepro
+
+
+# Prefer for the imputed data to be plausible values, i.e. values that could
 # ... have been observed if they had not been missing.
-mice::stripplot(init_test, Life_Span ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, Age_First_Breeding ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, Broods_Per_Year ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test)
+mice::stripplot(init_test, LongevityMax ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, FirstBreedingAge ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, ReproPerYear ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, SVLMax ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, OffspringPerRepro ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, ActivitySeasonLength ~ .imp, pch = 20, cex = 2)
+mice::stripplot(init_test, BodyTemperature ~ .imp, pch = 20, cex = 2)
+
+# Can also check that relatioships between variables are not changed:
+# 1 plot only raw data and other plot, repetitions of imputated (red) and raw (blue)
+mice::xyplot(init_test, LongevityMax ~ FirstBreedingAge | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, LongevityMax ~ ReproPerYear | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, LongevityMax ~ SVLMax | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, LongevityMax ~ OffspringPerRepro | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, LongevityMax ~ ActivitySeasonLength | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, LongevityMax ~ BodyTemperature | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, FirstBreedingAge ~ ReproPerYear | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, FirstBreedingAge ~ SVLMax | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, FirstBreedingAge ~ OffspringPerRepro | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, FirstBreedingAge ~ ActivitySeasonLength | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, FirstBreedingAge ~ BodyTemperature | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, ReproPerYear ~ SVLMax | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, ReproPerYear ~ OffspringPerRepro  | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, ReproPerYear ~ ActivitySeasonLength  | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, ReproPerYear ~ BodyTemperature  | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, SVLMax ~ OffspringPerRepro  | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, SVLMax ~ ActivitySeasonLength  | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, SVLMax ~ BodyTemperature | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, OffspringPerRepro ~ BodyTemperature | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, OffspringPerRepro ~ ActivitySeasonLength | .imp,
+             pch = 20, cex = 2)
+mice::xyplot(init_test, BodyTemperature ~ ActivitySeasonLength | .imp,
+             pch = 20, cex = 2)
 
 # Get the imputed values for each iteration?
 # If the objective of the imputation is to produce estimates of missing
@@ -75,18 +134,12 @@ mice::stripplot(init_test)
 # considered most effective, because the stochastic draws in multiple
 # imputation add error (Van Buuren, 2012)
 iter_data <- mice::complete(init_test, action = "long")
-
+# Regarding the plots before, the "best" imputation looks like 5:
+complete_data <- mice::complete(init_test, 5)
 
 # Save imputed traits:
 saveRDS(complete_data, here::here("transformed_data",
                                   "final_traits_REPTILES.rds"))
 
-
-
-
-# 3 - Test if ok to impute traits - cross validation ===========================
-
-
-cross_val_results <- test.mf(raw_sp_tr = sp_tr_REPTILES)
 
 
