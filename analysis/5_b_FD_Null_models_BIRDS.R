@@ -122,13 +122,12 @@ tr_1_6_faxes_BIRDS <- mFD::traits.faxes.cor(
   plot           = TRUE)
 tr_1_6_faxes_BIRDS
 
-# Test correlation for the other half::
+# Test correlation for the other half:
 tr_7_11_faxes_BIRDS <- mFD::traits.faxes.cor(
   sp_tr          = sp_tr_BIRDS[,c(7:12)],
   sp_faxes_coord = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
 tr_7_11_faxes_BIRDS
-
 
 
 # 6 - Plot functional spaces ===================================================
