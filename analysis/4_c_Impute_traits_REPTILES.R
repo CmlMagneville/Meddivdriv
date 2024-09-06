@@ -143,8 +143,16 @@ complete_data_REPTILES <- complete_data %>%
 sp_tr_REPTILES <- sp_tr_REPTILES %>%
   tibble::rownames_to_column(var = "Species")
 complete_data_REPTILES <- dplyr::left_join(complete_data_REPTILES,
-                                           sp_tr_REPTILES[, c(1, 11:ncol(sp_tr_REPTILES))],
+                                           sp_tr_REPTILES[, c(1, 12:ncol(sp_tr_REPTILES))],
                                            by = "Species")
+
+complete_data_REPTILES <- tibble::column_to_rownames(complete_data_REPTILES,
+                                          "Species")
+
+# Put fuzzy traits as numeric:
+complete_data_REPTILES[, c(11:ncol(complete_data_REPTILES))] <- apply(complete_data_REPTILES[, c(11:ncol(complete_data_REPTILES))],
+                                                                      2,
+                                                                      as.numeric)
 
 # Save imputed traits:
 saveRDS(complete_data_REPTILES, here::here("transformed_data",

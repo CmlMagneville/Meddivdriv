@@ -124,7 +124,7 @@ tr_1_6_faxes_BIRDS
 
 # Test correlation for the other half::
 tr_7_11_faxes_BIRDS <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_BIRDS[,c(7:11)],
+  sp_tr          = sp_tr_BIRDS[,c(7:12)],
   sp_faxes_coord = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
 tr_7_11_faxes_BIRDS
@@ -216,7 +216,7 @@ FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_BIRDS,
                                           faxes_nm_vect = c("PC1", "PC2", "PC3",
                                                             "PC4"),
                                           sp_asb_df = sp_occ_BIRDS,
-                                          nb_asb_rep = 1000)
+                                          nb_asb_rep = 100)
 
 fric_null_models <- FD_null_asb_list$fric
 fmpd_null_models <- FD_null_asb_list$fmpd
