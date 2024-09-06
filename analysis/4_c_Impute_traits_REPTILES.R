@@ -50,7 +50,7 @@ sp_tr_REPTILES <- tibble::column_to_rownames(sp_tr_REPTILES,
 set.seed(42)
 
 # Sp tr df with no fuzzy traits:
-sp_tr_no_fuzzy_REPTILES <- sp_tr_REPTILES[, c(1:11)]
+sp_tr_no_fuzzy_REPTILES <- sp_tr_REPTILES[, c(1:10)]
 
 # Impute traits and check quality - with mice pkge:
 ## Check missing traits:
@@ -134,11 +134,20 @@ mice::xyplot(init_test, BodyTemperature ~ ActivitySeasonLength | .imp,
 # considered most effective, because the stochastic draws in multiple
 # imputation add error (Van Buuren, 2012)
 iter_data <- mice::complete(init_test, action = "long")
-# Regarding the plots before, the "best" imputation looks like 5:
+# Regarding the plots before, the "best" imputation looks like 4 or 5:
 complete_data <- mice::complete(init_test, 5)
 
+# Link with the fuzzy traits:
+complete_data_REPTILES <- complete_data %>%
+  tibble::rownames_to_column(var = "Species")
+sp_tr_REPTILES <- sp_tr_REPTILES %>%
+  tibble::rownames_to_column(var = "Species")
+complete_data_REPTILES <- dplyr::left_join(complete_data_REPTILES,
+                                           sp_tr_REPTILES[, c(1, 11:ncol(sp_tr_REPTILES))],
+                                           by = "Species")
+
 # Save imputed traits:
-saveRDS(complete_data, here::here("transformed_data",
+saveRDS(complete_data_REPTILES, here::here("transformed_data",
                                   "final_traits_REPTILES.rds"))
 
 
