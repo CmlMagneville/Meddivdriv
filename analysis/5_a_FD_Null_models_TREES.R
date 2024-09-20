@@ -117,18 +117,18 @@ mFD::quality.fspaces.plot(
 sp_faxes_coord_TREES <- fspaces_quality_TREES$"details_fspaces"$"sp_pc_coord"
 
 # Test correlation for half of the traits (because mFD limit to plot = 11):
-tr_1_6_faxes_TREES <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_TREES[,c(1:6)],
+tr_1_7_faxes_TREES <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_TREES[,c(1:7)],
   sp_faxes_coord = sp_faxes_coord_TREES[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
-tr_1_6_faxes_TREES
+tr_1_7_faxes_TREES
 
 # Test correlation for the other half::
-tr_7_11_faxes_TREES <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_TREES[,c(7:11)],
+tr_8_11_faxes_TREES <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_TREES[,c(8:11)],
   sp_faxes_coord = sp_faxes_coord_TREES[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
-tr_7_11_faxes_TREES
+tr_8_11_faxes_TREES
 
 
 
@@ -156,7 +156,7 @@ fct_space_TREES <- mFD::funct.space.plot(
   shape_vert      = 23,
   size_vert       = 1,
   plot_sp_nm      = NULL,
-  nm_size         = 3,
+  nm_size         = 1,
   nm_color        = "black",
   nm_fontface     = "plain",
   check_input     = TRUE)

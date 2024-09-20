@@ -29,14 +29,30 @@ envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
 fric_ses_birds_df <- readRDS(here::here("transformed_data",
                                          "div_values_null_models",
                                          "FD_FRic_null_models_metrics_50km_BIRDS.rds"))
-fric_ses_birds_df <- readRDS(here::here("transformed_data",
+fric_ses_trees_df <- readRDS(here::here("transformed_data",
                                         "div_values_null_models",
-                                        "FD_FRic_null_models_metrics_50km_BIRDS.rds"))
-fric_ses_birds_df <- readRDS(here::here("transformed_data",
-                                        "div_values_null_models",
-                                        "FD_FRic_null_models_metrics_50km_BIRDS.rds"))
-# Load the other taxa when ready here -----
+                                        "FD_FRic_null_models_metrics_50km_TREES.rds"))
+fric_ses_reptiles_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "FD_FRic_null_models_metrics_50km_REPTILES.rds"))
+# Remove cells with NA if any ...
+# ... (i.e. problem species position in the functional space):
+cells_NA_birds <- unique(fric_ses_birds_df$Idgrid[which(is.na(fric_ses_birds_df$ses) == TRUE)],
+                         fric_ses_birds_df$Idgrid[which(fric_ses_birds_df$ses == "NaN")])
+cells_NA_birds
+cells_NA_reptiles <- unique(fric_ses_reptiles_df$Idgrid[which(is.na(fric_ses_reptiles_df$ses) == TRUE)],
+                            fric_ses_reptiles_df$Idgrid[which(fric_ses_reptiles_df$ses == "NaN")])
+cells_NA_reptiles
+cells_NA_trees <- unique(fric_ses_trees_df$Idgrid[which(is.na(fric_ses_trees_df$ses) == TRUE)],
+                         fric_ses_trees_df$Idgrid[which(fric_ses_trees_df$ses == "NaN")])
+cells_NA_trees
 
+fric_ses_birds_df <- fric_ses_birds_df %>%
+  dplyr::filter(! Idgrid %in% cells_NA_birds)
+fric_ses_reptiles_df <- fric_ses_reptiles_df %>%
+  dplyr::filter(! Idgrid %in% cells_NA_reptiles)
+fric_ses_trees_df <- fric_ses_trees_df %>%
+  dplyr::filter(!Idgrid %in% cells_NA_trees)
 
 # Load grid data(for locating grid cells):
 grid_50km <- sf::st_read(here::here("integradiv_db",
@@ -63,6 +79,7 @@ cells_ok_trees <- unique(fric_ses_trees_df$Idgrid)
 cells_to_keep <- intersect(intersect(cells_ok_birds,
                                      cells_ok_reptiles),
                            cells_ok_trees)
+length(cells_to_keep)
 locate.cells(cell_vect = cells_to_keep,
              grid = grid_50km)
 
@@ -76,15 +93,19 @@ fric_ses_trees_df <- fric_ses_trees_df %>%
 
 
 # Link the two tables (drivers + diversity):
-rf_fric_birds_df <- dplyr::left_join(envdriv_full_db,
+rf_fric_birds_df <- dplyr::inner_join(envdriv_full_db,
                                       fric_ses_birds_df[, c("Idgrid", "ses")],
                                       by = "Idgrid")
-rf_fric_trees_df <- dplyr::left_join(envdriv_full_db,
+rf_fric_trees_df <- dplyr::inner_join(envdriv_full_db,
                                       fric_ses_trees_df[, c("Idgrid", "ses")],
                                       by = "Idgrid")
-rf_fric_reptiles_df <- dplyr::left_join(envdriv_full_db,
+rf_fric_reptiles_df <- dplyr::inner_join(envdriv_full_db,
                                          fric_ses_reptiles_df[, c("Idgrid", "ses")],
                                          by = "Idgrid")
+# We have ... cells for each rf:
+nrow(rf_fric_birds_df)
+nrow(rf_fric_trees_df)
+nrow(rf_fric_reptiles_df)
 
 # Put Idgrid as rownames:
 rf_fric_birds_df <- rf_fric_birds_df %>%
@@ -148,9 +169,9 @@ varimp_birds <- test.rf.model(rf_data = rf_fric_birds_df,
 varimp_birds[[1]]
 # Std Variable importance:
 varimp_birds[[2]]
-# Mean R-squared:
+# Mean R-squared: 0.4862521
 varimp_birds[[3]]
-# Sd R-squared:
+# Sd R-squared: 0.004548841
 varimp_birds[[4]]
 
 # Save variable importance:
@@ -214,7 +235,7 @@ mtry <- randomForest::tuneRF(rf_fric_reptiles_df[-ncol(rf_fric_reptiles_df)],
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 170.004377582 seems ok (after a few tries)
+print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable + ALE plots:
@@ -227,9 +248,9 @@ varimp_reptiles <- test.rf.model(rf_data = rf_fric_reptiles_df,
 varimp_reptiles[[1]]
 # Std Variable importance:
 varimp_reptiles[[2]]
-# Mean R-squared: 0.4637845
+# Mean R-squared: 0.4656991
 varimp_reptiles[[3]]
-# Sd R-squared: 0.004528529
+# Sd R-squared: 0.009807748
 varimp_reptiles[[4]]
 
 # Save variable importance:
@@ -304,9 +325,9 @@ varimp_trees <- test.rf.model(rf_data = rf_fric_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.5119643
+# Mean R-squared: 0.718425
 varimp_trees[[3]]
-# Sd R-squared: 0.004710844
+# Sd R-squared: 0.003117503
 varimp_trees[[4]]
 
 # Save variable importance:

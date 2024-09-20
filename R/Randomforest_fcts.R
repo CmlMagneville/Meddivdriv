@@ -150,7 +150,7 @@ test.rf.model <- function(rf_data,
   sd_Rsq <- sd(rsq_vect)
 
 
-  # If partial dependance plots are to be plotted and saved:
+  # If ALE plots are to be plotted and saved:
   if (plot == TRUE) {
 
       # Create ALE plots with the last random forest computed:
@@ -166,6 +166,8 @@ test.rf.model <- function(rf_data,
                                         features = colnames(rf_data)[1:28])
       # Plot ALE plots for half features:
       local_effect_plot1 <- plot(local_effect1)
+      # Extract data:
+      data_mod_1 <- local_effect1$results
       local_effect_plot1
 
       # Idem for the other half:
@@ -1683,3 +1685,63 @@ relationships.plot <- function(ses_var_df,
          "pr_hum_imp1" = pr_hum_plot1, "pr_hum_imp2" = pr_hum_plot2))
 
 }
+
+
+
+
+ALE.plots.compute <- function(rf_model,
+                              rf_data,
+                              var_to_plot,
+                              nb_boots,
+                              splits) {
+
+  # Create a list that will contains values to be plotted:
+  acc_list <- list()
+
+  ## This list is to be filled for each variables:
+  for (var in var_to_plot) {
+
+    main_ale_explainer <- DALEX::explain(rf_model,
+                                       data = rf_data,
+                                       y = rf_data$ses,
+                                       label = "",
+                                       verbose = FALSE)
+    main_ale_ranger <- DALEX::model_profile(main_ale_explainer,
+                                       variables = var,
+                                       type = "accumulated")
+
+    ## Bootstrap resample data and make many ALEs:
+    boot_list <- list()
+
+    for (times in 1:boots_nb) {
+
+      print(times)
+
+      # Create bootstrap data:
+      boot_data <- rf_data[sample(nrow(rf_data), nrow(rf_data), replace = TRUE),]
+
+      # ALE plot iteration
+      explainer_ranger <- DALEX::explain(rf_model,
+                                         data = boot_data,
+                                         y = boot_data$ses,
+                                         label = "",
+                                         verbose = FALSE)
+      ale_ranger <- DALEX::model_profile(explainer_ranger,
+                                         variables = var,
+                                         type = "accumulated")
+
+
+      # Save the values for this bootstrapped data:
+      boot_list[[times]] <- ale_ranger
+    }
+
+    # add all ALE to a list for that variable
+    acc_list[[var]] <- list(original = main_ale_ranger, bootstraps = boot_list)
+  }
+
+  return(acc_list)
+
+}
+
+
+

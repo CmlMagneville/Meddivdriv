@@ -36,14 +36,20 @@ trees_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_mpd_50.r
 
 # FD - Richness:
 birds_fric_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_FRic_50.rds"))
+reptiles_fric_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_FD_FRic_50.rds"))
+trees_fric_rf <- readRDS(here::here("transformed_data", "std_rf_trees_FD_FRic_50.rds"))
 
 
 # FD - Originality:
 birds_fori_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_fori_50.rds"))
+reptiles_fori_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_FD_fori_50.rds"))
+trees_fori_rf <- readRDS(here::here("transformed_data", "std_rf_trees_FD_fori_50.rds"))
 
 
 # FD - Dispersion:
 birds_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_fmpd_50.rds"))
+reptiles_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_FD_FMPD_50.rds"))
+trees_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_FD_FMPD_50.rds"))
 
 
 # Load the file which contain drivers shorter names:
@@ -200,6 +206,20 @@ rf_df_list <- list("FD Richness" = birds_fric_rf,
 rf_plot_birds_df <- create.df.circular.plot(rf_df_list = rf_df_list,
                                             var_nb = 15)
 
+# For reptiles:
+rf_df_list <- list("FD Richness" = reptiles_fric_rf,
+                   "FD Dispersion" = reptiles_fmpd_rf,
+                   "FD Originality" = reptiles_fori_rf)
+rf_plot_reptiles_df <- create.df.circular.plot(rf_df_list = rf_df_list,
+                                               var_nb = 15)
+
+# For trees:
+rf_df_list <- list("FD Richness" = trees_fric_rf,
+                   "FD Dispersion" = trees_fmpd_rf,
+                   "FD Originality" = trees_fori_rf)
+rf_plot_trees_df <- create.df.circular.plot(rf_df_list = rf_df_list,
+                                            var_nb = 15)
+
 
 
 # 5 - Plot the circular plots - FD =============================================
@@ -233,6 +253,75 @@ ggplot2::ggsave(plot = circular_plot_birds,
 ggplot2::ggsave(plot = circular_plot_birds,
                 filename = here::here("outputs",
                                       "circular_plot_50_FD_BIRDS.jpeg"),
+                device = "jpeg",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+
+# For REPTILES: (palette according to which variables are chosen - put the colors
+# ... which are not represented at the end)
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+
+circular_plot_reptiles <- circular.drivers.plot(taxa_plot_df = rf_plot_reptiles_df,
+                                                drivers_nm_df = drivers_nm_df,
+                                                palette = palette,
+                                                div_facet = "FD")
+circular_plot_reptiles
+
+# Save it:
+ggplot2::ggsave(plot = circular_plot_reptiles,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_REPTILES.pdf"),
+                device = "pdf",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = circular_plot_reptiles,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_REPTILES.jpeg"),
+                device = "jpeg",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+
+# For TREES: (palette according to which variables are chosen - put the colors
+# ... which are not represented at the end)
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+
+circular_plot_trees <- circular.drivers.plot(taxa_plot_df = rf_plot_trees_df,
+                                             drivers_nm_df = drivers_nm_df,
+                                             palette = palette,
+                                             div_facet = "FD")
+circular_plot_trees
+
+# Save it:
+ggplot2::ggsave(plot = circular_plot_trees,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_TREES.pdf"),
+                device = "pdf",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = circular_plot_trees,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_TREES.jpeg"),
                 device = "jpeg",
                 scale = 0.7,
                 height = 6500,

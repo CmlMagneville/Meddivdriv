@@ -328,6 +328,24 @@ ggplot2::ggsave(plot = varimp_plot_trees,
                 units = "px",
                 dpi = 600)
 
+# Create a ALE plot from bootstrapped data (n=50 bootsrapped):
+
+rf_data <- rf_faith_trees_df
+rf_model <- ranger::ranger(ses ~.,
+                         data = rf_data,
+                         num.trees = 300,
+                         importance = 'sobolMDA',
+                         mtry = 17)
+var_to_plot <- c("Past_CCVelYoungerDryas_mean.voccMag",
+                 "HerbCons_sum",
+                 "Depth_mean",
+                 "Pr_RatePop_2020_mean")
+boots_nb <- 50
+splits_nb <- 25
+
+
+
+
 # 6 - Plot a heatmap comparing variables importance across taxa ================
 
 
