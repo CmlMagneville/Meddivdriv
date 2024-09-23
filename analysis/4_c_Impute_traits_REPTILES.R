@@ -42,121 +42,291 @@ funbiogeo::fb_plot_number_traits_by_species(funbiogeo_df)
 sp_tr_REPTILES <- tibble::column_to_rownames(sp_tr_REPTILES,
                                           "Species")
 
+# 3 - Impute traits based on Random Forest approach =====================
 
+# Note: remove fuzzy traits:
+fuzzy_tr_df <- sp_tr_REPTILES %>%
+  dplyr::select(c("terrestrial",
+                  "saxicolous",
+                  "arboreal",
+                  "cryptic",
+                  "fossorial",
+                  "aquatic",
+                  "semi_aquatic"))
 
-# 3 - Impute traits based on Random Forest approach - non fuzzy ones ===========
-
+sp_tr_REPTILES_nonfuzzy <- sp_tr_REPTILES %>%
+  dplyr::select(- c("terrestrial",
+                  "saxicolous",
+                  "arboreal",
+                  "cryptic",
+                  "fossorial",
+                  "aquatic",
+                  "semi_aquatic"))
 
 set.seed(42)
 
-# Sp tr df with no fuzzy traits:
-sp_tr_no_fuzzy_REPTILES <- sp_tr_REPTILES[, c(1:10)]
-
 # Impute traits and check quality - with mice pkge:
 ## Check missing traits:
-mice::md.pattern(sp_tr_no_fuzzy_REPTILES)
-## Compute missing data:
-init_test <- mice::mice(sp_tr_no_fuzzy_REPTILES, ntree = 300,
-                        m = 5,
+mice::md.pattern(sp_tr_REPTILES_nonfuzzy)
+## Compute missing data - get 100 distributions:
+init_test <- mice::mice(sp_tr_REPTILES_nonfuzzy, ntree = 300,
+                        m = 100,
                         meth = 'rf', seed = 42)
-summary(init_test)
+imputed_traits <- init_test$imp
 
-# How are the 5 imputation similar or dissimilar?
-# Have a look at which dataset is closer to the mean value of each variable?
-summary(sp_tr_no_fuzzy_REPTILES)
-init_test$imp$ActivitySeasonLength
-init_test$imp$FirstBreedingAge
-init_test$imp$BodyTemperature
-init_test$imp$ReproPerYear
-init_test$imp$LongevityMax
-init_test$imp$SVLMax
-init_test$imp$OffspringPerRepro
+# Get the imputed values for traits with NA values:
+offspring <- imputed_traits$OffspringPerRepro
+svl <- imputed_traits$SVLMax
+longevity <- imputed_traits$LongevityMax
+repro <- imputed_traits$ReproPerYear
+bodytemp <- imputed_traits$BodyTemperature
+breeding <- imputed_traits$FirstBreedingAge
+activity <- imputed_traits$ActivitySeasonLength
+
+# Compute the mean over the 100 distributions:
+
+# OffspringPerRepro:
+mean_offspring <- as.data.frame(apply(offspring, 1, mean))
+colnames(mean_offspring) <- "OffspringPerRepro"
+mean_offspring <- tibble::rownames_to_column(mean_offspring,
+                                                "Species")
+# SVLMax:
+mean_svl <- as.data.frame(apply(svl, 1, mean))
+colnames(mean_svl) <- "SVLMax"
+mean_svl <- tibble::rownames_to_column(mean_svl,
+                                       "Species")
+# LongevityMax:
+mean_longevity <- as.data.frame(apply(longevity, 1, mean))
+colnames(mean_longevity) <- "LongevityMax"
+mean_longevity <- tibble::rownames_to_column(mean_longevity,
+                                            "Species")
+# ReproPerYear:
+mean_repro <- as.data.frame(apply(repro, 1, mean))
+colnames(mean_repro) <- "ReproPerYear"
+mean_repro <- tibble::rownames_to_column(mean_repro,
+                                      "Species")
+
+# Body temperature:
+mean_bodytemp <- as.data.frame(apply(bodytemp, 1, mean))
+colnames(mean_bodytemp) <- "BodyTemperature"
+mean_bodytemp <- tibble::rownames_to_column(mean_bodytemp,
+                                         "Species")
+
+# Breeding:
+mean_breeding <- as.data.frame(apply(breeding, 1, mean))
+colnames(mean_breeding) <- "FirstBreedingAge"
+mean_breeding <- tibble::rownames_to_column(mean_breeding,
+                                            "Species")
+
+# Activity:
+mean_activity <- as.data.frame(apply(activity, 1, mean))
+colnames(mean_activity) <- "ActivitySeasonLength"
+mean_activity <- tibble::rownames_to_column(mean_activity,
+                                            "Species")
+
+# Complete the sp_tr_REPTILES with imputed traits:
+sp_tr_REPTILES <- tibble::rownames_to_column(sp_tr_REPTILES,
+                                             "Species")
+complete_sp_tr_REPTILES <- sp_tr_REPTILES %>%
+  dplyr::rows_update(mean_offspring, by = "Species") %>%
+  dplyr::rows_update(mean_svl, by = "Species") %>%
+  dplyr::rows_update(mean_longevity, by = "Species") %>%
+  dplyr::rows_update(mean_repro, by = "Species") %>%
+  dplyr::rows_update(mean_bodytemp, by = "Species") %>%
+  dplyr::rows_update(mean_breeding, by = "Species") %>%
+  dplyr::rows_update(mean_activity, by = "Species")
+complete_sp_tr_REPTILES <- tibble::column_to_rownames(complete_sp_tr_REPTILES,
+                                                      "Species")
+
+# 4 - Compare imputed traits with observed ones ========================
+
+## Density plots:
+# OffspringPerRepro:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = OffspringPerRepro),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = OffspringPerRepro),
+                        fill="#ce446e", alpha = 0.5)
+
+# SVLMax:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = SVLMax),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = SVLMax),
+                        fill="#ce446e", alpha = 0.5)
+
+# ReproPerYear:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = ReproPerYear),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = ReproPerYear),
+                        fill="#ce446e", alpha = 0.5)
+
+# LongevityMax:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = LongevityMax),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = LongevityMax),
+                        fill="#ce446e", alpha = 0.5)
+
+# Body Temperature:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = BodyTemperature),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = BodyTemperature),
+                        fill="#ce446e", alpha = 0.5)
+
+# Activity length:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = ActivitySeasonLength),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = ActivitySeasonLength),
+                        fill="#ce446e", alpha = 0.5)
+
+# First Breeding Age:
+ggplot2::ggplot(data = sp_tr_REPTILES) +
+  ggplot2::geom_density(ggplot2::aes(x = FirstBreedingAge),
+                        fill="#69b3a2", alpha = 0.5) +
+  ggplot2::geom_density(data = complete_sp_tr_REPTILES,
+                        ggplot2::aes(x = FirstBreedingAge),
+                        fill="#ce446e", alpha = 0.5)
 
 
-# Prefer for the imputed data to be plausible values, i.e. values that could
-# ... have been observed if they had not been missing.
-mice::stripplot(init_test, LongevityMax ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, FirstBreedingAge ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, ReproPerYear ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, SVLMax ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, OffspringPerRepro ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, ActivitySeasonLength ~ .imp, pch = 20, cex = 2)
-mice::stripplot(init_test, BodyTemperature ~ .imp, pch = 20, cex = 2)
+## Points distribution:
 
-# Can also check that relatioships between variables are not changed:
-# 1 plot only raw data and other plot, repetitions of imputated (red) and raw (blue)
-mice::xyplot(init_test, LongevityMax ~ FirstBreedingAge | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, LongevityMax ~ ReproPerYear | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, LongevityMax ~ SVLMax | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, LongevityMax ~ OffspringPerRepro | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, LongevityMax ~ ActivitySeasonLength | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, LongevityMax ~ BodyTemperature | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, FirstBreedingAge ~ ReproPerYear | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, FirstBreedingAge ~ SVLMax | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, FirstBreedingAge ~ OffspringPerRepro | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, FirstBreedingAge ~ ActivitySeasonLength | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, FirstBreedingAge ~ BodyTemperature | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, ReproPerYear ~ SVLMax | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, ReproPerYear ~ OffspringPerRepro  | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, ReproPerYear ~ ActivitySeasonLength  | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, ReproPerYear ~ BodyTemperature  | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, SVLMax ~ OffspringPerRepro  | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, SVLMax ~ ActivitySeasonLength  | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, SVLMax ~ BodyTemperature | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, OffspringPerRepro ~ BodyTemperature | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, OffspringPerRepro ~ ActivitySeasonLength | .imp,
-             pch = 20, cex = 2)
-mice::xyplot(init_test, BodyTemperature ~ ActivitySeasonLength | .imp,
-             pch = 20, cex = 2)
+# Build a data frame that contains observed data:
+# Only keep traits of interest (those imputed):
+plot_sp_tr_REPTILES <- sp_tr_REPTILES %>%
+  dplyr::select(c("Species",
+                  "OffspringPerRepro",
+                  "SVLMax",
+                  "ReproPerYear",
+                  "LongevityMax",
+                  "ActivitySeasonLength",
+                  "FirstBreedingAge",
+                  "BodyTemperature"))
+# Format as numeric for illustration purposes:
+plot_sp_tr_REPTILES[, which(colnames(plot_sp_tr_REPTILES) != c("Species"))] <- apply(plot_sp_tr_REPTILES[, which(colnames(plot_sp_tr_REPTILES) != c("Species"))],
+                                                                                     2,
+                                                                                     as.numeric)
+# Format to plot:
+plot_sp_tr_REPTILES <- plot_sp_tr_REPTILES %>%
+  tidyr::pivot_longer(cols = c("OffspringPerRepro",
+                               "SVLMax",
+                               "ReproPerYear",
+                               "LongevityMax",
+                               "ActivitySeasonLength",
+                               "FirstBreedingAge",
+                               "BodyTemperature"),
+                      names_to = 'traits_nm',
+                      values_to = 'values') %>%
+  na.omit()
 
-# Get the imputed values for each iteration?
-# If the objective of the imputation is to produce estimates of missing
-# values (for example, to fill gaps in a dataset), single imputation is
-# considered most effective, because the stochastic draws in multiple
-# imputation add error (Van Buuren, 2012)
-iter_data <- mice::complete(init_test, action = "long")
-# Regarding the plots before, the "best" imputation looks like 4 or 5:
-complete_data <- mice::complete(init_test, 5)
+# Build a dataframe that contains imputed data:
+plot_imputed_traits <- mean_bodytemp %>%
+  dplyr::full_join(mean_svl) %>%
+  dplyr::full_join(mean_repro) %>%
+  dplyr::full_join(mean_offspring) %>%
+  dplyr::full_join(mean_longevity) %>%
+  dplyr::full_join(mean_breeding) %>%
+  dplyr::full_join(mean_activity)
+# Format as numeric for the plot:
+plot_imputed_traits[, which(colnames(plot_imputed_traits) != c("Species"))] <- apply(plot_imputed_traits[, which(colnames(plot_imputed_traits) != c("Species"))],
+                                                                                     2, as.numeric)
+# Format for the plot:
+plot_imputed_traits <- plot_imputed_traits %>%
+  tidyr::pivot_longer(cols = c("OffspringPerRepro",
+                               "SVLMax",
+                               "ReproPerYear",
+                               "LongevityMax",
+                               "ActivitySeasonLength",
+                               "FirstBreedingAge",
+                               "BodyTemperature"),
+                      names_to = 'traits_nm',
+                      values_to = 'values') %>%
+  na.omit()
 
-# Link with the fuzzy traits:
-complete_data_REPTILES <- complete_data %>%
-  tibble::rownames_to_column(var = "Species")
-sp_tr_REPTILES <- sp_tr_REPTILES %>%
-  tibble::rownames_to_column(var = "Species")
-complete_data_REPTILES <- dplyr::left_join(complete_data_REPTILES,
-                                           sp_tr_REPTILES[, c(1, 12:ncol(sp_tr_REPTILES))],
-                                           by = "Species")
 
-complete_data_REPTILES <- tibble::column_to_rownames(complete_data_REPTILES,
-                                          "Species")
+# SVLMax
+ggplot2::ggplot(data = plot_sp_tr_REPTILES[which(plot_sp_tr_REPTILES$traits_nm == "SVLMax"), ]) +
+  ggplot2::geom_jitter(ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#69b3a2",
+                       alpha = 0.6) +
+  ggplot2::geom_jitter(data = plot_imputed_traits[which(plot_imputed_traits$traits_nm == "SVLMax"), ],
+                       ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#ce446e",
+                       alpha = 0.6)
 
-# Put fuzzy traits as numeric:
-complete_data_REPTILES[, c(11:ncol(complete_data_REPTILES))] <- apply(complete_data_REPTILES[, c(11:ncol(complete_data_REPTILES))],
-                                                                      2,
-                                                                      as.numeric)
+# ReproPerYear
+ggplot2::ggplot(data = plot_sp_tr_REPTILES[which(plot_sp_tr_REPTILES$traits_nm == "ReproPerYear"), ]) +
+  ggplot2::geom_jitter(ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#69b3a2",
+                       alpha = 0.6) +
+  ggplot2::geom_jitter(data = plot_imputed_traits[which(plot_imputed_traits$traits_nm == "ReproPerYear"), ],
+                       ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#ce446e",
+                       alpha = 0.6)
+
+# LongevityMax
+ggplot2::ggplot(data = plot_sp_tr_REPTILES[which(plot_sp_tr_REPTILES$traits_nm == "LongevityMax"), ]) +
+  ggplot2::geom_jitter(ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#69b3a2",
+                       alpha = 0.6) +
+  ggplot2::geom_jitter(data = plot_imputed_traits[which(plot_imputed_traits$traits_nm == "LongevityMax"), ],
+                       ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#ce446e",
+                       alpha = 0.6)
+# ActiviySeasonLength:
+ggplot2::ggplot(data = plot_sp_tr_REPTILES[which(plot_sp_tr_REPTILES$traits_nm == "ActivitySeasonLength"), ]) +
+  ggplot2::geom_jitter(ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#69b3a2",
+                       alpha = 0.6) +
+  ggplot2::geom_jitter(data = plot_imputed_traits[which(plot_imputed_traits$traits_nm == "ActivitySeasonLength"), ],
+                       ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#ce446e",
+                       alpha = 0.6)
+
+# OffspringPerRepro:
+ggplot2::ggplot(data = plot_sp_tr_REPTILES[which(plot_sp_tr_REPTILES$traits_nm == "OffspringPerRepro"), ]) +
+  ggplot2::geom_jitter(ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#69b3a2",
+                       alpha = 0.6) +
+  ggplot2::geom_jitter(data = plot_imputed_traits[which(plot_imputed_traits$traits_nm == "OffspringPerRepro"), ],
+                       ggplot2::aes(x = traits_nm,
+                                    y = values),
+                       color = "#ce446e",
+                       alpha = 0.6)
+
+
+# Check and change if necessary the class of each trait:
+str(complete_sp_tr_REPTILES)
+
 
 # Save imputed traits:
-saveRDS(complete_data_REPTILES, here::here("transformed_data",
-                                  "final_traits_REPTILES.rds"))
+saveRDS(complete_sp_tr_REPTILES, here::here("transformed_data",
+                                            "final_traits_REPTILES.rds"))
 
+
+# 5 - Compare the functional spaces ====================================
+
+# Note: compare functional space of observed traits and the one with
+# ... imputed and observed traits: but as I have to remove all species
+# ... with NA to build the one with observed traits, it changes a lot
+# ... distances between species - don't mean anything
 
 

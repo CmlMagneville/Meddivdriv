@@ -30,7 +30,7 @@ INTEGRADIV_birds_occ_df <- readRDS(here::here("transformed_data",
 INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
                                                 "INTEGRADIV_traits_v4.csv"))
 
-# Only keep TREE data:
+# Only keep BIRDS data:
 birds_traits <- dplyr::filter(INTEGRADIV_traits,
                               Taxon == "Birds")
 
