@@ -32,6 +32,8 @@
 #' @param plot a TRUE/FALSE value according to whether or not partial dependance
 #' are to be plotted and saved (it takes a lot of time)
 #'
+#' @param  drivers_nm_df a data frame containing shortened names of drivers
+#'
 #' @return a data frame with variable importance for each rf, another
 #' dataframe in the same format with std importance (so that the most
 #' important variable has a value of 1 and negative importances equal 0).
@@ -47,8 +49,11 @@ test.rf.model <- function(rf_data,
                        iteration_nb,
                        metric_nm,
                        taxa_nm,
-                       plot) {
+                       plot,
+                       drivers_nm_df) {
 
+  # Set seed for randomisation:
+  set.seed(42)
 
   # Create one final db that will be returned:
   var_imp_final_df <- as.data.frame(matrix(ncol = 1,
@@ -131,6 +136,30 @@ test.rf.model <- function(rf_data,
                                                c(1:iteration_nb))
     }
 
+    # IF first iteration (first rf model), create an empty list:
+    if (i == 1) {
+      # It will contain ALE data for each variable:
+      ale_list <- list()
+    }
+    # Compute ALE plots for all the variables (drivers) and the given rf model:
+    print(paste0("ALE plot being computed for random forest #",
+                 sep = " ",
+                 i))
+    ale_list <- get.ale.data(model = rf_mod,
+                                     data = rf_data,
+                                     chosen_var = colnames(rf_data)[-ncol(rf_data)],
+                                     i = i,
+                                     ale_list = ale_list)
+
+  }
+
+  # Plot the ALE plot (line = mean +- sd):
+  if (plot == TRUE) {
+    plot.ale(ale_list = ale_list,
+             chosen_var = colnames(rf_data)[-ncol(rf_data)],
+             metric_nm = metric_nm,
+             taxa_nm = taxa_nm,
+             drivers_nm_df = drivers_nm_df)
   }
 
   # For each variable, get the mean importance (also sd) and percentage:
@@ -148,66 +177,6 @@ test.rf.model <- function(rf_data,
   # Get the mean Rsquared among all models:
   mean_Rsq <- mean(rsq_vect)
   sd_Rsq <- sd(rsq_vect)
-
-
-  # If ALE plots are to be plotted and saved:
-  if (plot == TRUE) {
-
-      # Create ALE plots with the last random forest computed:
-      # Get the function to make prediction:
-      pfun <- function(object, newdata) predict(object, data = newdata)$predictions
-      # Create an object which holds holds the rf model and the data to be used:
-      model <- iml::Predictor$new(rf_mod, data = rf_data[, -ncol(rf_data)],
-                                 y = rf_data$ses,
-                                 predict.fun = pfun)
-      # Compute Local Effects for first half (easier to read):
-      local_effect1 <- iml::FeatureEffects$new(model,
-                                        method = "ale",
-                                        features = colnames(rf_data)[1:28])
-      # Plot ALE plots for half features:
-      local_effect_plot1 <- plot(local_effect1)
-      # Extract data:
-      data_mod_1 <- local_effect1$results
-      local_effect_plot1
-
-      # Idem for the other half:
-      local_effect2 <- iml::FeatureEffects$new(model,
-                                               method = "ale",
-                                               features = colnames(rf_data)[29:54])
-      # Plot ALE plots the other half:
-      local_effect_plot2 <- plot(local_effect2)
-      local_effect_plot2
-
-      # Save them:
-      ggplot2::ggsave(plot = local_effect_plot1,
-                      filename = here::here("outputs",
-                                            "ALE_plots",
-                                            paste0("1", sep = "_",
-                                                   metric_nm, sep = "_",
-                                                   "50", sep = "_", taxa_nm,
-                                                   ".jpeg")),
-                      device = "jpeg",
-                      scale = 2.5,
-                      height = 1700,
-                      width = 2000,
-                      units = "px",
-                      dpi = 700)
-      ggplot2::ggsave(plot = local_effect_plot2,
-                      filename = here::here("outputs",
-                                            "ALE_plots",
-                                            paste0("2", sep = "_",
-                                                   metric_nm, sep = "_",
-                                                   "50", sep = "_", taxa_nm,
-                                                   ".jpeg")),
-                      device = "jpeg",
-                      scale = 2.5,
-                      height = 1700,
-                      width = 2000,
-                      units = "px",
-                      dpi = 700)
-
-
-  }
 
   return(list(var_imp_mean_df,
               std_var_imp_mean_df,
@@ -247,6 +216,273 @@ plot.partial.dependence <- function(models, var_name, data, iteration_nb) {
 }
 
 
+
+#' Get data to plot ALE plots (one data for each 100 model)
+#'
+#' @param model a given random forest (one of the 100 run)
+#' @param data data used to run the random forest
+#' @param chosen_var a vector containing the names of the variables
+#' for which the ALE plot should be used
+#' @param i the iteration number (nuber of the rf model to be studied
+#' based on the 100 iterations)
+#' @param ale_list the list containing coordinates for ALE plots for
+#' all variables (updated at each round of new rf model)
+#'
+#' @return
+#' @export
+#'
+
+get.ale.data <- function(model,
+                         data,
+                         chosen_var,
+                         ale_list,
+                         i) {
+
+  # Get the function to make prediction:
+  pfun <- function(object, newdata) predict(object, data = newdata)$predictions
+
+  # Create an object which holds holds the rf model and the data to be used:
+  model <- iml::Predictor$new(rf_mod, data = rf_data[, -ncol(rf_data)],
+                              y = rf_data$ses,
+                              predict.fun = pfun)
+
+  # For each variable to be plotted - retrieve ALE data:
+  for (var in chosen_var) {
+
+    # Create a dataframe that will contain values to plot ...
+    # ... ALE data for the given model (will be updated for each model)
+    # ... IF first model to be studied
+    if (i == 1) {
+      var_coord_df <- as.data.frame(matrix(ncol = 4,
+                                           nrow = 1,
+                                           NA))
+      colnames(var_coord_df) <- c("var_nm",
+                                  "rep_nb",
+                                  "x",
+                                  "y")
+    }
+
+    # IF not the first iteration (ie first rf model), retrieve
+    # ... the df associated with var which already has values from
+    # ... previous ALE plots:
+    if (i != 1) {
+      var_coord_df <- ale_list[[var]][[1]]
+    }
+
+    # Compute the ALE plot for var and given rf model:
+    ale_var_data <- iml::FeatureEffects$new(model,
+                                            method = "ale",
+                                            features = var)
+    # Retrieve x and y values and put them in a df with right col nms:
+    ale_var_coord <- ale_var_data$results[[1]]
+    ale_var_coord_df <- as.data.frame(matrix(ncol = 4,
+                                             nrow = nrow(ale_var_coord),
+                                             NA))
+    colnames(ale_var_coord_df) <- c("var_nm",
+                                "rep_nb",
+                                "x",
+                                "y")
+    ale_var_coord_df$var_nm <- rep(var, nrow(ale_var_coord_df))
+    ale_var_coord_df$rep_nb <- rep(i, nrow(ale_var_coord_df))
+    ale_var_coord_df$x <- ale_var_coord$.borders
+    ale_var_coord_df$y <- ale_var_coord$.value
+
+    # Update the coordinates df with data from this new ALE plot:
+    var_coord_df <- dplyr::bind_rows(var_coord_df,
+                                    ale_var_coord_df)
+
+    # Update the ale_list() with the updated dataframe:
+    ale_list[[var]][[1]] <- var_coord_df
+
+  }
+
+  return(ale_list)
+
+}
+
+
+
+#' Plot ALE plots for all variables (mean and sd)
+#'
+#' @param ale_list a list containing for each variable (driver), a dataframe
+#' with coordinates of points of the ALE plot
+#' @param chosen_var a vector containing the names of all the variables to study
+#' @param metric_nm a character string refering to the metric studied
+#' @param taxa_nm a character string refering to the taxa studied
+#' @param drivers_nm_df a dataframe linking drivers raw names and nice names
+#'
+#' @return
+#' @export
+#'
+plot.ale <- function(ale_list,
+                     chosen_var,
+                     metric_nm,
+                     taxa_nm,
+                     drivers_nm_df) {
+
+  # For each variable (driver):
+  for (var in chosen_var) {
+
+    # Retrieve the associated dataframe:
+    var_coord_df <- ale_list[[var]][[1]]
+    # Remove the first row (NAs):
+    var_coord_df <- var_coord_df[-1, ]
+
+    # Compute the mean of y values for each x:
+    mean_line_df <- dplyr::group_by(var_coord_df,
+                                    x)
+    mean_line_df <- dplyr::summarise(mean_line_df,
+                                     mean(y))
+    colnames(mean_line_df) <- c("x", "mean_y")
+
+    # Compute the sd of y values for each x:
+    sd_line_df <- dplyr::group_by(var_coord_df,
+                                    x)
+    sd_line_df <- dplyr::summarise(sd_line_df,
+                                     sd(y))
+    colnames(sd_line_df) <- c("x", "sd_y")
+
+    # Join the two df:
+    plot_ALE_df <- dplyr::left_join(mean_line_df,
+                                    sd_line_df,
+                                    by = "x")
+
+    # Retrieve the color of the line based on the variable:
+    if (unique(var_coord_df$var_nm) %in% c("Past_CCVelHolocene_mean.voccMag",
+                                           "Past_CCVelLGM_mean.voccMag",
+                                           "Past_CCVelShortTerm_mean.voccMag",
+                                           "Past_CCVelYoungerDryas_mean.voccMag",
+                                           "Past_MAT_sd",
+                                           "Past_TAP_sd")) {
+      line_col <- "#88CCEE"
+    }
+    if (unique(var_coord_df$var_nm) %in% c("Depth_mean",
+                                           "Elv_mean",
+                                           "OC_mean",
+                                           "pH_mean",
+                                           "VWC_mean",
+                                           "Present_AI_mean",
+                                           "Present_MAT_mean",
+                                           "Present_TAP_mean")) {
+      line_col <- "#44AA99"
+    }
+    if (unique(var_coord_df$var_nm) %in% c("Depth_stdev",
+                                           "Elv_stdev",
+                                           "OC_stdev",
+                                           "pH_stdev",
+                                           "VWC_stdev",
+                                           "Present_AI_stdev",
+                                           "Present_MAT_stdev",
+                                           "Present_TAP_stdev")) {
+      line_col <- "#117733"
+    }
+    if (unique(var_coord_df$var_nm) %in% c("HerbCons_sum",
+                                           "HerbRichn_sum",
+                                           "Pr_FInt_2000_2023_mean",
+                                           "Pr_FInt_2000_2023_sd",
+                                           "Pr_FSurf_2000_2023_pixels")) {
+      line_col <- "#DDCC77"
+    }
+    if (unique(var_coord_df$var_nm) %in% c("Pr_FCon_percentage_percentage",
+                                           "Past_Perc_wild_lands_Weighted_Mean",
+                                           "Past_Perc_wild_lands_Weighted_Sd",
+                                           "Present_Perc_croplands_Weighted_Mean",
+                                           "Present_Perc_croplands_Weighted_Sd",
+                                           "Present_Perc_dense_settlements_Weighted_Mean",
+                                           "Present_Perc_dense_settlements_Weighted_Sd",
+                                           "Present_Perc_rangelands_Weighted_Mean",
+                                           "Present_Perc_rangelands_Weighted_Sd",
+                                           "Present_Perc_seminatural_lands_Weighted_Mean",
+                                           "Present_Perc_seminatural_lands_Weighted_Sd",
+                                           "Present_Perc_villages_Weighted_Mean",
+                                           "Present_Perc_villages_Weighted_Sd",
+                                           "Present_Perc_wild_lands_Weighted_Mean",
+                                           "Present_Perc_wild_lands_Weighted_Sd",
+                                           "Pr_Pop_2020_mean",
+                                           "Pr_RatePop_2020_mean")) {
+      line_col <- "#CC6677"
+    }
+    if (unique(var_coord_df$var_nm) %in% c("Past_Perc_croplands_Weighted_Mean",
+                                           "Past_Perc_croplands_Weighted_Sd",
+                                           "Past_Perc_dense_settlements_Weighted_Mean",
+                                           "Past_Perc_dense_settlements_Weighted_Sd",
+                                           "Past_Perc_rangelands_Weighted_Mean",
+                                           "Past_Perc_rangelands_Weighted_Sd",
+                                           "Past_Perc_seminatural_lands_Weighted_Mean",
+                                           "Past_Perc_seminatural_lands_Weighted_Sd",
+                                           "Past_Perc_villages_Weighted_Mean",
+                                           "Past_Perc_villages_Weighted_Sd",
+                                           "Past_Perc_wild_lands_Weighted_Mean",
+                                           "Past_Perc_wild_lands_Weighted_Sd")) {
+      line_col <- "#882255"
+    }
+
+    # Get the nice drivers names:
+    plot_ALE_df <- plot_ALE_df %>%
+      dplyr::mutate(Drivers_nm = var)
+    plot_ALE_df <- dplyr::left_join(plot_ALE_df,
+                                    drivers_nm_df,
+                                    by = "Drivers_nm")
+
+    # Plot the ALE plot for the given variable:
+    ALE_var_plot <- ggplot2::ggplot(plot_ALE_df,
+                                    ggplot2::aes(x = x,
+                                                 y = mean_y)) +
+      # add a horizontal line at 0:
+      ggplot2::geom_hline(ggplot2::aes(yintercept = 0),
+                          color = "grey70",
+                          linetype = 2,
+                          size = 0.5) +
+      # add the confidence interval (+- sd)
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = mean_y - sd_y,
+                                        ymax = mean_y + sd_y),
+                           fill = "grey90",
+                           alpha = 0.6) +
+      # add the mean line:
+      ggplot2::geom_line(color = line_col,
+                         size = 1,
+                         alpha = 0.7) +
+      # style background and grid:
+      ggplot2::theme_minimal() +
+      # titles:
+      ggplot2::xlab(unique(plot_ALE_df$Drivers_short_nm)) +
+      ggplot2::ylab("Effect on diversity")
+
+    print(ALE_var_plot)
+
+    ggplot2::ggsave(plot = ALE_var_plot,
+                    filename = here::here("outputs",
+                                          "ALE_plots",
+                                          paste0("ALE", sep = "_",
+                                                 var, sep = "_",
+                                                 metric_nm, sep = "_",
+                                                 "50", sep = "_", taxa_nm,
+                                                 ".jpeg")),
+                    device = "jpeg",
+                    scale = 1.7,
+                    height = 1400,
+                    width = 1800,
+                    units = "px",
+                    dpi = 600)
+    ggplot2::ggsave(plot = ALE_var_plot,
+                    filename = here::here("outputs",
+                                          "ALE_plots",
+                                          paste0("ALE", sep = "_",
+                                                 var, sep = "_",
+                                                 metric_nm, sep = "_",
+                                                 "50", sep = "_", taxa_nm,
+                                                 ".pdf")),
+                    device = "pdf",
+                    scale = 1.7,
+                    height = 1400,
+                    width = 1800,
+                    units = "px",
+                    dpi = 600)
+
+  } # end loop on each variable
+
+
+}
 
 #' Plot the variable importance for a given taxa and metric (lollipop plot)
 #'
@@ -1685,63 +1921,3 @@ relationships.plot <- function(ses_var_df,
          "pr_hum_imp1" = pr_hum_plot1, "pr_hum_imp2" = pr_hum_plot2))
 
 }
-
-
-
-
-ALE.plots.compute <- function(rf_model,
-                              rf_data,
-                              var_to_plot,
-                              nb_boots,
-                              splits) {
-
-  # Create a list that will contains values to be plotted:
-  acc_list <- list()
-
-  ## This list is to be filled for each variables:
-  for (var in var_to_plot) {
-
-    main_ale_explainer <- DALEX::explain(rf_model,
-                                       data = rf_data,
-                                       y = rf_data$ses,
-                                       label = "",
-                                       verbose = FALSE)
-    main_ale_ranger <- DALEX::model_profile(main_ale_explainer,
-                                       variables = var,
-                                       type = "accumulated")
-
-    ## Bootstrap resample data and make many ALEs:
-    boot_list <- list()
-
-    for (times in 1:boots_nb) {
-
-      print(times)
-
-      # Create bootstrap data:
-      boot_data <- rf_data[sample(nrow(rf_data), nrow(rf_data), replace = TRUE),]
-
-      # ALE plot iteration
-      explainer_ranger <- DALEX::explain(rf_model,
-                                         data = boot_data,
-                                         y = boot_data$ses,
-                                         label = "",
-                                         verbose = FALSE)
-      ale_ranger <- DALEX::model_profile(explainer_ranger,
-                                         variables = var,
-                                         type = "accumulated")
-
-
-      # Save the values for this bootstrapped data:
-      boot_list[[times]] <- ale_ranger
-    }
-
-    # add all ALE to a list for that variable
-    acc_list[[var]] <- list(original = main_ale_ranger, bootstraps = boot_list)
-  }
-
-  return(acc_list)
-
-}
-
-
-

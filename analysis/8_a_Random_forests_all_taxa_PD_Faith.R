@@ -27,6 +27,10 @@
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
                                        "env_drivers_final_noNA_db.rds"))
 
+# Load the file which contain drivers shorter names:
+drivers_nm_df <- read.csv(here::here("env_db",
+                                     "Drivers_short_nm.csv"))
+
 # Load SES PD - Faith:
 faith_ses_birds_df <- readRDS(here::here("transformed_data",
                                          "div_values_null_models",
@@ -107,9 +111,6 @@ rownames(rf_faith_birds_df[which(is.na(rf_faith_birds_df$ses) == TRUE), ])
 # Change SES from names num to num:
 rf_faith_birds_df$ses <- as.numeric(rf_faith_birds_df$ses)
 
-# Set seed for randomisation:
-set.seed(42)
-
 # See if 300 trees and mtry = 17 ok:
 # Run the random forest model mtry = 16 and 300 trees:
 rf_birds <- randomForest::randomForest(ses~.,
@@ -137,7 +138,8 @@ varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "BIRDS",
-                              plot = TRUE)
+                              plot = TRUE,
+                              drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_birds[[1]]
 # Std Variable importance:
