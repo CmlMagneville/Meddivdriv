@@ -144,9 +144,9 @@ varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
 varimp_birds[[1]]
 # Std Variable importance:
 varimp_birds[[2]]
-# Mean R-squared: 0.5008923
+# Mean R-squared: 0.500828
 varimp_birds[[3]]
-# Sd R-squared: 0.003966172
+# Sd R-squared: 0.004199216
 varimp_birds[[4]]
 
 # Save variable importance:
@@ -218,7 +218,8 @@ varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "REPTILES",
-                              plot = TRUE)
+                              plot = TRUE,
+                              drivers_nm_df)
 # Variable importance:
 varimp_reptiles[[1]]
 # Std Variable importance:
@@ -295,7 +296,8 @@ varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "TREES",
-                              plot = TRUE)
+                              plot = TRUE,
+                              drivers_nm_df)
 # Variable importance:
 varimp_trees[[1]]
 # Std Variable importance:

@@ -145,11 +145,11 @@ test.rf.model <- function(rf_data,
     print(paste0("ALE plot being computed for random forest #",
                  sep = " ",
                  i))
-    ale_list <- get.ale.data(model = rf_mod,
-                                     data = rf_data,
-                                     chosen_var = colnames(rf_data)[-ncol(rf_data)],
-                                     i = i,
-                                     ale_list = ale_list)
+    ale_list <- get.ale.data(rf_mod = rf_mod,
+                             rf_data = rf_data,
+                             chosen_var = colnames(rf_data)[-ncol(rf_data)],
+                             i = i,
+                             ale_list = ale_list)
 
   }
 
@@ -219,8 +219,8 @@ plot.partial.dependence <- function(models, var_name, data, iteration_nb) {
 
 #' Get data to plot ALE plots (one data for each 100 model)
 #'
-#' @param model a given random forest (one of the 100 run)
-#' @param data data used to run the random forest
+#' @param rf_mod a given random forest (one of the 100 run)
+#' @param rf_data data used to run the random forest
 #' @param chosen_var a vector containing the names of the variables
 #' for which the ALE plot should be used
 #' @param i the iteration number (nuber of the rf model to be studied
@@ -232,8 +232,8 @@ plot.partial.dependence <- function(models, var_name, data, iteration_nb) {
 #' @export
 #'
 
-get.ale.data <- function(model,
-                         data,
+get.ale.data <- function(rf_mod,
+                         rf_data,
                          chosen_var,
                          ale_list,
                          i) {
