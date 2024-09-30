@@ -42,10 +42,9 @@ setdiff(colnames(INTEGRADIV_trees_occ_df),
 setdiff(unique(trees_traits$Species),
         colnames(INTEGRADIV_trees_occ_df))
 
-# Remove the 2 species present in the traits db but not in our occ data:
+# Remove the 1 species present in the traits db but not in our occ data:
 trees_traits_corrected <- dplyr::filter(trees_traits,
-                                        ! Species %in% c( "Pyrus syriaca",
-                                                          "Tamarix passerinoides"))
+                                        ! Species %in% c( "Pyrus syriaca"))
 
 # Check again: Ok :)
 setdiff(unique(trees_traits_corrected$Species),
@@ -57,7 +56,7 @@ trees_traits_df <- trees_traits_corrected %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
-# Keep only the 11 traits needed: MAY BE ADD BLOOMBREADTH CIRCULAR
+# Keep only the 11 traits needed: BLOOMBREADTH CIRCULAR
 trees_traits_df <- trees_traits_df %>%
   dplyr::select(-c("BloomPosition", "LeafMargin", "DispMode"))
 
