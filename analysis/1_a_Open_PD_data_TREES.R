@@ -20,13 +20,13 @@
 
 
 INTEGRADIV_occ_db <- read.csv(here::here("integradiv_db",
-                                         "INTEGRADIV_occurrences_v3.csv"))
+                                         "INTEGRADIV_occurrences_v4.csv"))
 
 # Only keep trees data:
 INTEGRADIV_trees_occ_df <- dplyr::filter(INTEGRADIV_occ_db,
                                          Taxon == "Trees")
 
-# Number of species: 204
+# Number of species: 205
 length(unique(INTEGRADIV_trees_occ_df$Species))
 
 # Only keep 50x50 assemblages ie cells:

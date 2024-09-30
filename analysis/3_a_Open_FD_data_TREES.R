@@ -26,7 +26,7 @@ INTEGRADIV_trees_occ_df <- readRDS(here::here("transformed_data",
 # 2 - Load and clean traits data ================================
 
 
-# Load phylogeny data:
+# Load traits data:
 INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
                                                 "INTEGRADIV_traits_v4.csv"))
 

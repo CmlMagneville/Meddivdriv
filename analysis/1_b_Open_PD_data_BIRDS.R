@@ -20,7 +20,7 @@
 
 
 INTEGRADIV_occ_db <- read.csv(here::here("integradiv_db",
-                                         "INTEGRADIV_occurrences_v3.csv"))
+                                         "INTEGRADIV_occurrences_v4.csv"))
 
 # Only keep trees data:
 INTEGRADIV_birds_occ_df <- dplyr::filter(INTEGRADIV_occ_db,
