@@ -22,10 +22,6 @@
 INTEGRADIV_trees_occ_df <- readRDS(here::here("transformed_data",
                                               "sp_asb_50km_TREES.rds"))
 
-
-# 2 - Load and clean traits data ================================
-
-
 # Load traits data:
 INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
                                                 "INTEGRADIV_traits_v4.csv"))
@@ -33,6 +29,10 @@ INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
 # Only keep TREE data:
 trees_traits <- dplyr::filter(INTEGRADIV_traits,
                               Taxon == "Trees")
+
+
+# 2 - Load and clean traits data ================================
+
 
 # Check if all species in the occurrence df are in the traits db: YES :)
 setdiff(colnames(INTEGRADIV_trees_occ_df),
@@ -56,9 +56,16 @@ trees_traits_df <- trees_traits_corrected %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
-# Keep only the 11 traits needed: BLOOMBREADTH CIRCULAR
+# Keep only the 11 traits needed:
 trees_traits_df <- trees_traits_df %>%
-  dplyr::select(-c("BloomPosition", "LeafMargin", "DispMode"))
+  dplyr::select(c("Species",
+                  "BloomBreadth",
+                  "DispMode",
+                  "HeightMax",
+                  "LA",
+                  "SLA",
+                  "SeedMass",
+                  "StemSpecDens"))
 
 
 # Traits with the right format:
@@ -68,23 +75,7 @@ trees_traits_df$SLA <- as.numeric(trees_traits_df$SLA)
 trees_traits_df$StemSpecDens <- as.numeric(trees_traits_df$StemSpecDens)
 trees_traits_df$HeightMax <- as.numeric(trees_traits_df$HeightMax)
 trees_traits_df$BloomBreadth <- as.factor(trees_traits_df$BloomBreadth)
-trees_traits_df$DispDist <- ordered(trees_traits_df$DispDist,
-                                    levels = c("1_very_low", "2_low",
-                                               "3_intermediate", "4_high",
-                                               "5_very_high"))
-trees_traits_df$LeafOutline <- ordered(trees_traits_df$LeafOutline,
-                                       levels = c("1_entire", "2_lobed",
-                                                  "3_compound"))
-trees_traits_df$LeafPhenology <- ordered(trees_traits_df$LeafPhenology,
-                                         levels = c("1_deciduous",
-                                                    "2_intermediate",
-                                                    "3_evergreen"))
-trees_traits_df$Pollination <- ordered(trees_traits_df$Pollination,
-                                       levels = c("1_abiotic",
-                                                  "2_mixte",
-                                                  "3_biotic"))
-trees_traits_df$SexualSystem <- as.factor(trees_traits_df$SexualSystem)
-
+trees_traits_df$DispMode <- as.factor(trees_traits_df$DispMode)
 
 # Save the traits:
 saveRDS(trees_traits_df, file = here::here("transformed_data",

@@ -51,25 +51,33 @@ birds_traits_df <- birds_traits %>%
 
 # Select the traits that will be used:
 birds_traits_df <- dplyr::select(birds_traits_df,
-                                 -c("LongevityMax"))
+                                 c("Species",
+                                   "BeakLengthCulmen",
+                                   "BeakRatio",
+                                   "BodyMass",
+                                   "GenerationLength",
+                                   "HandWingIndex",
+                                   "Migration",
+                                   "OffspringPerRepro",
+                                   "ReproPerYear",
+                                   "TarsusLength"))
+
+# Create a new traits: Offspring per year:
+birds_traits_df <- birds_traits_df %>%
+  dplyr::mutate("OffspringPerYear" = as.numeric(OffspringPerRepro)*as.numeric(ReproPerYear)) %>%
+  dplyr::select(-c("OffspringPerRepro",
+                   "ReproPerYear"))
 
 
 # Format the traits:
-birds_traits_df$FirstBreedingAge <- ordered(birds_traits_df$FirstBreedingAge,
-                                               levels = c("1", "2", "3", "4", "5", "6"))
 birds_traits_df$BodyMass <- as.numeric(birds_traits_df$BodyMass)
 birds_traits_df$HandWingIndex <- as.numeric(birds_traits_df$HandWingIndex)
 birds_traits_df$Migration <- ordered(birds_traits_df$Migration,
                                  levels = c("1_sedentary", "2_intermediate",
                                             "3_migratory"))
-birds_traits_df$TailLength <- as.numeric(birds_traits_df$TailLength)
 birds_traits_df$TarsusLength <- as.numeric(birds_traits_df$TarsusLength)
-birds_traits_df$OffspringPerRepro <- as.numeric(birds_traits_df$OffspringPerRepro)
-birds_traits_df$ReproPerYear <- ordered(birds_traits_df$ReproPerYear,
-                                         levels = c("1", "1.5", "2", "2.5",
-                                                    "3", "4.5"))
+birds_traits_df$OffspringPerYear <- as.numeric(birds_traits_df$OffspringPerYear)
 birds_traits_df$GenerationLength <- round(as.numeric(birds_traits_df$GenerationLength), 2)
-birds_traits_df$FledgingPeriod <- as.numeric(birds_traits_df$FledgingPeriod)
 birds_traits_df$BeakRatio <- as.numeric(birds_traits_df$BeakRatio)
 birds_traits_df$BeakLengthCulmen <- as.numeric(birds_traits_df$BeakLengthCulmen)
 

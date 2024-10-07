@@ -27,13 +27,10 @@ INTEGRADIV_reptiles_occ_df <- readRDS(here::here("transformed_data",
 
 
 # Load traits data:
-# INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
-#                                                 "INTEGRADIV_traits_v3.csv"))
+INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
+                                                "INTEGRADIV_traits_v4.csv"))
 
-reptiles_traits <- read.csv(file = here::here("integradiv_db",
-                                                "reptiles_traits_170424.csv"))
-
-# Only keep REPTILES data:
+# Only keep TREE data:
 reptiles_traits <- dplyr::filter(INTEGRADIV_traits,
                               Taxon == "Reptiles")
 
@@ -45,14 +42,14 @@ setdiff(colnames(INTEGRADIV_reptiles_occ_df),
 setdiff(unique(reptiles_traits$Species),
         colnames(INTEGRADIV_reptiles_occ_df))
 
-# Remove fuzzy traits (formatted afterwards):
+
+# Divide fuzzy/non fuzzy to format traits classes (formatted afterwards):
 reptiles_fuzzy_traits <- reptiles_traits %>%
   dplyr::filter(Trait == "Substrate")
-
 reptiles_no_fuzzy_traits <- reptiles_traits %>%
   dplyr::filter(Trait != "Substrate")
 
-# Put it in the right format (species = rows, traits = columns)
+# Put dataframes in the right format (species = rows, traits = columns)
 reptiles_no_fuzzy_traits_df <- reptiles_no_fuzzy_traits %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
@@ -71,14 +68,31 @@ reptiles_fuzzy_substrate_df[is.na(reptiles_fuzzy_substrate_df)] <- 0
 reptiles_fuzzy_substrate_df[, -1] <- apply(reptiles_fuzzy_substrate_df[, -1], 2, as.factor)
 
 
+# Only keep interesting traits:
+reptiles_no_fuzzy_traits_df <- reptiles_no_fuzzy_traits_df %>%
+  dplyr::select(c("Species",
+                  "ActivityTime",
+                  "LimbDev",
+                  "LongevityMax",
+                  "OffspringPerRepro",
+                  "ReproPerYear",
+                  "SVLMax",
+                  "TrophicLevel"))
+
+
+# Create a new traits: Offspring per year:
+reptiles_no_fuzzy_traits_df  <- reptiles_no_fuzzy_traits_df  %>%
+  dplyr::mutate("OffspringPerYear" = as.numeric(OffspringPerRepro)*as.numeric(ReproPerYear)) %>%
+  dplyr::select(-c("OffspringPerRepro",
+                   "ReproPerYear"))
+
 # Format the right class for the traits - non fuzzy:
 reptiles_no_fuzzy_traits_df$ActivityTime <- ordered(reptiles_no_fuzzy_traits_df$ActivityTime,
                                            levels = c("1_nocturnal",
                                                       "2_intermediate",
                                                       "3_diurnal"))
 reptiles_no_fuzzy_traits_df$SVLMax <- as.numeric(reptiles_no_fuzzy_traits_df$SVLMax)
-reptiles_no_fuzzy_traits_df$ReproPerYear <- round(as.numeric(reptiles_no_fuzzy_traits_df$ReproPerYear), 2)
-reptiles_no_fuzzy_traits_df$OffspringPerRepro <- round(as.numeric(reptiles_no_fuzzy_traits_df$OffspringPerRepro), 2)
+reptiles_no_fuzzy_traits_df$OffspringPerYear <- round(as.numeric(reptiles_no_fuzzy_traits_df$OffspringPerYear), 2)
 reptiles_no_fuzzy_traits_df$TrophicLevel <- ordered(reptiles_no_fuzzy_traits_df$TrophicLevel,
                                            levels = c("1_herbivorous",
                                                       "2_omnivorous",
@@ -87,10 +101,7 @@ reptiles_no_fuzzy_traits_df$LimbDev <- ordered(reptiles_no_fuzzy_traits_df$LimbD
                                       levels = c("1_limbless",
                                                  "2_reduced",
                                                  "3_developed"))
-reptiles_no_fuzzy_traits_df$ActivitySeasonLength <- as.numeric(reptiles_no_fuzzy_traits_df$ActivitySeasonLength)
-reptiles_no_fuzzy_traits_df$BodyTemperature <- as.numeric(reptiles_no_fuzzy_traits_df$BodyTemperature)
-reptiles_no_fuzzy_traits_df$FirstBreedingAge <- round(as.numeric(reptiles_no_fuzzy_traits_df$FirstBreedingAge), 2)
-reptiles_no_fuzzy_traits_df$LongevityMax <- round(as.numeric(reptiles_no_fuzzy_traits_df$LongevityMax), 2)
+reptiles_no_fuzzy_traits_df$LongevityMax <- as.numeric(reptiles_no_fuzzy_traits_df$LongevityMax)
 
 
 # Link the two dataframes:

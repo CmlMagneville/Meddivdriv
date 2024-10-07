@@ -38,7 +38,7 @@ mammals_traits <- dplyr::filter(INTEGRADIV_traits,
 setdiff(colnames(INTEGRADIV_mammals_occ_df),
         unique(mammals_traits$Species))
 
-# Remove this species becaue it has no value for any trait (so can't impute them):
+# Remove this species because it has no value for any trait (so can't impute them):
 mammals_traits_corrected <- dplyr::filter(mammals_traits,
                                          ! Species %in% c( "Arvicola italicus"))
 
@@ -51,24 +51,38 @@ mammals_traits_df <- mammals_traits_corrected %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
+# Select only the traits to keep:
+mammals_traits_df <- mammals_traits_df %>%
+  dplyr::select(c("Species",
+                  "ActivityTime",
+                  "BodyMass",
+                  "ForagingStratum",
+                  "GenerationLength",
+                  "Hibernation",
+                  "OffspringPerRepro",
+                  "ReproPerYear",
+                  "TrophicLevel"))
+
+# Create a new traits: Offspring per year:
+mammals_traits_df <- mammals_traits_df %>%
+  dplyr::mutate("OffspringPerYear" = as.numeric(OffspringPerRepro)*as.numeric(ReproPerYear)) %>%
+  dplyr::select(-c("OffspringPerRepro",
+                   "ReproPerYear"))
+
 # Traits with the right format:
 mammals_traits_df$ActivityTime <- ordered(mammals_traits_df$ActivityTime,
                                           levels = c("1_nocturnal",
                                                      "2_intermediate",
                                                      "3_diurnal"))
 mammals_traits_df$BodyMass <- as.numeric(mammals_traits_df$BodyMass)
-mammals_traits_df$Dispersal <- as.numeric(mammals_traits_df$Dispersal)
 mammals_traits_df$ForagingStratum <- as.factor(mammals_traits_df$ForagingStratum)
 mammals_traits_df$GenerationLength <- as.numeric(mammals_traits_df$GenerationLength)
 mammals_traits_df$Hibernation <- as.factor(mammals_traits_df$Hibernation)
-mammals_traits_df$ReproPerYear <- as.numeric(mammals_traits_df$ReproPerYear)
-mammals_traits_df$OffspringPerRepro <- as.numeric(mammals_traits_df$OffspringPerRepro)
-mammals_traits_df$LongevityMax <- as.numeric(mammals_traits_df$LongevityMax)
+mammals_traits_df$OffspringPerYear <- as.numeric(mammals_traits_df$OffspringPerYear)
 mammals_traits_df$TrophicLevel <- ordered(mammals_traits_df$TrophicLevel,
                                           levels = c("1_herbivorous",
                                                      "2_omnivorous",
                                                      "3_carnivorous"))
-mammals_traits_df$WeaningAge <- as.numeric(mammals_traits_df$WeaningAge)
 
 # Save the traits:
 saveRDS(mammals_traits_df, file = here::here("transformed_data",
