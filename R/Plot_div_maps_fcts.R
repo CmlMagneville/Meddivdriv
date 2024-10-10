@@ -237,3 +237,105 @@ div.maps.plot <- function(div_per_cell_df,
 
 }
 
+
+
+div.3d.plots <- function(div_per_cell_list,
+                         div_facet_nm,
+                         taxa_nm,
+                         grid,
+                         plot_title,
+                         save) {
+
+  print("Make sure that the list is ordered with 1 - richness, 2 - dispersion,
+        3 - originality dataframes")
+
+  # Rename the column with metrics name:
+  for (i in c(1:length(div_per_cell_list))) {
+
+    dim_nm <- names(div_per_cell_list)[i]
+
+    colnames(div_per_cell_list[[i]])[2] <- dim_nm
+
+  }
+
+  # Remove rows with no values for all metrics:
+  cells_rm
+
+  # Link the df into a big dataframe:
+  for (i in  c(1:length(div_per_cell_list))){
+
+    if (i == 1){
+      dim_div_df <- div_per_cell_list[[i]][, c(1:2)]
+    }
+    if (i != 1){
+      dim_div_df <- dplyr::full_join(dim_div_df,
+                                     div_per_cell_list[[i]][, c(1:2)])
+    }
+
+  }
+
+  # Add a new column that will contains the code to plot:
+  dim_div_df$code <- rep(NA, nrow(dim_div_df))
+  for (i in c(1:nrow(dim_div_df))) {
+
+    if (dim_div_df[i, 2] > 0) {
+
+      if (dim_div_df[i, 3] > 0) {
+
+        if (dim_div_df[i, 4] > 0) {
+          dim_div_df[i, 5] <- "white"
+        }
+
+        if (dim_div_df[i, 4] < 0) {
+          dim_div_df[i, 5] <- "deeppink3"
+        }
+
+      }
+
+      if (dim_div_df[i, 3] < 0) {
+
+        if (dim_div_df[i, 4] > 0) {
+          dim_div_df[i, 5] <- "gold"
+        }
+
+        if (dim_div_df[i, 4] < 0) {
+          dim_div_df[i, 5] <- "firebrick"
+        }
+
+      }
+
+    }
+
+    if (dim_div_df[i, 2] < 0) {
+
+      if (dim_div_df[i, 3] > 0) {
+
+        if (dim_div_df[i, 4] > 0) {
+          dim_div_df[i, 5] <- "turquoise"
+        }
+
+        if (dim_div_df[i, 4] < 0) {
+          dim_div_df[i, 5] <- "royalblue3"
+        }
+
+      }
+
+      if (dim_div_df[i, 3] < 0) {
+
+        if (dim_div_df[i, 4] > 0) {
+          dim_div_df[i, 5] <- "yellowgreen"
+        }
+
+        if (dim_div_df[i, 4] < 0) {
+          dim_div_df[i, 5] <- "grey80"
+        }
+
+      }
+
+    }
+
+  }
+
+
+
+}
