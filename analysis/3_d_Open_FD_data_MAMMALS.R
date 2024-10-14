@@ -63,6 +63,33 @@ mammals_traits_df <- mammals_traits_df %>%
                   "ReproPerYear",
                   "TrophicLevel"))
 
+
+# 3 - Check extreme traits values ==============================================
+
+
+# We have spotted one error for birds:
+# ... the idea is then to check all extreme values for each trait as they
+# ... can profoundly impact the shape of the functional space
+# ... by affecting the range by which Gower distance is standardised.
+
+# For each trait, get the identity of species bearing traits > 99% quantile
+# ... and < 1% quantile:
+
+extreme_to_check_MAMMALS <- check.quantiles(traits_df = mammals_traits_df,
+                                            quant_traits_vect = c("BodyMass",
+                                                                  "GenerationLength",
+                                                                  "OffspringPerRepro",
+                                                                  "ReproPerYear"))
+
+# Save:
+write.csv(extreme_to_check_MAMMALS, file = here::here("transformed_data",
+                                                      "extreme_check_MAMMALS.csv"))
+# Everything seems to be ok.
+
+
+# 4 - Format and save ==========================================================
+
+
 # Create a new traits: Offspring per year:
 mammals_traits_df <- mammals_traits_df %>%
   dplyr::mutate("OffspringPerYear" = as.numeric(OffspringPerRepro)*as.numeric(ReproPerYear)) %>%

@@ -62,6 +62,44 @@ birds_traits_df <- dplyr::select(birds_traits_df,
                                    "ReproPerYear",
                                    "TarsusLength"))
 
+# Based on the AMNIOTE database, complete some missing values:
+birds_traits_df$OffspringPerRepro[which(birds_traits_df$Species == "Iduna opaca")] <- 3.3
+birds_traits_df$ReproPerYear[which(birds_traits_df$Species == "Iduna opaca")] <- 2
+
+
+
+
+# 3 - Check extreme traits values ==============================================
+
+
+# We have spotted one error for OffspringPerRepro for Clamator glandarius:
+# ... the idea is then to check all extreme values for each trait as they
+# ... can profoundly impact the shape of the functional space
+# ... by affecting the range by which Gower distance is standardised.
+
+# For each trait, get the identity of species bearing traits > 99% quantile
+# ... and < 1% quantile:
+
+extreme_to_check_BIRDS <- check.quantiles(traits_df = birds_traits_df,
+                                          quant_traits_vect = c("BeakLengthCulmen", "BeakRatio",
+                                                                "BodyMass",
+                                                                "GenerationLength", "HandWingIndex",
+                                                                "OffspringPerRepro",
+                                                                "ReproPerYear","TarsusLength"))
+
+# Save:
+write.csv(extreme_to_check_BIRDS, file = here::here("transformed_data",
+                                                  "extreme_check_BIRDS.csv"))
+
+
+# Correct extreme values based on expert knowledge + sources:
+# Bade on the AMNIOTE db (original value - 18 probably confused with Offspring per year)
+birds_traits_df$OffspringPerRepro[which(birds_traits_df$Species == "Clamator glandarius")] <- 4.8
+
+
+# 4 - Format and save ==========================================================
+
+
 # Create a new traits: Offspring per year:
 birds_traits_df <- birds_traits_df %>%
   dplyr::mutate("OffspringPerYear" = as.numeric(OffspringPerRepro)*as.numeric(ReproPerYear)) %>%
@@ -73,21 +111,19 @@ birds_traits_df <- birds_traits_df %>%
 birds_traits_df$BodyMass <- as.numeric(birds_traits_df$BodyMass)
 birds_traits_df$HandWingIndex <- as.numeric(birds_traits_df$HandWingIndex)
 birds_traits_df$Migration <- ordered(birds_traits_df$Migration,
-                                 levels = c("1_sedentary", "2_intermediate",
-                                            "3_migratory"))
+                                     levels = c("1_sedentary", "2_intermediate",
+                                                "3_migratory"))
 birds_traits_df$TarsusLength <- as.numeric(birds_traits_df$TarsusLength)
 birds_traits_df$OffspringPerYear <- as.numeric(birds_traits_df$OffspringPerYear)
 birds_traits_df$GenerationLength <- round(as.numeric(birds_traits_df$GenerationLength), 2)
 birds_traits_df$BeakRatio <- as.numeric(birds_traits_df$BeakRatio)
 birds_traits_df$BeakLengthCulmen <- as.numeric(birds_traits_df$BeakLengthCulmen)
 
-
 # Save the traits:
 saveRDS(birds_traits_df, file = here::here("transformed_data",
                                            "raw_traits_BIRDS.rds"))
 
-
-# 3 - Check for missing data ===================================================
+# 4 - Check for missing data ===================================================
 
 
 # Change first column name for funbiogeo use:

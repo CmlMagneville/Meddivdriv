@@ -85,8 +85,9 @@ imputed_sp_tr_BIRDS_df <- impute.missing.traits(sp_tr_NA_df = sp_tr_BIRDS_df,
                                                 taxo_df = family_order_completed_nms,
                                                 traits_NA_nms = c("OffspringPerYear",
                                                                   "GenerationLength"))
-# Missing two values of OffpsringPerYear for two Cuculiformes species:
-# ... Clamator_glandarius and Cuculus_canorus
+# Still Missing:
+# 2 species OffpsringPerYear for two Cuculiformes species - Clamator_glandarius and Cuculus_canorus
+# Will remove them in the following analysis
 
 # Save this final version of traits:
 saveRDS(imputed_sp_tr_BIRDS_df, file = here::here("transformed_data",

@@ -94,7 +94,10 @@ imputed_sp_tr_TREES_df <- impute.missing.traits(sp_tr_NA_df = sp_tr_TREES_df,
 saveRDS(imputed_sp_tr_TREES_df, file = here::here("transformed_data",
                                                         "final_traits_TREES.rds"))
 
-
+# Still miss:
+# 3 species for StemSpecDens: Chamaerops_humilis, Liquidambar_orientalis, Phoenix_theophrasti
+# 1 species for SLA: Liquidambar_orientalis
+# Will remove them while doing the analysis
 
 
 

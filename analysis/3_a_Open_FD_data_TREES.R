@@ -68,6 +68,34 @@ trees_traits_df <- trees_traits_df %>%
                   "StemSpecDens"))
 
 
+# 3 - Check extreme traits values ==============================================
+
+
+# We have spotted one error for birds:
+# ... the idea is then to check all extreme values for each trait as they
+# ... can profoundly impact the shape of the functional space
+# ... by affecting the range by which Gower distance is standardised.
+
+# For each trait, get the identity of species bearing traits > 99% quantile
+# ... and < 1% quantile:
+
+extreme_to_check_TREES <- check.quantiles(traits_df = trees_traits_df,
+                                          quant_traits_vect = c("BloomBreadth",
+                                                                "HeightMax",
+                                                                "LA",
+                                                                "SLA",
+                                                                "SeedMass",
+                                                                "StemSpecDens"))
+
+# Save:
+write.csv(extreme_to_check_TREES, file = here::here("transformed_data",
+                                                    "extreme_check_TREES.csv"))
+# Seems to be ok for extreme traits - check with naturalist and search
+
+
+# 4 - Format and save ==========================================================
+
+
 # Traits with the right format:
 trees_traits_df$LA <- as.numeric(trees_traits_df$LA)
 trees_traits_df$SeedMass <- as.numeric(trees_traits_df$SeedMass)
@@ -82,7 +110,7 @@ saveRDS(trees_traits_df, file = here::here("transformed_data",
                                            "raw_traits_TREES.rds"))
 
 
-# 3 - Check for missing data ===================================================
+# 5 - Check for missing data ===================================================
 
 
 # Change first column name for funbiogeo use:

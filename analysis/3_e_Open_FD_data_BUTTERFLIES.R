@@ -77,6 +77,31 @@ butterflies_traits_df <- butterflies_traits_df %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
 
+# 3 - Check extreme traits values ==============================================
+
+
+# We have spotted one error for birds:
+# ... the idea is then to check all extreme values for each trait as they
+# ... can profoundly impact the shape of the functional space
+# ... by affecting the range by which Gower distance is standardised.
+
+# For each trait, get the identity of species bearing traits > 99% quantile
+# ... and < 1% quantile:
+
+extreme_to_check_BUTTERFLIES <- check.quantiles(traits_df = butterflies_traits_df,
+                                                quant_traits_vect = c("FlyingPeriodBreadth",
+                                                                      "HostPlantSpec",
+                                                                      "VoltinismMax",
+                                                                      "WingIndex",
+                                                                      "WingSpan"))
+
+# Save:
+write.csv(extreme_to_check_BUTTERFLIES, file = here::here("transformed_data",
+                                                          "extreme_check_BUTTERFLIES.csv"))
+
+
+# 4 - Format and save ==========================================================
+
 # Format the right class for the traits:
 butterflies_traits_df$EggLayingType <- ordered(butterflies_traits_df$EggLayingType,
                                                        levels = c("1_single_egg",

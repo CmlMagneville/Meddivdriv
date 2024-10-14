@@ -46,8 +46,18 @@ species_nm <- rownames(sp_tr_BUTTERFLIES_df)
 species_nm_corrected <- stringr::str_replace(species_nm, '_', ' ')
 
 # Retrieve Genus, Family, Order:
-family_order_nms <- taxize::tax_name(species_nm, get = c("genus", "family", "order"),
+family_order_nms_1 <- taxize::tax_name(species_nm[1:50], get = c("genus", "family", "order"),
                                      db = 'ncbi')
+family_order_nms_2 <- taxize::tax_name(species_nm[51:100], get = c("genus", "family", "order"),
+                                       db = 'ncbi')
+family_order_nms_3 <- taxize::tax_name(species_nm[101:150], get = c("genus", "family", "order"),
+                                       db = 'ncbi')
+family_order_nms_4 <- taxize::tax_name(species_nm[151:233], get = c("genus", "family", "order"),
+                                       db = 'ncbi')
+family_order_nms <- dplyr::bind_rows(family_order_nms_1,
+                                      family_order_nms_2,
+                                      family_order_nms_3,
+                                      family_order_nms_4)
 
 # Which species where not found?
 missing_sp <- family_order_nms[which(is.na(family_order_nms$genus)), "query"]
@@ -58,9 +68,9 @@ family_order_completed_nms <- check.genus(taxo_df = family_order_nms,
 
 # Few species with missing information - complete by hand:
 missing_sp <- family_order_completed_nms[which(is.na(family_order_completed_nms$genus)), "query"]
-family_order_completed_nms[which(family_order_completed_nms$query == "Clethrionomys_glareolus"), c("genus", "family", "order")] <- c("Myodes",
-                                                                                                                                     "Cricetidae",
-                                                                                                                                     "Rodentia")
+family_order_completed_nms[which(family_order_completed_nms$query == "Aglais_io"), c("genus", "family", "order")] <- c("Aglais",
+                                                                                                                       "Nymphalidae",
+                                                                                                                        "Lepidoptera")
 # Save it:
 saveRDS(family_order_completed_nms, file = here::here("transformed_data",
                                                       "taxo_info_BUTTERFLIES.rds"))
@@ -77,14 +87,11 @@ missing_sp <- family_order_completed_nms[which(is.na(family_order_completed_nms$
 
 imputed_sp_tr_BUTTERFLIES_df <- impute.missing.traits(sp_tr_NA_df = sp_tr_BUTTERFLIES_df,
                                                   taxo_df = family_order_completed_nms,
-                                                  traits_NA_nms = c("BodyMass",
-                                                                    "ForagingStratum",
-                                                                    "ActivityTime",
-                                                                    "TrophicLevel",
-                                                                    "GenerationLength",
-                                                                    "Hibernation",
-                                                                    "OffspringPerYear"))
+                                                  traits_NA_nms = c("OverwinteringStage",
+                                                                    "HostPlantSpec",
+                                                                    "EggLayingType"))
 
 # Save this final version of traits:
 saveRDS(imputed_sp_tr_BUTTERFLIES_df, file = here::here("transformed_data",
                                                     "final_traits_BUTTERFLIES.rds"))
+# No missing values for any species :)

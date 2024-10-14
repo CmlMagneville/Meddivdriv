@@ -65,7 +65,6 @@ family_order_completed_nms[which(family_order_completed_nms$query == "Clethriono
 saveRDS(family_order_completed_nms, file = here::here("transformed_data",
                                                       "taxo_info_MAMMALS.rds"))
 
-
 # No missing information now:
 missing_sp <- family_order_completed_nms[which(is.na(family_order_completed_nms$genus)), "query"]
 
@@ -88,3 +87,5 @@ imputed_sp_tr_MAMMALS_df <- impute.missing.traits(sp_tr_NA_df = sp_tr_MAMMALS_df
 # Save this final version of traits:
 saveRDS(imputed_sp_tr_MAMMALS_df, file = here::here("transformed_data",
                                                      "final_traits_MAMMALS.rds"))
+# No missing values :)
+

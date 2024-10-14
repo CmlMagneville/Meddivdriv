@@ -86,6 +86,7 @@ imputed_sp_tr_REPTILES_df <- impute.missing.traits(sp_tr_NA_df = sp_tr_REPTILES_
                                                 traits_NA_nms = c("OffspringPerYear",
                                                                   "LongevityMax",
                                                                   "SVLMax"))
+# No value missing at all :)
 
 # Save this final version of traits:
 saveRDS(imputed_sp_tr_REPTILES_df, file = here::here("transformed_data",
