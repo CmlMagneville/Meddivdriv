@@ -10,7 +10,6 @@ div.maps.plot(
   metric_nm,
   grid,
   continuous,
-  std,
   col_pal,
   plot_title,
   save
@@ -36,14 +35,6 @@ the 10x10km grid (WOODIV one) or the 50x50km one (INTEGRADIV one).}
 \item{continuous}{if continuous equals \code{TRUE}, diversity values are
 plotted along a continuous scale. Otherwise they are plotted along a
 discrete scale defined by 1/10 of values.}
-
-\item{std}{a character string referring to whether colors should be
-standardised between 0 and 1 \code{"0-1"} or between 0 and the maximal
-value of the index \code{"0-max"}. Only used if a continuous color scale
-is chosen.}
-
-\item{col_pal}{a character string referring to the color palette to use
-from the \code{harrypotter} package}
 
 \item{plot_title}{a TRUE/FALSE value referring to plotting or not the graph
 title (on the diversity facet studied)}
