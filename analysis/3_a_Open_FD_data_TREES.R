@@ -102,7 +102,7 @@ trees_traits_df$SeedMass <- as.numeric(trees_traits_df$SeedMass)
 trees_traits_df$SLA <- as.numeric(trees_traits_df$SLA)
 trees_traits_df$StemSpecDens <- as.numeric(trees_traits_df$StemSpecDens)
 trees_traits_df$HeightMax <- as.numeric(trees_traits_df$HeightMax)
-trees_traits_df$BloomBreadth <- as.factor(trees_traits_df$BloomBreadth)
+trees_traits_df$BloomBreadth <- as.numeric(trees_traits_df$BloomBreadth)
 trees_traits_df$DispMode <- as.factor(trees_traits_df$DispMode)
 
 # Save the traits:
