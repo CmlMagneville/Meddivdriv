@@ -86,7 +86,17 @@ trees_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_mntd_clean_
                                         plot_title = TRUE,
                                         save = TRUE)
 
+# Map the three dimensions of PD together:
 
+# RIGHT ORDER: RICHNESS, MPD and THEN ORIGINALITY
+div_per_cell_list <- list("faith" = trees_ses_faith_clean_df,
+                          "mpd" = trees_ses_mpd_clean_df,
+                          "mntd" = trees_ses_mntd_clean_df)
+div_facet_nm <- "PD"
+taxa_nm <- "Trees"
+grid <- grid_50km
+plot_title <- TRUE
+save <- TRUE
 
 
 # 1 b - Maps SES FD (FRic, FMPD, FOri) =========================================
