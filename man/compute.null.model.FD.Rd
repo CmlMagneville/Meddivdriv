@@ -4,11 +4,17 @@
 \alias{compute.null.model.FD}
 \title{Compute null models for FD metrics}
 \usage{
-compute.null.model.FD(sp_faxes_coord, sp_asb_df, nb_asb_rep)
+compute.null.model.FD(sp_faxes_coord, faxes_nm_vect, sp_asb_df, nb_asb_rep)
+
+compute.null.model.FD(sp_faxes_coord, faxes_nm_vect, sp_asb_df, nb_asb_rep)
 }
 \arguments{
-\item{sp_faxes_coord}{the array with species coordinates of functional axes -
-with only the PC wanted. Saved in the \code{2_a_Compute_..._TD_FD_PD.R}.}
+\item{sp_faxes_coord}{a matrix gathering species coordinates in the
+functional space - from the mFD package. Must have at least the same number
+of dimensions than \code{faxes_nm_vect}.}
+
+\item{faxes_nm_vect}{a vector gathering the names of functional axes to study.
+They must be contained in the \code{sp_faxes_coord} matrix}
 
 \item{sp_asb_df}{a data frame with species in columns and asb (grid cells)
 in rows.}
@@ -19,7 +25,13 @@ each grid cell.}
 \value{
 a list of data frames - as many as FD metrics - with the grid cells
 in rows and the values of the metric for each null asb in columns.
+
+a list of data frames - as many as FD metrics - with the grid cells
+in rows and the values of the metric for each null asb in columns. For FRic,
+some values are NA because for some assemblages, to few species.
 }
 \description{
 Compute null models for FD metrics
+
+Compute FD null models
 }

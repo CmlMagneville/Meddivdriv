@@ -13,11 +13,10 @@
 
 # Define the pipe symbol so I can use it:
 `%>%` <- magrittr::`%>%`
+`%dopar%` <- foreach::`%dopar%`
 
 
 # 1 - Load data ========================================================
-
-
 
 # Species-traits data:
 sp_tr_TREES <- readRDS(here::here("transformed_data",
@@ -217,11 +216,14 @@ saveRDS(fric_indices_TREES, here::here("transformed_data",
 # ... compositions: as many null asb as wanted through the `nb_asb_rep` input:
 
 
-FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_TREES,
+FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_TREES[, c("PC1",
+                                                                                    "PC2",
+                                                                                    "PC3",
+                                                                                    "PC4")],
                                           faxes_nm_vect = c("PC1", "PC2", "PC3",
                                                             "PC4"),
                                           sp_asb_df = sp_occ_TREES,
-                                          nb_asb_rep = 100)
+                                          nb_asb_rep = 500)
 
 fric_null_models <- FD_null_asb_list$fric
 fmpd_null_models <- FD_null_asb_list$fmpd
