@@ -25,6 +25,10 @@
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
                                       "env_drivers_final_noNA_db.rds"))
 
+# Load the file which contain drivers shorter names:
+drivers_nm_df <- read.csv(here::here("env_db",
+                                     "Drivers_short_nm.csv"))
+
 # Load SES PD - mntd:
 mntd_ses_birds_df <- readRDS(here::here("transformed_data",
                                        "div_values_null_models",
@@ -158,7 +162,8 @@ varimp_birds <- test.rf.model(rf_data = rf_mntd_birds_df,
                               iteration_nb = 100,
                               metric_nm = "PD_MNTD",
                               taxa_nm = "BIRDS",
-                              plot = TRUE)
+                              plot = TRUE,
+                              drivers_nm_df)
 
 # Variable importance:
 varimp_birds[[1]]
@@ -235,7 +240,8 @@ varimp_reptiles <- test.rf.model(rf_data = rf_mntd_reptiles_df,
                                  iteration_nb = 100,
                                  metric_nm = "PD_MNTD",
                                  taxa_nm = "REPTILES",
-                                 plot = TRUE)
+                                 plot = TRUE,
+                                 drivers_nm_df)
 
 # Variable importance:
 varimp_reptiles[[1]]
@@ -312,7 +318,8 @@ varimp_trees <- test.rf.model(rf_data = rf_mntd_trees_df,
                               iteration_nb = 100,
                               metric_nm = "PD_MNTD",
                               taxa_nm = "TREES",
-                              plot = TRUE)
+                              plot = TRUE,
+                              drivers_nm_df)
 
 # Variable importance:
 varimp_trees[[1]]

@@ -83,10 +83,9 @@ setdiff(unique(INTEGRADIV_trees_occ_df$Species),
 setdiff(trees_phylogeny$tip.label,
         unique(INTEGRADIV_trees_occ_df$Species))
 
-# Remove the 2 species present in the phylogeny but not in our occ data:
+# Remove the 1 species present in the phylogeny but not in our occ data:
 trees_phylogeny_corrected <- ape::drop.tip(trees_phylogeny,
-                                           c("Pyrus syriaca",
-                                             "Tamarix passerinoides"),
+                                           c("Pyrus syriaca"),
                                            trim.internal = TRUE)
 setdiff(trees_phylogeny_corrected$tip.label,
         unique(INTEGRADIV_trees_occ_df$Species))

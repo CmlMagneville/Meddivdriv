@@ -76,7 +76,7 @@ saveRDS(butterflies_PD_MNTD_50km, here::here("transformed_data",
 
 PD_null_asb_list <- compute.null.model.PD(phylo_tree = butterflies_phylogeny,
                                           sp_asb_df = butterflies_occ_df,
-                                          nb_asb_rep = 1000)
+                                          nb_asb_rep = 500)
 
 faith_null_models <- PD_null_asb_list$faith
 mpd_null_models <- PD_null_asb_list$mpd
