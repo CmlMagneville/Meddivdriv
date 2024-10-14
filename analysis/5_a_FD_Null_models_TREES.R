@@ -22,8 +22,6 @@
 # Species-traits data:
 sp_tr_TREES <- readRDS(here::here("transformed_data",
                                   "final_traits_TREES.rds"))
-sp_tr_TREES <- tibble::column_to_rownames(sp_tr_TREES,
-                                          "Species")
 
 # Occurrence data:
 sp_occ_TREES <- readRDS(here::here("transformed_data",
@@ -34,19 +32,30 @@ str(sp_tr_TREES)
 
 # Create traits category data frame:
 traits_nm <- c("BloomBreadth",
-               "DispDist",
+               "DispMode",
                "HeightMax",
                "LA",
-               "LeafOutline",
-               "LeafPhenology",
-               "Pollination",
                "SLA",
                "SeedMass",
-               "SexualSystem",
                "StemSpecDens")
-traits_cat <- c("N", "O", "Q", "Q", "O", "O", "O", "Q", "Q", "N", "Q")
+traits_cat <- c("Q", "N", "Q", "Q", "Q", "Q", "Q")
 trait_cat_df <- data.frame(traits_nm, traits_cat)
 colnames(trait_cat_df) <- c("trait_name", "trait_type")
+
+# Remove species which have NAs from the sp*tr and occurrence dfs:
+sp_tr_TREES <- sp_tr_TREES[which(! rownames(sp_tr_TREES) %in%
+                                     c("Chamaerops_humilis",
+                                       "Liquidambar_orientalis",
+                                       "Phoenix_theophrasti",
+                                       "Staphylea_pinnata")), ]
+sp_occ_TREES <- sp_occ_TREES[, which(! colnames(sp_occ_TREES) %in%
+                                    c("Chamaerops humilis",
+                                      "Liquidambar orientalis",
+                                      "Phoenix theophrasti",
+                                      "Staphylea pinnata"))]
+
+# Rename species in sp*tr df to remove "_":
+rownames(sp_tr_TREES) <- stringr::str_replace(rownames(sp_tr_TREES), '_', ' ')
 
 
 # 2 - Summarise traits and assemblages =========================================
@@ -116,19 +125,14 @@ mFD::quality.fspaces.plot(
 # Retrieve TREES coordinates in the functional space:
 sp_faxes_coord_TREES <- fspaces_quality_TREES$"details_fspaces"$"sp_pc_coord"
 
-# Test correlation for half of the traits (because mFD limit to plot = 11):
+# Test correlation:
 tr_1_7_faxes_TREES <- mFD::traits.faxes.cor(
   sp_tr          = sp_tr_TREES[,c(1:7)],
   sp_faxes_coord = sp_faxes_coord_TREES[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
 tr_1_7_faxes_TREES
 
-# Test correlation for the other half::
-tr_8_11_faxes_TREES <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_TREES[,c(8:11)],
-  sp_faxes_coord = sp_faxes_coord_TREES[ , c("PC1", "PC2", "PC3", "PC4")],
-  plot           = TRUE)
-tr_8_11_faxes_TREES
+
 
 
 
@@ -142,7 +146,7 @@ fct_space_TREES <- mFD::funct.space.plot(
   faxes_nm        = NULL,
   range_faxes     = c(NA, NA),
   color_bg        = "grey95",
-  color_pool      = "darkgoldenrod2",
+  color_pool      = "darkgoldenrod3",
   fill_pool       = "white",
   shape_pool      = 21,
   size_pool       = 1,
@@ -151,8 +155,8 @@ fct_space_TREES <- mFD::funct.space.plot(
   fill_ch         = "white",
   alpha_ch        = 0.5,
   plot_vertices   = TRUE,
-  color_vert      = "turquoise",
-  fill_vert       = "turquoise",
+  color_vert      = "cyan4",
+  fill_vert       = "cyan4",
   shape_vert      = 23,
   size_vert       = 1,
   plot_sp_nm      = NULL,
