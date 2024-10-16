@@ -236,9 +236,9 @@ varimp_reptiles <- test.rf.model(rf_data = rf_fori_reptiles_df,
 varimp_reptiles[[1]]
 # Std Variable importance:
 varimp_reptiles[[2]]
-# Mean R-squared: 0.4656991
+# Mean R-squared: 0.3049044
 varimp_reptiles[[3]]
-# Sd R-squared: 0.009807748
+# Sd R-squared: 0.005425804
 varimp_reptiles[[4]]
 
 # Save variable importance:
