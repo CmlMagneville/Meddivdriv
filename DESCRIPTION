@@ -39,6 +39,7 @@ Imports:
     ranger,
     reshape,
     reshape2,
+    sobolMDA,
     stats,
     taxize,
     tibble

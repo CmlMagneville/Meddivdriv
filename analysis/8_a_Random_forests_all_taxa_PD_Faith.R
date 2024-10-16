@@ -297,14 +297,14 @@ varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
                               metric_nm = "PD_Faith",
                               taxa_nm = "TREES",
                               plot = TRUE,
-                              drivers_nm_df)
+                              drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.4776828
+# Mean R-squared: 0.4927059
 varimp_trees[[3]]
-# Sd R-squared: 0.004579286
+# Sd R-squared: 0.0041457
 varimp_trees[[4]]
 
 # Save variable importance:

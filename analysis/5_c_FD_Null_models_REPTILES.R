@@ -13,6 +13,7 @@
 
 # Define the pipe symbol so I can use it:
 `%>%` <- magrittr::`%>%`
+`%dopar%` <- foreach::`%dopar%`
 
 
 # 1 - Load data ========================================================
@@ -30,30 +31,19 @@ sp_occ_REPTILES <- readRDS(here::here("transformed_data",
 # Check that traits have the right format:
 str(sp_tr_REPTILES)
 
+# Rename species in sp*tr df to remove "_":
+rownames(sp_tr_REPTILES) <- stringr::str_replace(rownames(sp_tr_REPTILES), '_', ' ')
+
 # Create traits category data frame:
 traits_nm <- c("ActivityTime",
-               "OffspringPerRepro",
-               "ReproPerYear",
-               "TrophicLevel",
                "LimbDev",
-               "SVLMax",
-               "ActivitySeasonLength",
-               "BodyTemperature",
-               "FirstBreedingAge",
                "LongevityMax",
-               "terrestrial",
-               "saxicolous",
-               "arboreal",
-               "cryptic",
-               "fossorial",
-               "aquatic",
-               "semi_aquatic")
-traits_cat <- c("O", "Q", "Q", "O", "O", "Q", "Q", "Q", "Q", "Q",
-                "F", "F", "F", "F", "F", "F", "F")
-fuzzy_name <- c(rep(NA, 10),
-                rep("Substrate", 7))
-trait_cat_df <- data.frame(traits_nm, traits_cat, fuzzy_name)
-colnames(trait_cat_df) <- c("trait_name", "trait_type", "fuzzy_name")
+               "SVLMax",
+               "TrophicLevel",
+               "OffspringPerYear")
+traits_cat <- c("O", "O", "Q", "Q", "O", "Q")
+trait_cat_df <- data.frame(traits_nm, traits_cat)
+colnames(trait_cat_df) <- c("trait_name", "trait_type")
 
 
 # 2 - Summarise traits and assemblages =========================================
@@ -122,20 +112,12 @@ mFD::quality.fspaces.plot(
 # Retrieve REPTILES coordinates in the functional space:
 sp_faxes_coord_REPTILES <- fspaces_quality_REPTILES$"details_fspaces"$"sp_pc_coord"
 
-# Test correlation for half of the traits (because mFD limit to plot = 11):
-tr_1_6_faxes_REPTILES <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_REPTILES[,c(1:6)],
+# Test correlation:
+tr_faxes_REPTILES <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_REPTILES,
   sp_faxes_coord = sp_faxes_coord_REPTILES[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
-tr_1_6_faxes_REPTILES
-
-# Test correlation for the other half::
-tr_7_10_faxes_REPTILES <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_REPTILES[,c(7:10)],
-  sp_faxes_coord = sp_faxes_coord_REPTILES[ , c("PC1", "PC2", "PC3", "PC4")],
-  plot           = TRUE)
-tr_7_10_faxes_REPTILES
-
+tr_faxes_REPTILES
 
 
 # 6 - Plot functional spaces ===================================================
@@ -148,7 +130,7 @@ fct_space_REPTILES <- mFD::funct.space.plot(
   faxes_nm        = NULL,
   range_faxes     = c(NA, NA),
   color_bg        = "grey95",
-  color_pool      = "darkgoldenrod2",
+  color_pool      = "darkgoldenrod3",
   fill_pool       = "white",
   shape_pool      = 21,
   size_pool       = 1,
@@ -157,8 +139,8 @@ fct_space_REPTILES <- mFD::funct.space.plot(
   fill_ch         = "white",
   alpha_ch        = 0.5,
   plot_vertices   = TRUE,
-  color_vert      = "turquoise",
-  fill_vert       = "turquoise",
+  color_vert      = "cyan4",
+  fill_vert       = "cyan4",
   shape_vert      = 23,
   size_vert       = 1,
   plot_sp_nm      = NULL,
@@ -219,7 +201,11 @@ saveRDS(fric_indices_REPTILES, here::here("transformed_data",
 # ... compositions: as many null asb as wanted through the `nb_asb_rep` input:
 
 
-FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_REPTILES,
+FD_null_asb_list <- compute.null.model.FD.paral(sp_faxes_coord = sp_faxes_coord_REPTILES[,
+                                                                                         c("PC1",
+                                                                                           "PC2",
+                                                                                           "PC3",
+                                                                                           "PC4")],
                                           faxes_nm_vect = c("PC1", "PC2", "PC3",
                                                             "PC4"),
                                           sp_asb_df = sp_occ_REPTILES,
@@ -262,6 +248,14 @@ REPTILES_null_model_fmpd <- readRDS(here::here("transformed_data",
 REPTILES_null_model_fori <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
                                             "FD_FOri_null_models_50km_REPTILES.rds"))
+
+# Idgrid as rownames:
+REPTILES_null_model_fric <- tibble::column_to_rownames(REPTILES_null_model_fric,
+                                                    var = "Idgrid")
+REPTILES_null_model_fmpd <- tibble::column_to_rownames(REPTILES_null_model_fmpd,
+                                                    var = "Idgrid")
+REPTILES_null_model_fori <- tibble::column_to_rownames(REPTILES_null_model_fori,
+                                                    var = "Idgrid")
 
 # Load the actual values of FD indices:
 REPTILES_FD_FRic_50km <- readRDS(here::here("transformed_data",

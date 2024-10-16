@@ -25,6 +25,10 @@
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
                                       "env_drivers_final_noNA_db.rds"))
 
+# Load drivers names:
+drivers_nm_df <- read.csv(here::here("env_db",
+                                     "Drivers_short_nm.csv"))
+
 # Load SES FD - FMPD
 fmpd_ses_birds_df <- readRDS(here::here("transformed_data",
                                         "div_values_null_models",
@@ -165,14 +169,15 @@ varimp_birds <- test.rf.model(rf_data = rf_fmpd_birds_df,
                               iteration_nb = 100,
                               metric_nm = "FD_fmpd",
                               taxa_nm = "BIRDS",
+                              drivers_nm_df = drivers_nm_df,
                               plot = TRUE)
 # Variable importance:
 varimp_birds[[1]]
 # Std Variable importance:
 varimp_birds[[2]]
-# Mean R-squared: 0.6044054
+# Mean R-squared: 0.5871626
 varimp_birds[[3]]
-# Sd R-squared: 0.003167201
+# Sd R-squared: 0.00383027
 varimp_birds[[4]]
 
 # Save variable importance:
@@ -244,6 +249,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_fmpd_reptiles_df,
                                  iteration_nb = 100,
                                  metric_nm = "FD_fmpd",
                                  taxa_nm = "REPTILES",
+                                 drivers_nm_df = drivers_nm_df,
                                  plot = TRUE)
 # Variable importance:
 varimp_reptiles[[1]]
@@ -321,14 +327,15 @@ varimp_trees <- test.rf.model(rf_data = rf_fmpd_trees_df,
                               iteration_nb = 100,
                               metric_nm = "FD_fmpd",
                               taxa_nm = "TREES",
+                              drivers_nm_df = drivers_nm_df,
                               plot = TRUE)
 # Variable importance:
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.5943685
+# Mean R-squared:0.4100455
 varimp_trees[[3]]
-# Sd R-squared: 0.003117503
+# Sd R-squared:0.005505982
 varimp_trees[[4]]
 
 # Save variable importance:

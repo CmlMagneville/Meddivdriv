@@ -85,7 +85,7 @@ test.rf.model <- function(rf_data,
     # test <- rsample::testing(data_split)
 
     # Run the rf model:
-    rf_mod <- ranger::ranger(ses ~.,
+    rf_mod <- sobolMDA::ranger(ses ~.,
                              data = rf_data,
                              num.trees = 300,
                              importance = 'sobolMDA',
@@ -142,7 +142,7 @@ test.rf.model <- function(rf_data,
       ale_list <- list()
     }
     # Compute ALE plots for all the variables (drivers) and the given rf model:
-    print(paste0("ALE plot being computed for random forest #",
+    print(paste0("ALE data being retrived for random forest #",
                  sep = " ",
                  i))
     ale_list <- get.ale.data(rf_mod = rf_mod,

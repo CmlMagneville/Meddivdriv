@@ -216,7 +216,7 @@ saveRDS(fric_indices_TREES, here::here("transformed_data",
 # ... compositions: as many null asb as wanted through the `nb_asb_rep` input:
 
 
-FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_TREES[, c("PC1",
+FD_null_asb_list <- compute.null.model.FD.paral(sp_faxes_coord = sp_faxes_coord_TREES[, c("PC1",
                                                                                     "PC2",
                                                                                     "PC3",
                                                                                     "PC4")],
@@ -263,6 +263,13 @@ TREES_null_model_fori <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
                                             "FD_FOri_null_models_50km_TREES.rds"))
 
+# Idgrid as rownames:
+TREES_null_model_fric <- tibble::column_to_rownames(TREES_null_model_fric,
+                                                    var = "Idgrid")
+TREES_null_model_fmpd <- tibble::column_to_rownames(TREES_null_model_fmpd,
+                                                    var = "Idgrid")
+TREES_null_model_fori <- tibble::column_to_rownames(TREES_null_model_fori,
+                                                    var = "Idgrid")
 # Load the actual values of FD indices:
 TREES_FD_FRic_50km <- readRDS(here::here("transformed_data",
                                          "div_values_null_models",

@@ -13,7 +13,7 @@
 
 # Define the pipe symbol so I can use it:
 `%>%` <- magrittr::`%>%`
-
+`%dopar%` <- foreach::`%dopar%`
 
 # 1 - Load data and create traits category df ==================================
 
@@ -29,22 +29,34 @@ sp_occ_BIRDS <- readRDS(here::here("transformed_data",
 # Check that traits have the right format:
 str(sp_tr_BIRDS)
 
+# Rename species in sp*tr df to remove "_":
+rownames(sp_tr_BIRDS) <- stringr::str_replace(rownames(sp_tr_BIRDS), '_', ' ')
+
+# Remove species which have NAs from the sp*tr and occurrence dfs:
+sp_tr_BIRDS <- sp_tr_BIRDS[which(! rownames(sp_tr_BIRDS) %in%
+                                   c("Clamator glandarius",
+                                     "Cuculus canorus")), ]
+sp_occ_BIRDS <- sp_occ_BIRDS[, which(! colnames(sp_occ_BIRDS) %in%
+                                       c("Clamator glandarius",
+                                         "Cuculus canorus"))]
+
+setdiff(colnames(sp_occ_BIRDS), rownames(sp_tr_BIRDS))
+setdiff(rownames(sp_tr_BIRDS), colnames(sp_occ_BIRDS))
+
+
 # Create traits category data frame:
-traits_nm <- c("FirstBreedingAge",
-               "BeakLengthCulmen",
+traits_nm <- c("BeakLengthCulmen",
                "BeakRatio",
-               "ReproPerYear",
-               "OffspringPerRepro",
-               "FledgingPeriod",
+               "BodyMass",
+               "GenerationLength",
                "HandWingIndex",
-               "LongevityMax" ,
-               "BodyMass" ,
                "Migration" ,
-               "TailLength",
-               "TarsusLength")
-traits_cat <- c("O", "Q", "Q", "O", "Q", "Q", "Q", "Q", "Q", "O", "Q", "Q")
+               "TarsusLength",
+               "OffspringPerYear")
+traits_cat <- c("Q", "Q", "Q", "Q", "Q", "O", "Q", "Q")
 trait_cat_df <- data.frame(traits_nm, traits_cat)
 colnames(trait_cat_df) <- c("trait_name", "trait_type")
+
 
 
 # 2 - Summarise traits and assemblages =========================================
@@ -115,20 +127,12 @@ mFD::quality.fspaces.plot(
 # Retrieve birds coordinates in the functional space:
 sp_faxes_coord_BIRDS <- fspaces_quality_BIRDS$"details_fspaces"$"sp_pc_coord"
 
-# Test correlation for half of the traits (because mFD limit to plot = 11):
-tr_1_6_faxes_BIRDS <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_BIRDS[,c(1:6)],
+# Test correlation :
+tr_faxes_BIRDS <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_BIRDS,
   sp_faxes_coord = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
-tr_1_6_faxes_BIRDS
-
-# Test correlation for the other half:
-tr_7_11_faxes_BIRDS <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_BIRDS[,c(7:12)],
-  sp_faxes_coord = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
-  plot           = TRUE)
-tr_7_11_faxes_BIRDS
-
+tr_faxes_BIRDS
 
 # 6 - Plot functional spaces ===================================================
 
@@ -140,7 +144,7 @@ fct_space_BIRDS <- mFD::funct.space.plot(
   faxes_nm        = NULL,
   range_faxes     = c(NA, NA),
   color_bg        = "grey95",
-  color_pool      = "darkgoldenrod2",
+  color_pool      = "darkgoldenrod3",
   fill_pool       = "white",
   shape_pool      = 21,
   size_pool       = 1,
@@ -149,8 +153,8 @@ fct_space_BIRDS <- mFD::funct.space.plot(
   fill_ch         = "white",
   alpha_ch        = 0.5,
   plot_vertices   = TRUE,
-  color_vert      = "turquoise",
-  fill_vert       = "turquoise",
+  color_vert      = "cyan4",
+  fill_vert       = "cyan4",
   shape_vert      = 23,
   size_vert       = 1,
   plot_sp_nm      = NULL,
@@ -211,7 +215,10 @@ saveRDS(fric_indices_BIRDS, here::here("transformed_data",
 # ... compositions: as many null asb as wanted through the `nb_asb_rep` input:
 
 
-FD_null_asb_list <- compute.null.model.FD(sp_faxes_coord = sp_faxes_coord_BIRDS,
+FD_null_asb_list <- compute.null.model.FD.paral(sp_faxes_coord = sp_faxes_coord_BIRDS[, c("PC1",
+                                                                                    "PC2",
+                                                                                    "PC3",
+                                                                                    "PC4")],
                                           faxes_nm_vect = c("PC1", "PC2", "PC3",
                                                             "PC4"),
                                           sp_asb_df = sp_occ_BIRDS,
@@ -254,6 +261,13 @@ birds_null_model_fmpd <- readRDS(here::here("transformed_data",
 birds_null_model_fori <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
                                             "FD_FOri_null_models_50km_BIRDS.rds"))
+# Idgrid as rownames:
+birds_null_model_fric <- tibble::column_to_rownames(birds_null_model_fric,
+                                                    var = "Idgrid")
+birds_null_model_fmpd <- tibble::column_to_rownames(birds_null_model_fmpd,
+                                                    var = "Idgrid")
+birds_null_model_fori <- tibble::column_to_rownames(birds_null_model_fori,
+                                                    var = "Idgrid")
 
 # Load the actual values of FD indices:
 birds_FD_FRic_50km <- readRDS(here::here("transformed_data",
