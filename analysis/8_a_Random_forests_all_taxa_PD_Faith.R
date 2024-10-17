@@ -8,7 +8,7 @@
 ##
 ## Camille Magneville
 ##
-## 14/05/2024 - 09/2024
+## 14/05/2024 - 10/2024
 ##
 ## 8_a_Random_forests_all_taxa_PD_Faith.R
 ##
@@ -41,6 +41,13 @@ faith_ses_trees_df <- readRDS(here::here("transformed_data",
 faith_ses_reptiles_df <- readRDS(here::here("transformed_data",
                                          "div_values_null_models",
                                          "PD_Faith_null_models_metrics_50km_REPTILES.rds"))
+faith_ses_mammals_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "PD_Faith_null_models_metrics_50km_MAMMALS.rds"))
+faith_ses_butterflies_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "PD_Faith_null_models_metrics_50km_BUTTERFLIES.rds"))
+
 
 # Load grid data(for locating grid cells):
 grid_50km <- sf::st_read(here::here("integradiv_db",
@@ -64,9 +71,14 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 cells_ok_birds <- unique(faith_ses_birds_df$Idgrid)
 cells_ok_reptiles <- unique(faith_ses_reptiles_df$Idgrid)
 cells_ok_trees <- unique(faith_ses_trees_df$Idgrid)
+cells_ok_mammals <- unique(faith_ses_mammals_df$Idgrid)
+cells_ok_butterflies <- unique(faith_ses_butterflies_df$Idgrid)
+
 cells_to_keep <- intersect(intersect(cells_ok_birds,
                                      cells_ok_reptiles),
-                           cells_ok_trees)
+                                     cells_ok_trees,
+                                     cells_ok_mammals,
+                                     cells_ok_butterflies)
 locate.cells(cell_vect = cells_to_keep,
              grid = grid_50km)
 
@@ -76,6 +88,10 @@ faith_ses_birds_df <- faith_ses_birds_df %>%
 faith_ses_reptiles_df <- faith_ses_reptiles_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
 faith_ses_trees_df <- faith_ses_trees_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+faith_ses_mammals_df <- faith_ses_mammals_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+faith_ses_butterflies_df <- faith_ses_butterflies_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
 
 
@@ -89,6 +105,12 @@ rf_faith_trees_df <- dplyr::left_join(envdriv_full_db,
 rf_faith_reptiles_df <- dplyr::left_join(envdriv_full_db,
                                       faith_ses_reptiles_df[, c("Idgrid", "ses")],
                                       by = "Idgrid")
+rf_faith_mammals_df <- dplyr::left_join(envdriv_full_db,
+                                        faith_ses_mammals_df[, c("Idgrid", "ses")],
+                                        by = "Idgrid")
+rf_faith_butterflies_df <- dplyr::left_join(envdriv_full_db,
+                                            faith_ses_butterflies_df[, c("Idgrid", "ses")],
+                                            by = "Idgrid")
 
 # Put Idgrid as rownames:
 rf_faith_birds_df <- rf_faith_birds_df %>%
@@ -96,6 +118,10 @@ rf_faith_birds_df <- rf_faith_birds_df %>%
 rf_faith_trees_df <- rf_faith_trees_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 rf_faith_reptiles_df <- rf_faith_reptiles_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_faith_mammals_df <- rf_faith_mammals_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_faith_butterflies_df <- rf_faith_butterflies_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 
 
@@ -219,7 +245,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
                               metric_nm = "PD_Faith",
                               taxa_nm = "REPTILES",
                               plot = TRUE,
-                              drivers_nm_df)
+                              drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_reptiles[[1]]
 # Std Variable importance:
@@ -332,8 +358,159 @@ ggplot2::ggsave(plot = varimp_plot_trees,
                 units = "px",
                 dpi = 600)
 
+# 6 - Random forest for mammals ==================================================
 
-# 6 - Plot a heatmap comparing variables importance across taxa ================
+
+# Check types of variables
+str(rf_faith_mammals_df)
+
+# Check that diversity metric doesn't have NA:
+rownames(rf_faith_mammals_df[which(is.na(rf_faith_mammals_df$ses) == TRUE), ])
+
+# Change SES from names num to num:
+rf_faith_mammals_df$ses <- as.numeric(rf_faith_mammals_df$ses)
+
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 16 and 300 trees:
+rf_mammals <- randomForest::randomForest(ses~.,
+                                         data = rf_faith_mammals_df,
+                                         ntree = 300,
+                                         mtry = 17,
+                                         importance = TRUE)
+# ntree:
+plot(rf_mammals)
+
+# mtry:
+mtry <- randomForest::tuneRF(rf_faith_mammals_df[-ncol(rf_faith_mammals_df)],
+                             rf_faith_mammals_df$ses,
+                             mtryStart = 17,
+                             ntreeTry = 300,
+                             stepFactor = 1.5,
+                             improve = 0.00001,
+                             trace = TRUE,
+                             plot = TRUE)
+print(mtry) # mtry = 17 seems ok (after a few tries)
+
+
+# Compute 100 random forests and mean importance of each variable + ALE plots:
+varimp_mammals <- test.rf.model(rf_data = rf_faith_mammals_df,
+                                iteration_nb = 100,
+                                metric_nm = "PD_Faith",
+                                taxa_nm = "MAMMALS",
+                                plot = TRUE,
+                                drivers_nm_df = drivers_nm_df)
+# Variable importance:
+varimp_mammals[[1]]
+# Std Variable importance:
+varimp_mammals[[2]]
+# Mean R-squared: 0.500828
+varimp_mammals[[3]]
+# Sd R-squared: 0.004199216
+varimp_mammals[[4]]
+
+# Save variable importance:
+saveRDS(varimp_mammals[[1]], here::here("transformed_data",
+                                        "rf_mammals_PD_Faith_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_mammals[[2]], here::here("transformed_data",
+                                        "std_rf_mammals_PD_Faith_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_mammals <- varimp.plot(varimp_mammals[[2]])
+
+# Save it:
+ggplot2::ggsave(plot = varimp_plot_mammals,
+                filename = here::here("outputs",
+                                      "varimp_PD_Faith_50_MAMMALS.pdf"),
+                device = "pdf",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# 7 - Random forest for butterflies ==================================================
+
+
+# Check types of variables
+str(rf_faith_butterflies_df)
+
+# Check that diversity metric doesn't have NA:
+rownames(rf_faith_butterflies_df[which(is.na(rf_faith_butterflies_df$ses) == TRUE), ])
+
+# Change SES from names num to num:
+rf_faith_butterflies_df$ses <- as.numeric(rf_faith_butterflies_df$ses)
+
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 16 and 300 trees:
+rf_butterflies <- randomForest::randomForest(ses~.,
+                                             data = rf_faith_butterflies_df,
+                                             ntree = 300,
+                                             mtry = 17,
+                                             importance = TRUE)
+# ntree:
+plot(rf_butterflies)
+
+# mtry:
+mtry <- randomForest::tuneRF(rf_faith_butterflies_df[-ncol(rf_faith_butterflies_df)],
+                             rf_faith_butterflies_df$ses,
+                             mtryStart = 17,
+                             ntreeTry = 300,
+                             stepFactor = 1.5,
+                             improve = 0.00001,
+                             trace = TRUE,
+                             plot = TRUE)
+print(mtry) # mtry = 17 seems ok (after a few tries)
+
+
+# Compute 100 random forests and mean importance of each variable + ALE plots:
+varimp_butterflies <- test.rf.model(rf_data = rf_faith_butterflies_df,
+                                    iteration_nb = 100,
+                                    metric_nm = "PD_Faith",
+                                    taxa_nm = "BUTTERFLIES",
+                                    plot = TRUE,
+                                    drivers_nm_df = drivers_nm_df)
+# Variable importance:
+varimp_butterflies[[1]]
+# Std Variable importance:
+varimp_butterflies[[2]]
+# Mean R-squared: 0.500828
+varimp_butterflies[[3]]
+# Sd R-squared: 0.004199216
+varimp_butterflies[[4]]
+
+# Save variable importance:
+saveRDS(varimp_butterflies[[1]], here::here("transformed_data",
+                                            "rf_butterflies_PD_Faith_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_butterflies[[2]], here::here("transformed_data",
+                                            "std_rf_butterflies_PD_Faith_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_butterflies <- varimp.plot(varimp_butterflies[[2]])
+
+# Save it:
+ggplot2::ggsave(plot = varimp_plot_butterflies,
+                filename = here::here("outputs",
+                                      "varimp_PD_Faith_50_BUTTERFLIES.pdf"),
+                device = "pdf",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# 8 - Plot a heatmap comparing variables importance across taxa ================
 
 
 # a - Load rf data:
@@ -355,7 +532,7 @@ PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
                                   plot_nb = TRUE)
 
 
-# 7 - Broad categories importance: plot and test ===============================
+# 9 - Broad categories importance: plot and test ===============================
 
 
 # a - Load data ----------------------------------------------------------------
@@ -478,7 +655,7 @@ ggplot2::ggsave(plot = cat_imp[[2]],
                 dpi = 600)
 
 
-# 8 - Direction of the effect for each category ================================
+# 10 - Direction of the effect for each category ================================
 
 # Note: For each driver's category, we chose the first variables that ...
 # ... had the highest importance to study in which direction they are driving

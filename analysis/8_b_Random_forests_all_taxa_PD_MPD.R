@@ -40,6 +40,12 @@ mpd_ses_trees_df <- readRDS(here::here("transformed_data",
 mpd_ses_reptiles_df <- readRDS(here::here("transformed_data",
                                             "div_values_null_models",
                                             "PD_MPD_null_models_metrics_50km_REPTILES.rds"))
+mpd_ses_mammals_df <- readRDS(here::here("transformed_data",
+                                          "div_values_null_models",
+                                          "PD_MPD_null_models_metrics_50km_MAMMALS.rds"))
+mpd_ses_butterflies_df <- readRDS(here::here("transformed_data",
+                                          "div_values_null_models",
+                                          "PD_MPD_null_models_metrics_50km_BUTTERFLIES.rds"))
 
 # Load grid data(for locating grid cells):
 grid_50km <- sf::st_read(here::here("integradiv_db",
@@ -63,9 +69,13 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 cells_ok_birds <- unique(mpd_ses_birds_df$Idgrid)
 cells_ok_reptiles <- unique(mpd_ses_reptiles_df$Idgrid)
 cells_ok_trees <- unique(mpd_ses_trees_df$Idgrid)
+cells_ok_mammals <- unique(mpd_ses_trees_df$Idgrid)
+cells_ok_butterflies <- unique(mpd_ses_trees_df$Idgrid)
 cells_to_keep <- intersect(intersect(cells_ok_birds,
-                                     cells_ok_reptiles),
-                           cells_ok_trees)
+                                     cells_ok_reptiles,),
+                                     cells_ok_trees,
+                                     cells_ok_mammals,
+                                     cells_ok_butterflies)
 locate.cells(cell_vect = cells_to_keep,
              grid = grid_50km)
 
@@ -75,6 +85,10 @@ mpd_ses_birds_df <- mpd_ses_birds_df %>%
 mpd_ses_reptiles_df <- mpd_ses_reptiles_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
 mpd_ses_trees_df <- mpd_ses_trees_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+mpd_ses_mammals_df <- mpd_ses_mammals_df %>%
+  dplyr::filter(Idgrid %in% cells_to_keep)
+mpd_ses_butterflies_df <- mpd_ses_butterflies_df %>%
   dplyr::filter(Idgrid %in% cells_to_keep)
 
 
@@ -88,26 +102,13 @@ rf_mpd_trees_df <- dplyr::left_join(envdriv_full_db,
 rf_mpd_reptiles_df <- dplyr::left_join(envdriv_full_db,
                                          mpd_ses_reptiles_df[, c("Idgrid", "ses")],
                                          by = "Idgrid")
+rf_mpd_mammals_df <- dplyr::left_join(envdriv_full_db,
+                                       mpd_ses_mammals_df[, c("Idgrid", "ses")],
+                                       by = "Idgrid")
+rf_mpd_butterflies_df <- dplyr::left_join(envdriv_full_db,
+                                       mpd_ses_butterflies_df[, c("Idgrid", "ses")],
+                                       by = "Idgrid")
 
-
-# Check that diversity metrics don't have NA:
-rf_mpd_birds_df$Idgrid[which(is.na(rf_mpd_birds_df$ses) == TRUE)]
-rf_mpd_trees_df$Idgrid[which(is.na(rf_mpd_trees_df$ses) == TRUE)]
-rf_mpd_reptiles_df$Idgrid[which(is.na(rf_mpd_reptiles_df$ses) == TRUE)]
-
-# Only keep the cells where the diversity metric can be computed for all taxa
-# ... otherwise one driver can be important for a given taxa but not for others
-# ... given that this driver has specific values on the grid cells that do not
-# ... contain all taxa:
-to_remove <- unique(c(rf_mpd_birds_df$Idgrid[which(is.na(rf_mpd_birds_df$ses) == TRUE)],
-                      rf_mpd_trees_df$Idgrid[which(is.na(rf_mpd_trees_df$ses) == TRUE)],
-                      rf_mpd_reptiles_df$Idgrid[which(is.na(rf_mpd_reptiles_df$ses) == TRUE)]))
-rf_mpd_birds_df <- rf_mpd_birds_df %>%
-  dplyr::filter(! Idgrid %in% to_remove)
-rf_mpd_reptiles_df <- rf_mpd_reptiles_df %>%
-  dplyr::filter(! Idgrid %in% to_remove)
-rf_mpd_trees_df <- rf_mpd_trees_df %>%
-  dplyr::filter(! Idgrid %in% to_remove)
 
 # Put Idgrid as rownames:
 rf_mpd_birds_df <- rf_mpd_birds_df %>%
@@ -116,14 +117,14 @@ rf_mpd_trees_df <- rf_mpd_trees_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 rf_mpd_reptiles_df <- rf_mpd_reptiles_df %>%
   tibble::column_to_rownames(var = "Idgrid")
+rf_mpd_mammals_df <- rf_mpd_mammals_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_mpd_butterflies_df <- rf_mpd_butterflies_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
 
 
-# With which cells are we finally doing the rf?
-locate.cells(cell_vect = rownames(rf_mpd_reptiles_df),
-             grid = grid_50km)
 
-
-# 4 - Random forest for birds ==================================================
+# 3 - Random forest for birds ==================================================
 
 
 # Check types of variables
@@ -164,7 +165,7 @@ varimp_birds <- test.rf.model(rf_data = rf_mpd_birds_df,
                               metric_nm = "PD_MPD",
                               taxa_nm = "BIRDS",
                               plot = TRUE,
-                              drivers_nm_df)
+                              drivers_nm_df = drivers_nm_df)
 
 # Variable importance:
 varimp_birds[[1]]
@@ -242,7 +243,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_mpd_reptiles_df,
                               metric_nm = "PD_MPD",
                               taxa_nm = "REPTILES",
                               plot = TRUE,
-                              drivers_nm_df)
+                              drivers_nm_df = drivers_nm_df)
 
 # Variable importance:
 varimp_reptiles[[1]]
@@ -320,7 +321,7 @@ varimp_trees <- test.rf.model(rf_data = rf_mpd_trees_df,
                               metric_nm = "PD_MPD",
                               taxa_nm = "TREES",
                               plot = TRUE,
-                              drivers_nm_df)
+                              drivers_nm_df = drivers_nm_df)
 
 # Variable importance:
 varimp_trees[[1]]
@@ -357,7 +358,162 @@ ggplot2::ggsave(plot = varimp_plot_trees,
                 dpi = 600)
 
 
-# 6 - Plot a heatmap comparing variables importance across taxa ================
+# 6 - Random forest for mammals ==================================================
+
+
+# Check types of variables
+str(rf_mpd_mammals_df)
+
+# Change SES from names num to num:
+rf_mpd_mammals_df$ses <- as.numeric(rf_mpd_mammals_df$ses)
+
+# Set seed for randomisation:
+set.seed(42)
+
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
+rf_mammals <- randomForest::randomForest(ses~.,
+                                         data = rf_mpd_mammals_df,
+                                         ntree = 300,
+                                         mtry = 17,
+                                         importance = TRUE)
+# ntree:
+plot(rf_mammals)
+
+# mtry:
+mtry <- randomForest::tuneRF(rf_mpd_mammals_df[-ncol(rf_mpd_mammals_df)],
+                             rf_mpd_mammals_df$ses,
+                             mtryStart = 17,
+                             ntreeTry = 300,
+                             stepFactor = 1.5,
+                             improve = 0.00001,
+                             trace = TRUE,
+                             plot = TRUE)
+print(mtry) # mtry = 17 seems ok (after a few tries)
+
+
+# Compute 100 random forests and mean importance of each variable:
+# % Var explained around 50%
+varimp_mammals <- test.rf.model(rf_data = rf_mpd_mammals_df,
+                                iteration_nb = 100,
+                                metric_nm = "PD_MPD",
+                                taxa_nm = "MAMMALS",
+                                plot = TRUE,
+                                drivers_nm_df = drivers_nm_df)
+
+# Variable importance:
+varimp_mammals[[1]]
+# Std Variable importance:
+varimp_mammals[[2]]
+# Mean R-squared: 0.5083114
+varimp_mammals[[3]]
+# Sd R-squared: 0.003843679
+varimp_mammals[[4]]
+
+# Save variable importance:
+saveRDS(varimp_mammals[[1]], here::here("transformed_data",
+                                        "rf_mammals_PD_mpd_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_mammals[[2]], here::here("transformed_data",
+                                        "std_rf_mammals_PD_mpd_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_mammals <- varimp.plot(varimp_mammals[[2]])
+
+# Save it:
+ggplot2::ggsave(plot = varimp_plot_mammals,
+                filename = here::here("outputs",
+                                      "varimp_PD_mpd_50_MAMMALS.pdf"),
+                device = "pdf",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+# 7 - Random forest for butterflies ==================================================
+
+
+# Check types of variables
+str(rf_mpd_butterflies_df)
+
+# Change SES from names num to num:
+rf_mpd_butterflies_df$ses <- as.numeric(rf_mpd_butterflies_df$ses)
+
+# Set seed for randomisation:
+set.seed(42)
+
+# See if 300 trees and mtry = 17 ok:
+# Run the random forest model mtry = 17 and 300 trees:
+rf_butterflies <- randomForest::randomForest(ses~.,
+                                             data = rf_mpd_butterflies_df,
+                                             ntree = 300,
+                                             mtry = 17,
+                                             importance = TRUE)
+# ntree:
+plot(rf_butterflies)
+
+# mtry:
+mtry <- randomForest::tuneRF(rf_mpd_butterflies_df[-ncol(rf_mpd_butterflies_df)],
+                             rf_mpd_butterflies_df$ses,
+                             mtryStart = 17,
+                             ntreeTry = 300,
+                             stepFactor = 1.5,
+                             improve = 0.00001,
+                             trace = TRUE,
+                             plot = TRUE)
+print(mtry) # mtry = 17 seems ok (after a few tries)
+
+
+# Compute 100 random forests and mean importance of each variable:
+# % Var explained around 50%
+varimp_butterflies <- test.rf.model(rf_data = rf_mpd_butterflies_df,
+                                    iteration_nb = 100,
+                                    metric_nm = "PD_MPD",
+                                    taxa_nm = "BUTTERFLIES",
+                                    plot = TRUE,
+                                    drivers_nm_df = drivers_nm_df)
+
+# Variable importance:
+varimp_butterflies[[1]]
+# Std Variable importance:
+varimp_butterflies[[2]]
+# Mean R-squared: 0.5083114
+varimp_butterflies[[3]]
+# Sd R-squared: 0.003843679
+varimp_butterflies[[4]]
+
+# Save variable importance:
+saveRDS(varimp_butterflies[[1]], here::here("transformed_data",
+                                            "rf_butterflies_PD_mpd_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_butterflies[[2]], here::here("transformed_data",
+                                            "std_rf_butterflies_PD_mpd_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_butterflies <- varimp.plot(varimp_butterflies[[2]])
+
+# Save it:
+ggplot2::ggsave(plot = varimp_plot_butterflies,
+                filename = here::here("outputs",
+                                      "varimp_PD_mpd_50_BUTTERFLIES.pdf"),
+                device = "pdf",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# 8 - Plot a heatmap comparing variables importance across taxa ================
 
 
 # a - Load rf data:
@@ -379,7 +535,7 @@ PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
                                 plot_nb = TRUE)
 
 
-# 7 - Broad categories importance: plot and test ===============================
+# 9 - Broad categories importance: plot and test ===============================
 
 
 # a - Load data ----------------------------------------------------------------
@@ -502,7 +658,7 @@ ggplot2::ggsave(plot = cat_imp[[2]],
                 dpi = 600)
 
 
-# 8 - Direction of the effect for each category ================================
+# 10 - Direction of the effect for each category ================================
 
 # Note: For each driver's category, we chose the first variables that ...
 # ... had the highest importance to study in which direction they are driving

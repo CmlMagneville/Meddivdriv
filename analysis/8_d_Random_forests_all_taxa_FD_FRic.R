@@ -39,6 +39,12 @@ fric_ses_trees_df <- readRDS(here::here("transformed_data",
 fric_ses_reptiles_df <- readRDS(here::here("transformed_data",
                                            "div_values_null_models",
                                            "FD_FRic_null_models_metrics_50km_REPTILES.rds"))
+fric_ses_mammals_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "FD_FRic_null_models_metrics_50km_MAMMALS.rds"))
+fric_ses_butterflies_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "FD_FRic_null_models_metrics_50km_BUTTERFLIES.rds"))
 # Remove cells with NA if any ...
 # ... (i.e. problem species position in the functional space):
 cells_NA_birds <- unique(fric_ses_birds_df$Idgrid[which(is.na(fric_ses_birds_df$ses) == TRUE)],
@@ -50,6 +56,12 @@ cells_NA_reptiles
 cells_NA_trees <- unique(fric_ses_trees_df$Idgrid[which(is.na(fric_ses_trees_df$ses) == TRUE)],
                          fric_ses_trees_df$Idgrid[which(fric_ses_trees_df$ses == "NaN")])
 cells_NA_trees
+cells_NA_mammals <- unique(fric_ses_mammals_df$Idgrid[which(is.na(fric_ses_mammals_df$ses) == TRUE)],
+                         fric_ses_mammals_df$Idgrid[which(fric_ses_mammals_df$ses == "NaN")])
+cells_NA_mammals
+cells_NA_butterflies <- unique(fric_ses_butterflies_df$Idgrid[which(is.na(fric_ses_butterflies_df$ses) == TRUE)],
+                         fric_ses_butterflies_df$Idgrid[which(fric_ses_butterflies_df$ses == "NaN")])
+cells_NA_butterflies
 
 fric_ses_birds_df <- fric_ses_birds_df %>%
   dplyr::filter(! Idgrid %in% cells_NA_birds)
@@ -57,6 +69,10 @@ fric_ses_reptiles_df <- fric_ses_reptiles_df %>%
   dplyr::filter(! Idgrid %in% cells_NA_reptiles)
 fric_ses_trees_df <- fric_ses_trees_df %>%
   dplyr::filter(!Idgrid %in% cells_NA_trees)
+fric_ses_mammals_df <- fric_ses_mammals_df %>%
+  dplyr::filter(!Idgrid %in% cells_NA_mammals)
+fric_ses_butterflies_df <- fric_ses_butterflies_df %>%
+  dplyr::filter(!Idgrid %in% cells_NA_butterflies)
 
 # Load grid data(for locating grid cells):
 grid_50km <- sf::st_read(here::here("integradiv_db",
@@ -80,6 +96,9 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 cells_ok_birds <- unique(fric_ses_birds_df$Idgrid)
 cells_ok_reptiles <- unique(fric_ses_reptiles_df$Idgrid)
 cells_ok_trees <- unique(fric_ses_trees_df$Idgrid)
+cells_ok_mammals <- unique(fric_ses_mammals_df$Idgrid)
+cells_ok_butterflies <- unique(fric_ses_butterflies_df$Idgrid)
+
 cells_to_keep <- intersect(intersect(cells_ok_birds,
                                      cells_ok_reptiles),
                            cells_ok_trees)
