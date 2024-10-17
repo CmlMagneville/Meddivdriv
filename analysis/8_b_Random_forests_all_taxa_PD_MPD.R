@@ -69,8 +69,8 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 cells_ok_birds <- unique(mpd_ses_birds_df$Idgrid)
 cells_ok_reptiles <- unique(mpd_ses_reptiles_df$Idgrid)
 cells_ok_trees <- unique(mpd_ses_trees_df$Idgrid)
-cells_ok_mammals <- unique(mpd_ses_trees_df$Idgrid)
-cells_ok_butterflies <- unique(mpd_ses_trees_df$Idgrid)
+cells_ok_mammals <- unique(mpd_ses_mammals_df$Idgrid)
+cells_ok_butterflies <- unique(mpd_ses_butterflies_df$Idgrid)
 cells_to_keep <- intersect(intersect(cells_ok_birds,
                                      cells_ok_reptiles,),
                                      cells_ok_trees,

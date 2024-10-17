@@ -480,6 +480,10 @@ trees_occ_df <- readRDS(here::here("transformed_data",
                                    "sp_asb_50km_TREES.rds"))
 reptiles_occ_df <- readRDS(here::here("transformed_data",
                                       "sp_asb_50km_REPTILES.rds"))
+mammals_occ_df <- readRDS(here::here("transformed_data",
+                                      "sp_asb_50km_REPTILES.rds"))
+butterflies_occ_df <- readRDS(here::here("transformed_data",
+                                      "sp_asb_50km_REPTILES.rds"))
 
 ## DIVERSITY db
 

@@ -403,9 +403,9 @@ varimp_mammals <- test.rf.model(rf_data = rf_faith_mammals_df,
 varimp_mammals[[1]]
 # Std Variable importance:
 varimp_mammals[[2]]
-# Mean R-squared: 0.500828
+# Mean R-squared: 0.8376617
 varimp_mammals[[3]]
-# Sd R-squared: 0.004199216
+# Sd R-squared: 0.002495345
 varimp_mammals[[4]]
 
 # Save variable importance:
