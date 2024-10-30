@@ -120,7 +120,7 @@ saveRDS(trees_traits_corrected_df, file = here::here("transformed_data",
 
 
 # Change first column name for funbiogeo use:
-funbiogeo_df <- dplyr::rename(trees_traits_df, species = Species)
+funbiogeo_df <- dplyr::rename(trees_traits_corrected_df, species = Species)
 
 # Get the percentage of completedness per traits:
 funbiogeo::fb_plot_number_species_by_trait(funbiogeo_df)
