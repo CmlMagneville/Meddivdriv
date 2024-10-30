@@ -38,9 +38,7 @@ mammals_traits <- dplyr::filter(INTEGRADIV_traits,
 setdiff(colnames(INTEGRADIV_mammals_occ_df),
         unique(mammals_traits$Species))
 
-# Remove this species because it has no value for any trait (so can't impute them):
-mammals_traits_corrected <- dplyr::filter(mammals_traits,
-                                         ! Species %in% c( "Arvicola italicus"))
+# This species has no traits value - add it in the db later
 
 # Check traits db only contains species in the occurrence df: YES :)
 setdiff(unique(mammals_traits$Species),
@@ -63,6 +61,17 @@ mammals_traits_df <- mammals_traits_df %>%
                   "ReproPerYear",
                   "TrophicLevel"))
 
+# Add the species with didn't have any traits value (A. italicus):
+mammals_traits_df <- tibble::add_row(mammals_traits_df,
+                                     Species = "Arvicola italicus",
+                                     ActivityTime = NA,
+                                     BodyMass = NA,
+                                     ForagingStratum = NA,
+                                     GenerationLength = NA,
+                                     Hibernation = NA,
+                                     OffspringPerRepro = NA,
+                                     ReproPerYear = NA,
+                                     TrophicLevel = NA)
 
 # 3 - Check extreme traits values ==============================================
 
