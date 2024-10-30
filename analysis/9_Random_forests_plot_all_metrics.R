@@ -163,7 +163,6 @@ palette <- c("#88CCEE",
              "#44AA99",
              "#117733",
              "#DDCC77",
-             "#CC6677",
              "#882255")
 circular_plot_trees <- circular.drivers.plot(taxa_plot_df = rf_plot_trees_df,
                                              drivers_nm_df = drivers_nm_df,
