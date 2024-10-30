@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## Script to impute traits based on missForests - for BIRDS
+## Script to impute traits based on taxonomic data - for BIRDS
 ##
 ## Camille Magneville
 ##
@@ -78,7 +78,8 @@ missing_sp <- family_order_completed_nms[which(is.na(family_order_completed_nms$
 
 # 3 - Complete based on the closest taxonomic level which has information ======
 
-
+family_order_completed_nms <- readRDS(file = here::here("transformed_data",
+                                                      "taxo_info_BIRDS.rds"))
 # Note: Do the mean for quantitative traits and the mode for qualitative traits
 
 imputed_sp_tr_BIRDS_df <- impute.missing.traits(sp_tr_NA_df = sp_tr_BIRDS_df,

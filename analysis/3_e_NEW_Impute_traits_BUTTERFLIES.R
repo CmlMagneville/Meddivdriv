@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## Script to impute traits based on missForests - for BUTTERFLIES
+## Script to impute traits based on taxonomic data - for BUTTERFLIES
 ##
 ## Camille Magneville
 ##

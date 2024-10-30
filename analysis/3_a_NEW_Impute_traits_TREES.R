@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## Script to impute traits based on missForests - for TREES
+## Script to impute traits based on taxonomic data - for TREES
 ##
 ## Camille Magneville
 ##
@@ -30,6 +30,7 @@ funbiogeo::fb_plot_number_traits_by_species(funbiogeo_df)
 # Check traits in the right format:
 str(sp_tr_TREES)
 
+
 # 2 - Retrieve species Genus/Family information =============
 
 
@@ -55,7 +56,8 @@ family_order_completed_nms <- sp_tr_TREES_df %>%
   dplyr::select(c("species", "genus", "family", "order")) %>%
   dplyr::rename(query = "species") %>%
   dplyr::mutate(db = "woodiv") %>%
-  dplyr::select("db", "query", "order", "family", "genus")
+  dplyr::select("db", "query", "order", "family", "genus") %>%
+  dplyr::distinct()
 
 
 # Save it:
