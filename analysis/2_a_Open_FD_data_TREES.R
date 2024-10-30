@@ -56,7 +56,7 @@ trees_traits_df <- trees_traits_corrected %>%
   dplyr::select(c("Species", "Trait", "Value")) %>%
   tidyr::pivot_wider(names_from = Trait, values_from = Value)
 
-# Keep only the 11 traits needed:
+# Keep only the 7 traits needed:
 trees_traits_df <- trees_traits_df %>%
   dplyr::select(c("Species",
                   "BloomBreadth",
@@ -90,23 +90,29 @@ extreme_to_check_TREES <- check.quantiles(traits_df = trees_traits_df,
 # Save:
 write.csv(extreme_to_check_TREES, file = here::here("transformed_data",
                                                     "extreme_check_TREES.csv"))
-# Seems to be ok for extreme traits - check with naturalist and search
+
+# Correct extreme traits values based on expert knowledge and litterature...
+# ... or NA if value is not right but no other options:
+trees_traits_corrected_df <- trees_traits_df
+# 1 - Arbustus andrachne: LA value 10 times too high - NA:
+trees_traits_corrected_df$LA[which(trees_traits_corrected_df$Species == "Arbutus andrachne")] <- NA
 
 
 # 4 - Format and save ==========================================================
 
 
+
 # Traits with the right format:
-trees_traits_df$LA <- as.numeric(trees_traits_df$LA)
-trees_traits_df$SeedMass <- as.numeric(trees_traits_df$SeedMass)
-trees_traits_df$SLA <- as.numeric(trees_traits_df$SLA)
-trees_traits_df$StemSpecDens <- as.numeric(trees_traits_df$StemSpecDens)
-trees_traits_df$HeightMax <- as.numeric(trees_traits_df$HeightMax)
-trees_traits_df$BloomBreadth <- as.numeric(trees_traits_df$BloomBreadth)
-trees_traits_df$DispMode <- as.factor(trees_traits_df$DispMode)
+trees_traits_corrected_df$LA <- as.numeric(trees_traits_corrected_df$LA)
+trees_traits_corrected_df$SeedMass <- as.numeric(trees_traits_corrected_df$SeedMass)
+trees_traits_corrected_df$SLA <- as.numeric(trees_traits_corrected_df$SLA)
+trees_traits_corrected_df$StemSpecDens <- as.numeric(trees_traits_corrected_df$StemSpecDens)
+trees_traits_corrected_df$HeightMax <- as.numeric(trees_traits_corrected_df$HeightMax)
+trees_traits_corrected_df$BloomBreadth <- as.numeric(trees_traits_corrected_df$BloomBreadth)
+trees_traits_corrected_df$DispMode <- as.factor(trees_traits_corrected_df$DispMode)
 
 # Save the traits:
-saveRDS(trees_traits_df, file = here::here("transformed_data",
+saveRDS(trees_traits_corrected_df, file = here::here("transformed_data",
                                            "raw_traits_TREES.rds"))
 
 
