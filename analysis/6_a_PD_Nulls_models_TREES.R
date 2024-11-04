@@ -21,7 +21,7 @@
 # 1 - Load data ========================================================
 
 
-# Load occ data:
+# Load occ data (restricted to 411 cells - cf script 5):
 trees_occ_df <- readRDS(here::here("transformed_data",
                                    "sp_asb_50km_restricted_TREES.rds"))
 
