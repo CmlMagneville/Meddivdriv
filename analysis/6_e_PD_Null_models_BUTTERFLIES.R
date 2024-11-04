@@ -27,7 +27,7 @@ butterflies_occ_df <- readRDS(here::here("transformed_data",
 
 # Load butterflies phylogeny:
 butterflies_phylogeny <- ape::read.tree(file = here::here("transformed_data",
-                                                    "phylogeny_BUTTERFLIES.tree"))
+                                                    "phylogeny_restricted_BUTTERFLIES.tree"))
 
 
 

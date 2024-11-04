@@ -20,7 +20,7 @@
 
 # Species-traits data:
 sp_tr_TREES <- readRDS(here::here("transformed_data",
-                                  "final_traits_TREES.rds"))
+                                  "final_traits_restricted_TREES.rds"))
 
 # Occurrence data:
 sp_occ_TREES <- readRDS(here::here("transformed_data",

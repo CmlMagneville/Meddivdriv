@@ -20,7 +20,7 @@
 
 # Species-traits data:
 sp_tr_MAMMALS <- readRDS(here::here("transformed_data",
-                                  "final_traits_MAMMALS.rds"))
+                                  "final_traits_restricted_MAMMALS.rds"))
 
 # Occurrence data:
 sp_occ_MAMMALS <- readRDS(here::here("transformed_data",

@@ -27,7 +27,7 @@ reptiles_occ_df <- readRDS(here::here("transformed_data",
 
 # Load reptiles phylogeny:
 reptiles_phylogeny <- ape::read.tree(file = here::here("transformed_data",
-                                                    "phylogeny_REPTILES.tree"))
+                                                    "phylogeny_restricted_REPTILES.tree"))
 
 
 

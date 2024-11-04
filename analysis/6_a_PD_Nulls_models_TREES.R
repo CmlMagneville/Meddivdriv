@@ -27,7 +27,7 @@ trees_occ_df <- readRDS(here::here("transformed_data",
 
 # Load trees phylogeny:
 trees_phylogeny <- ape::read.tree(file = here::here("transformed_data",
-                                                    "phylogeny_TREES.tree"))
+                                                    "phylogeny_restricted_TREES.tree"))
 
 
 

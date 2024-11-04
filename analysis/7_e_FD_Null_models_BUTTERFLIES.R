@@ -20,7 +20,7 @@
 
 # Species-traits data:
 sp_tr_BUTTERFLIES <- readRDS(here::here("transformed_data",
-                                    "final_traits_BUTTERFLIES.rds"))
+                                    "final_traits_restricted_BUTTERFLIES.rds"))
 
 # Occurrence data:
 sp_occ_BUTTERFLIES <- readRDS(here::here("transformed_data",
