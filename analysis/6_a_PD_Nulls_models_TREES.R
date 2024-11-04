@@ -23,7 +23,7 @@
 
 # Load occ data:
 trees_occ_df <- readRDS(here::here("transformed_data",
-                                   "sp_asb_50km_TREES.rds"))
+                                   "sp_asb_50km_restricted_TREES.rds"))
 
 # Load trees phylogeny:
 trees_phylogeny <- ape::read.tree(file = here::here("transformed_data",

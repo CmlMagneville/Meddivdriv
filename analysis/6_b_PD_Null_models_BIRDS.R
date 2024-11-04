@@ -23,7 +23,7 @@
 
 # Load occ data:
 birds_occ_df <- readRDS(here::here("transformed_data",
-                                   "sp_asb_50km_birds.rds"))
+                                   "sp_asb_50km_restricted_BIRDS.rds"))
 
 # Load birds phylogeny:
 birds_phylogeny <- ape::read.tree(file = here::here("transformed_data",

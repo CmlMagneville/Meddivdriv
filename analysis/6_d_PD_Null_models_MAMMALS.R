@@ -23,7 +23,7 @@
 
 # Load occ data:
 mammals_occ_df <- readRDS(here::here("transformed_data",
-                                   "sp_asb_50km_MAMMALS.rds"))
+                                   "sp_asb_50km_restricted_MAMMALS.rds"))
 
 # Load mammals phylogeny:
 mammals_phylogeny <- ape::read.tree(file = here::here("transformed_data",

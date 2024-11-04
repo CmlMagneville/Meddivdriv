@@ -24,7 +24,7 @@ sp_tr_MAMMALS <- readRDS(here::here("transformed_data",
 
 # Occurrence data:
 sp_occ_MAMMALS <- readRDS(here::here("transformed_data",
-                                   "sp_asb_50km_MAMMALS.rds"))
+                                   "sp_asb_50km_restricted_MAMMALS.rds"))
 
 # Check that traits have the right format:
 str(sp_tr_MAMMALS)

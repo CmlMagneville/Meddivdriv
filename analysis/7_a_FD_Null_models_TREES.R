@@ -24,7 +24,7 @@ sp_tr_TREES <- readRDS(here::here("transformed_data",
 
 # Occurrence data:
 sp_occ_TREES <- readRDS(here::here("transformed_data",
-                                   "sp_asb_50km_TREES.rds"))
+                                   "sp_asb_50km_restricted_TREES.rds"))
 
 # Check that traits have the right format:
 str(sp_tr_TREES)

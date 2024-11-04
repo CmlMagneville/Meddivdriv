@@ -24,7 +24,7 @@ sp_tr_BUTTERFLIES <- readRDS(here::here("transformed_data",
 
 # Occurrence data:
 sp_occ_BUTTERFLIES <- readRDS(here::here("transformed_data",
-                                     "sp_asb_50km_BUTTERFLIES.rds"))
+                                     "sp_asb_50km_restricted_BUTTERFLIES.rds"))
 
 # Check that traits have the right format:
 str(sp_tr_BUTTERFLIES)
