@@ -175,11 +175,11 @@ sp_to_rm_butterflies <- colnames(restricted_butterflies_occ_df)[colSums(restrict
 sp_to_rm_reptiles <- colnames(restricted_reptiles_occ_df)[colSums(restricted_reptiles_occ_df) == 0]
 
 # Remove them from the occurrences data frame:
-restricted_birds_occ_df <- restricted_birds_occ_df[which(! colnames(restricted_birds_occ_df) %in% sp_to_rm_birds), ]
-restricted_mammals_occ_df <- restricted_mammals_occ_df[which(! colnames(restricted_mammals_occ_df) %in% sp_to_rm_mammals), ]
-restricted_reptiles_occ_df <- restricted_reptiles_occ_df[which(! colnames(restricted_reptiles_occ_df) %in% sp_to_rm_reptiles), ]
-restricted_butterflies_occ_df <- restricted_butterflies_occ_df[which(! colnames(restricted_butterflies_occ_df) %in% sp_to_rm_butterflies), ]
-restricted_trees_occ_df <- restricted_trees_occ_df[which(! colnames(restricted_trees_occ_df) %in% sp_to_rm_trees), ]
+restricted_birds_occ_df <- restricted_birds_occ_df[, which(! colnames(restricted_birds_occ_df) %in% sp_to_rm_birds)]
+restricted_mammals_occ_df <- restricted_mammals_occ_df[, which(! colnames(restricted_mammals_occ_df) %in% sp_to_rm_mammals)]
+restricted_reptiles_occ_df <- restricted_reptiles_occ_df[, which(! colnames(restricted_reptiles_occ_df) %in% sp_to_rm_reptiles)]
+restricted_butterflies_occ_df <- restricted_butterflies_occ_df[, which(! colnames(restricted_butterflies_occ_df) %in% sp_to_rm_butterflies)]
+restricted_trees_occ_df <- restricted_trees_occ_df[, which(! colnames(restricted_trees_occ_df) %in% sp_to_rm_trees)]
 
 saveRDS(restricted_birds_occ_df,
         here::here("transformed_data",
