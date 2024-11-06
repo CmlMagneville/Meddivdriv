@@ -23,7 +23,7 @@
 # Load environmental drivers (with no NA for predictors and only cells which
 # .. have values for all the studied taxa):
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
-                                      "env_drivers_final_noNA_db.rds"))
+                                      "env_drivers_final_restricted_db.rds"))
 
 # Load drivers names:
 drivers_nm_df <- read.csv(here::here("env_db",
@@ -45,34 +45,6 @@ fric_ses_mammals_df <- readRDS(here::here("transformed_data",
 fric_ses_butterflies_df <- readRDS(here::here("transformed_data",
                                            "div_values_null_models",
                                            "FD_FRic_null_models_metrics_50km_BUTTERFLIES.rds"))
-# Remove cells with NA if any ...
-# ... (i.e. problem species position in the functional space):
-cells_NA_birds <- unique(fric_ses_birds_df$Idgrid[which(is.na(fric_ses_birds_df$ses) == TRUE)],
-                         fric_ses_birds_df$Idgrid[which(fric_ses_birds_df$ses == "NaN")])
-cells_NA_birds
-cells_NA_reptiles <- unique(fric_ses_reptiles_df$Idgrid[which(is.na(fric_ses_reptiles_df$ses) == TRUE)],
-                            fric_ses_reptiles_df$Idgrid[which(fric_ses_reptiles_df$ses == "NaN")])
-cells_NA_reptiles
-cells_NA_trees <- unique(fric_ses_trees_df$Idgrid[which(is.na(fric_ses_trees_df$ses) == TRUE)],
-                         fric_ses_trees_df$Idgrid[which(fric_ses_trees_df$ses == "NaN")])
-cells_NA_trees
-cells_NA_mammals <- unique(fric_ses_mammals_df$Idgrid[which(is.na(fric_ses_mammals_df$ses) == TRUE)],
-                         fric_ses_mammals_df$Idgrid[which(fric_ses_mammals_df$ses == "NaN")])
-cells_NA_mammals
-cells_NA_butterflies <- unique(fric_ses_butterflies_df$Idgrid[which(is.na(fric_ses_butterflies_df$ses) == TRUE)],
-                         fric_ses_butterflies_df$Idgrid[which(fric_ses_butterflies_df$ses == "NaN")])
-cells_NA_butterflies
-
-fric_ses_birds_df <- fric_ses_birds_df %>%
-  dplyr::filter(! Idgrid %in% cells_NA_birds)
-fric_ses_reptiles_df <- fric_ses_reptiles_df %>%
-  dplyr::filter(! Idgrid %in% cells_NA_reptiles)
-fric_ses_trees_df <- fric_ses_trees_df %>%
-  dplyr::filter(!Idgrid %in% cells_NA_trees)
-fric_ses_mammals_df <- fric_ses_mammals_df %>%
-  dplyr::filter(!Idgrid %in% cells_NA_mammals)
-fric_ses_butterflies_df <- fric_ses_butterflies_df %>%
-  dplyr::filter(!Idgrid %in% cells_NA_butterflies)
 
 # Load grid data(for locating grid cells):
 grid_50km <- sf::st_read(here::here("integradiv_db",
@@ -82,37 +54,6 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
 
 # 2 - Subset diversity db and link the two databases (diversity + drivers) =====
-
-
-# NOTE: If joining drivers db and diversity db, the final db would have
-# ... 671 rows (grid cells) but for some of these grid cells, we don't have
-# ... occurrence data for now : (birds 664 grid cells, reptiles 624 grid cells,
-# ... trees 667 grid cells)
-# ... SO: Only keep the grid cells for which I have occ information for all taxa
-# ... already done for the environmental db (cf 7_Clean_environmental_var.R)
-
-
-# Get the names of the Idgrid to keep (diversity data for all taxa):
-cells_ok_birds <- unique(fric_ses_birds_df$Idgrid)
-cells_ok_reptiles <- unique(fric_ses_reptiles_df$Idgrid)
-cells_ok_trees <- unique(fric_ses_trees_df$Idgrid)
-cells_ok_mammals <- unique(fric_ses_mammals_df$Idgrid)
-cells_ok_butterflies <- unique(fric_ses_butterflies_df$Idgrid)
-
-cells_to_keep <- intersect(intersect(cells_ok_birds,
-                                     cells_ok_reptiles),
-                           cells_ok_trees)
-length(cells_to_keep)
-locate.cells(cell_vect = cells_to_keep,
-             grid = grid_50km)
-
-# Only keep these cells in the diversity df:
-fric_ses_birds_df <- fric_ses_birds_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-fric_ses_reptiles_df <- fric_ses_reptiles_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-fric_ses_trees_df <- fric_ses_trees_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
 
 
 # Link the two tables (drivers + diversity):
@@ -125,10 +66,6 @@ rf_fric_trees_df <- dplyr::inner_join(envdriv_full_db,
 rf_fric_reptiles_df <- dplyr::inner_join(envdriv_full_db,
                                          fric_ses_reptiles_df[, c("Idgrid", "ses")],
                                          by = "Idgrid")
-# We have ... cells for each rf:
-nrow(rf_fric_birds_df)
-nrow(rf_fric_trees_df)
-nrow(rf_fric_reptiles_df)
 
 # Put Idgrid as rownames:
 rf_fric_birds_df <- rf_fric_birds_df %>%
@@ -351,9 +288,9 @@ varimp_trees <- test.rf.model(rf_data = rf_fric_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.4578194
+# Mean R-squared: 0.5033567
 varimp_trees[[3]]
-# Sd R-squared: 0.005323259
+# Sd R-squared: 0.005911417
 varimp_trees[[4]]
 
 # Save variable importance:
@@ -363,6 +300,12 @@ saveRDS(varimp_trees[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_trees[[2]], here::here("transformed_data",
                                       "std_rf_trees_FD_fric_50.rds"))
+
+# Save mean R squared and sd R squared:
+saveRDS(varimp_trees[[3]], here::here("transformed_data",
+                                      "meanr2_rf_trees_FD_fric_50.rds"))
+saveRDS(varimp_trees[[4]], here::here("transformed_data",
+                                      "sd_meanr2_rf_trees_FD_fric_50.rds"))
 
 
 # Plot variable importance (std importance):

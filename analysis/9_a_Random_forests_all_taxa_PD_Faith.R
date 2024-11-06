@@ -25,7 +25,7 @@
 # Load environmental drivers (with no NA for predictors and only cells which
 # .. have values for all the studied taxa):
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
-                                       "env_drivers_final_noNA_db.rds"))
+                                       "env_drivers_final_restricted_db.rds"))
 
 # Load the file which contain drivers shorter names:
 drivers_nm_df <- read.csv(here::here("env_db",
@@ -57,42 +57,6 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
 
 # 2 - Subset diversity db and link the two databases (diversity + drivers) =====
-
-
-# NOTE: If joining drivers db and diversity db, the final db would have
-# ... 671 rows (grid cells) but for some of these grid cells, we don't have
-# ... occurrence data for now : (birds 664 grid cells, reptiles 624 grid cells,
-# ... trees 667 grid cells)
-# ... SO: Only keep the grid cells for which I have occ information for all taxa
-# ... already done for the environmental db (cf 7_Clean_environmental_var.R)
-
-
-# Get the names of the Idgrid to keep (diversity data for all taxa):
-cells_ok_birds <- unique(faith_ses_birds_df$Idgrid)
-cells_ok_reptiles <- unique(faith_ses_reptiles_df$Idgrid)
-cells_ok_trees <- unique(faith_ses_trees_df$Idgrid)
-cells_ok_mammals <- unique(faith_ses_mammals_df$Idgrid)
-cells_ok_butterflies <- unique(faith_ses_butterflies_df$Idgrid)
-
-cells_to_keep <- intersect(intersect(cells_ok_birds,
-                                     cells_ok_reptiles),
-                                     cells_ok_trees,
-                                     cells_ok_mammals,
-                                     cells_ok_butterflies)
-locate.cells(cell_vect = cells_to_keep,
-             grid = grid_50km)
-
-# Only keep these cells in the diversity df:
-faith_ses_birds_df <- faith_ses_birds_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-faith_ses_reptiles_df <- faith_ses_reptiles_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-faith_ses_trees_df <- faith_ses_trees_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-faith_ses_mammals_df <- faith_ses_mammals_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-faith_ses_butterflies_df <- faith_ses_butterflies_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
 
 
 # Link the two tables (drivers + diversity):

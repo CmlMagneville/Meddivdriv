@@ -125,11 +125,11 @@ mFD::quality.fspaces.plot(
 sp_faxes_coord_TREES <- fspaces_quality_TREES$"details_fspaces"$"sp_pc_coord"
 
 # Test correlation:
-tr_1_7_faxes_TREES <- mFD::traits.faxes.cor(
-  sp_tr          = sp_tr_TREES[,c(1:7)],
+tr_faxes_TREES <- mFD::traits.faxes.cor(
+  sp_tr          = sp_tr_TREES,
   sp_faxes_coord = sp_faxes_coord_TREES[ , c("PC1", "PC2", "PC3", "PC4")],
   plot           = TRUE)
-tr_1_7_faxes_TREES
+tr_faxes_TREES
 
 
 
@@ -179,21 +179,10 @@ fmpd_fori_indices_TREES <- mFD::alpha.fd.multidim(
   details_returned = TRUE)
 fmpd_fori_TREES <- fmpd_fori_indices_TREES$functional_diversity_indices
 
-
-# Remove assemblages that have less that 4 species for FRic (4 included):
-low_nb_sp_asb <- rownames(fmpd_fori_TREES[which(fmpd_fori_TREES$sp_richn < 5), ])
-sp_occ_subset_TREES <- as.data.frame(sp_occ_TREES)
-sp_occ_subset_TREES <- sp_occ_subset_TREES %>%
-  tibble::rownames_to_column(var = "Asb") %>%
-  dplyr::filter(! Asb %in% low_nb_sp_asb) %>%
-  tibble::column_to_rownames("Asb") %>%
-  as.matrix()
-
-
-# Compute FRic:
+# Compute FRic (asb with less than 4 species have been deleted):
 fric_indices_TREES <- mFD::alpha.fd.multidim(
   sp_faxes_coord   = sp_faxes_coord_TREES[ , c("PC1", "PC2", "PC3", "PC4")],
-  asb_sp_w         = sp_occ_subset_TREES,
+  asb_sp_w         = sp_occ_TREES,
   ind_vect         = c("fric"),
   scaling          = TRUE,
   check_input      = TRUE,

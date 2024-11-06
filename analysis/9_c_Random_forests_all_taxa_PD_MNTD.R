@@ -23,7 +23,7 @@
 # Load environmental drivers (with no NA for predictors and only cells which
 # .. have values for all the studied taxa):
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
-                                      "env_drivers_final_noNA_db.rds"))
+                                      "env_drivers_final_restricted_db.rds"))
 
 # Load the file which contain drivers shorter names:
 drivers_nm_df <- read.csv(here::here("env_db",
