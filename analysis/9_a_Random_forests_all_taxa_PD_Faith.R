@@ -278,7 +278,7 @@ mtry <- randomForest::tuneRF(rf_faith_trees_df[-ncol(rf_faith_trees_df)],
                              improve = 0.00001,
                              trace = TRUE,
                              plot = TRUE)
-print(mtry) # mtry = 16 seems ok (after a few tries)
+print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
 # Compute 100 random forests and mean importance of each variable + ALE plots:
@@ -292,9 +292,9 @@ varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.4927059
+# Mean R-squared: 0.392685
 varimp_trees[[3]]
-# Sd R-squared: 0.0041457
+# Sd R-squared: 0.007059978
 varimp_trees[[4]]
 
 # Save variable importance:
@@ -304,6 +304,12 @@ saveRDS(varimp_trees[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_trees[[2]], here::here("transformed_data",
                                       "std_rf_trees_PD_Faith_50.rds"))
+# Save mean R squared and sd R squared:
+saveRDS(varimp_trees[[3]], here::here("transformed_data",
+                                      "meanr2_rf_trees_PD_Faith_50.rds"))
+saveRDS(varimp_trees[[4]], here::here("transformed_data",
+                                      "sd_meanr2_rf_trees_PD_Faith_50.rds"))
+
 
 
 # Plot variable importance (std importance):

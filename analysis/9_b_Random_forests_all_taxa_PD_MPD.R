@@ -57,41 +57,6 @@ grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 # 2 - Subset diversity db and link the two databases (diversity + drivers) =====
 
 
-# NOTE: If joining drivers db and diversity db, the final db would have
-# ... 671 rows (grid cells) but for some of these grid cells, we don't have
-# ... occurrence data for now : (birds 664 grid cells, reptiles 624 grid cells,
-# ... trees 667 grid cells)
-# ... SO: Only keep the grid cells for which I have occ information for all taxa
-# ... already done for the environmental db (cf 7_Clean_environmental_var.R)
-
-
-# Get the names of the Idgrid to keep (diversity data for all taxa):
-cells_ok_birds <- unique(mpd_ses_birds_df$Idgrid)
-cells_ok_reptiles <- unique(mpd_ses_reptiles_df$Idgrid)
-cells_ok_trees <- unique(mpd_ses_trees_df$Idgrid)
-cells_ok_mammals <- unique(mpd_ses_mammals_df$Idgrid)
-cells_ok_butterflies <- unique(mpd_ses_butterflies_df$Idgrid)
-cells_to_keep <- intersect(intersect(cells_ok_birds,
-                                     cells_ok_reptiles,),
-                                     cells_ok_trees,
-                                     cells_ok_mammals,
-                                     cells_ok_butterflies)
-locate.cells(cell_vect = cells_to_keep,
-             grid = grid_50km)
-
-# Only keep these cells in the diversity df:
-mpd_ses_birds_df <- mpd_ses_birds_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-mpd_ses_reptiles_df <- mpd_ses_reptiles_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-mpd_ses_trees_df <- mpd_ses_trees_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-mpd_ses_mammals_df <- mpd_ses_mammals_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-mpd_ses_butterflies_df <- mpd_ses_butterflies_df %>%
-  dplyr::filter(Idgrid %in% cells_to_keep)
-
-
 # Link the two tables (drivers + diversity):
 rf_mpd_birds_df <- dplyr::left_join(envdriv_full_db,
                                       mpd_ses_birds_df[, c("Idgrid", "ses")],
@@ -327,9 +292,9 @@ varimp_trees <- test.rf.model(rf_data = rf_mpd_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.4928487
+# Mean R-squared: 0.5255012
 varimp_trees[[3]]
-# Sd R-squared: 0.004610469
+# Sd R-squared: 0.005368649
 varimp_trees[[4]]
 
 # Save variable importance:
@@ -339,6 +304,10 @@ saveRDS(varimp_trees[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_trees[[2]], here::here("transformed_data",
                                       "std_rf_trees_PD_mpd_50.rds"))
+saveRDS(varimp_trees[[3]], here::here("transformed_data",
+                                      "meanr2_rf_trees_PD_mpd_50.rds"))
+saveRDS(varimp_trees[[4]], here::here("transformed_data",
+                                      "sd_meanr2_rf_trees_PD_mpd_50.rds"))
 
 
 # Plot variable importance (std importance):

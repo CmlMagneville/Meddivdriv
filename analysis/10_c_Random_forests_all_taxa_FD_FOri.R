@@ -136,6 +136,10 @@ saveRDS(varimp_birds[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_birds[[2]], here::here("transformed_data",
                                       "std_rf_birds_FD_fori_50.rds"))
+saveRDS(varimp_trees[[3]], here::here("transformed_data",
+                                      "meanr2_rf_birds_FD_fori_50.rds"))
+saveRDS(varimp_trees[[4]], here::here("transformed_data",
+                                      "sd_meanr2_rf_birds_FD_fori_50.rds"))
 
 
 # Plot variable importance (std importance):
@@ -282,9 +286,9 @@ varimp_trees <- test.rf.model(rf_data = rf_fori_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared: 0.512722
+# Mean R-squared:
 varimp_trees[[3]]
-# Sd R-squared: 0.004878873
+# Sd R-squared:
 varimp_trees[[4]]
 
 # Save variable importance:

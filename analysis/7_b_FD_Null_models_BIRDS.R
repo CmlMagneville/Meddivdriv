@@ -178,21 +178,10 @@ fmpd_fori_indices_BIRDS <- mFD::alpha.fd.multidim(
   details_returned = TRUE)
 fmpd_fori_BIRDS <- fmpd_fori_indices_BIRDS$functional_diversity_indices
 
-
-# Remove assemblages that have less that 4 species for FRic (4 included):
-low_nb_sp_asb <- rownames(fmpd_fori_BIRDS[which(fmpd_fori_BIRDS$sp_richn < 5), ])
-sp_occ_subset_BIRDS <- as.data.frame(sp_occ_BIRDS)
-sp_occ_subset_BIRDS <- sp_occ_subset_BIRDS %>%
-  tibble::rownames_to_column(var = "Asb") %>%
-  dplyr::filter(! Asb %in% low_nb_sp_asb) %>%
-  tibble::column_to_rownames("Asb") %>%
-  as.matrix()
-
-
 # Compute FRic:
 fric_indices_BIRDS <- mFD::alpha.fd.multidim(
   sp_faxes_coord   = sp_faxes_coord_BIRDS[ , c("PC1", "PC2", "PC3", "PC4")],
-  asb_sp_w         = sp_occ_subset_BIRDS,
+  asb_sp_w         = sp_occ_BIRDS,
   ind_vect         = c("fric"),
   scaling          = TRUE,
   check_input      = TRUE,
@@ -243,11 +232,11 @@ saveRDS(fori_null_models, here::here("transformed_data",
 # 9 - Compute SES ==============================================================
 
 
-# Note SES: If the test were a one-sided test of whether the value observed was
+# Note SES: If the test was a one-sided test of whether the value observed was
 # significantly lower than expected, we would require a P -value less than or
-# equal to 0.05. If the test were a one-sided test of whether the value
+# equal to 0.05. If the test was a one-sided test of whether the value
 # observed was significantly higher than expected, we would require a P -value
-# greater than or equal to 0.95. If the test were two sided, we would require
+# greater than or equal to 0.95. If the test was two sided, we would require
 # P -values less than or equal to 0.025 or greater than or equal to 0.975.
 
 
