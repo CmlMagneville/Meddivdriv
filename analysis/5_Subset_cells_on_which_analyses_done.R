@@ -69,11 +69,11 @@ land50_noislands_cells_nm <- intersect(land_50_cells_nm,
 
 
 # Get the name of the cells for each taxa:
-asb_5_BIRDS <- names(rowSums(birds_occ_df) > 4)
-asb_5_TREES <- names(rowSums(trees_occ_df) > 4)
-asb_5_REPTILES <- names(rowSums(reptiles_occ_df) > 4)
-asb_5_MAMMALS <- names(rowSums(mammals_occ_df) > 4)
-asb_5_BUTTERFLIES <- names(rowSums(butterflies_occ_df) > 4)
+asb_5_BIRDS <- names(which(rowSums(birds_occ_df) > 4))
+asb_5_TREES <- names(which(rowSums(trees_occ_df) > 4))
+asb_5_REPTILES <- names(which(rowSums(reptiles_occ_df) > 4))
+asb_5_MAMMALS <- names(which(rowSums(mammals_occ_df) > 4))
+asb_5_BUTTERFLIES <- names(which(rowSums(butterflies_occ_df) > 4))
 
 # Get the intersection:
 more_4_sp_cells_nm <- intersect(intersect(intersect(intersect(asb_5_BIRDS, asb_5_BUTTERFLIES),
