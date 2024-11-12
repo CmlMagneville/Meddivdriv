@@ -68,6 +68,9 @@ test.rf.model <- function(rf_data,
   # create a list that will contains all rf results (from the n iterations):
   rf_models <- vector("list", iteration_nb)
 
+  # create a vector that will contain the residuals of each rf (from the n iter):
+  rf_resid <- vector("list", iteration_nb)
+
   # create a vector that will contain models R squared:
   rsq_vect <- c()
 
@@ -93,6 +96,9 @@ test.rf.model <- function(rf_data,
 
     # Put the output of the model in the rf vect:
     rf_models[[i]] <- rf_mod
+
+    # # Put the residuals of model in the rf vect:
+    rf_resid[[i]] <- rf_data$ses - rf_mod$predictions
 
     # Get the variables importance:
     var_imp_rf <- rf_mod$variable.importance
@@ -181,7 +187,8 @@ test.rf.model <- function(rf_data,
   return(list(var_imp_mean_df,
               std_var_imp_mean_df,
               mean_Rsq,
-              sd_Rsq))
+              sd_Rsq,
+              rf_resid))
 
 }
 
