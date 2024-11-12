@@ -165,7 +165,7 @@ div.maps.plot <- function(div_per_cell_df,
                                                  sep = "_",
                                                  unique(div_per_cell_df$Grid),
                                                  sep = ".",
-                                                 "pdf")),
+                                                 "jpg")),
                     device = "jpg",
                     scale = 1,
                     height = 3000,
@@ -217,6 +217,43 @@ div.3d.plots <- function(div_per_cell_list,
 
 
   # Compute the values for plotting:
+  col_code <- colors3d::colors3d(data = dim_div_df[, -1])
+  dim_div_df$col_code <- col_code
+
+  # Link to thegrid so have spatial info:
+  spatial_div_per_cell_df <- dplyr::left_join(grid, dim_div_df,
+                                              by = "Idgrid")
+
+  #
+  rgl::plot3d(spatial_div_per_cell_df$richness,
+              spatial_div_per_cell_df$dispersion,
+              spatial_div_per_cell_df$originality,
+              col = spatial_div_per_cell_df$col_code,
+              xlab = "Richness" ,
+              ylab = "Dispersion",
+              zlab = "Originality")
+
+
+  plot_map <- ggplot2::ggplot() +
+    ggplot2::geom_sf(data = land_mask, fill = "lightgrey", color = "#636363") +
+    ggplot2::geom_sf(data= spatial_div_per_cell_df, ggplot2::aes(fill = col_code),
+                     color = "lightgrey") +
+    ggplot2::scale_fill_distiller(type = "div", limit = limit) +
+    ggplot2::theme(legend.position = "right")  +
+    ggplot2::theme(legend.title = ggplot2::element_text(size = 12,
+                                                        face = "bold")) +
+    ggplot2::theme(axis.text = ggplot2::element_text(size = 10),
+                   axis.title = ggplot2::element_text(size = 12,
+                                                      face = "bold")) +
+    ggplot2::labs(x = "Longitude", y = "Latitude",
+                  fill = metric_nm) +
+    ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "lightgrey",
+                                                            linewidth = 0.1)) +
+    ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
+                                                            colour = "darkgrey"))+
+    ggplot2::coord_sf(xlim = c(box_m["xmin"], box_m["xmax"]),
+                      ylim = c(box_m["ymin"], box_m["ymax"]))
+
 
 
 
