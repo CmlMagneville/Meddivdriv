@@ -32,12 +32,10 @@
 #' @param grid a \code{sf} object referring to the spatial grid used, either
 #' the 10x10km grid (WOODIV one) or the 50x50km one (INTEGRADIV one).
 #'
-#' @param continuous if continuous equals \code{TRUE}, diversity values are
-#' plotted along a continuous scale. Otherwise they are plotted along a
-#' discrete scale defined by 1/10 of values.
-#'
 #' @param plot_title a TRUE/FALSE value referring to plotting or not the graph
 #' title (on the diversity facet studied)
+#'
+#' @param land_mask a shapefile of europe land mask
 #'
 #' @param save a TRUE/FALSE value referring to saving or not the graph
 #'
@@ -54,9 +52,9 @@ div.maps.plot <- function(div_per_cell_df,
                           div_facet_nm,
                           metric_nm,
                           grid,
-                          continuous,
                           col_pal,
                           plot_title,
+                          land_mask,
                           save) {
 
 
@@ -77,147 +75,74 @@ div.maps.plot <- function(div_per_cell_df,
   spatial_div_per_cell_df <- dplyr::filter(spatial_div_per_cell_df,
                                            ! is.na(Div_metric))
 
-  # if maps to be plotted as continuous:
-  if (continuous == TRUE) {
+    # Create a box around the study area:
+    box_m <- sf::st_bbox(grid)
 
-    # Set the colour scale limit to go from negative max to positive max:
+    # Get limit so scale it's center on 0:
     limit <- max(abs(spatial_div_per_cell_df$Div_metric)) * c(-1, 1)
+
+    # Plot the map:
+
+    if (plot_title == FALSE) {
+
+      plot_map <- ggplot2::ggplot() +
+        ggplot2::geom_sf(data = land_mask, fill = "lightgrey", color = "#636363") +
+        ggplot2::geom_sf(data= spatial_div_per_cell_df, ggplot2::aes(fill = Div_metric),
+                         color = "lightgrey") +
+        ggplot2::scale_fill_distiller(type = "div", limit = limit) +
+        ggplot2::theme(legend.position = "right")  +
+        ggplot2::theme(legend.title = ggplot2::element_text(size = 12,
+                                                            face = "bold")) +
+        ggplot2::theme(axis.text = ggplot2::element_text(size = 10),
+                       axis.title = ggplot2::element_text(size = 12,
+                                                          face = "bold")) +
+        ggplot2::labs(x = "Longitude", y = "Latitude",
+                      fill = metric_nm) +
+        ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "lightgrey",
+                                                                linewidth = 0.1)) +
+        ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
+                                                                colour = "darkgrey"))+
+        ggplot2::coord_sf(xlim = c(box_m["xmin"], box_m["xmax"]),
+                          ylim = c(box_m["ymin"], box_m["ymax"]))
+
+    }
+
 
     # if plot title is TRUE:
     if (plot_title == TRUE) {
 
-          div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
-
-            ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
-
-            ggplot2::scale_fill_distiller(type = "div", limit = limit) +
-
-            ggplot2::theme(legend.position = "bottom",
-                           legend.title = ggplot2::element_text(size = 12),
-                           axis.text = ggplot2::element_text(size = 12),
-                           axis.title = ggplot2::element_text(size = 12),
-                           panel.grid.major = ggplot2::element_line(colour = "lightgrey"),
-                           panel.background = ggplot2::element_rect(fill = NA,
-                                                                    colour = "black"))  +
-
-            ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
-                          fill= metric_nm) +
+      plot_map <- ggplot2::ggplot() +
+        ggplot2::geom_sf(data = land_mask, fill = "lightgrey", color = "#636363") +
+        ggplot2::geom_sf(data= spatial_div_per_cell_df, ggplot2::aes(fill = Div_metric),
+                         color = "lightgrey") +
+        ggplot2::scale_fill_distiller(type = "div", limit = limit) +
+        ggplot2::theme(legend.position = "right")  +
+        ggplot2::theme(legend.title = ggplot2::element_text(size = 12,
+                                                            face = "bold")) +
+        ggplot2::theme(axis.text = ggplot2::element_text(size = 10),
+                       axis.title = ggplot2::element_text(size = 12,
+                                                          face = "bold")) +
+        ggplot2::labs(x = "Longitude", y = "Latitude",
+                      fill = metric_nm) +
+        ggplot2::theme(panel.grid.major = ggplot2::element_line(colour = "lightgrey",
+                                                                linewidth = 0.1)) +
+        ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
+                                                                colour = "darkgrey"))+
+        ggplot2::coord_sf(xlim = c(box_m["xmin"], box_m["xmax"]),
+                          ylim = c(box_m["ymin"], box_m["ymax"])) +
 
             ggplot2::ggtitle(paste0(div_facet_nm, sep = " - ",
                                     unique(div_per_cell_df$Taxon)))
 
     }
 
-    # if no title to plot:
-    if (plot_title == FALSE) {
-
-        div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
-
-          ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
-
-          harrypotter::scale_fill_hp(option = col_pal, name = metric_nm,
-                                     limits = c(0, 1))  +
-
-          ggplot2::theme(legend.position = "bottom",
-                         legend.title = ggplot2::element_text(size = 12),
-                         axis.text = ggplot2::element_text(size = 12),
-                         axis.title = ggplot2::element_text(size = 12),
-                         panel.grid.major = ggplot2::element_line(colour = "lightgrey"),
-                         panel.background = ggplot2::element_rect(fill = NA,
-                                                                  colour = "black"))  +
-
-          ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
-                        fill= metric_nm)
-
-
-    } # end if plot title = FALSE
-
-  } # end if continuous = TRUE:
-
-
-  if (continuous == FALSE) {
-
-    # Retrieve the steps values used to define color palette:
-    # compute min and max values:
-    min_value <- min(spatial_div_per_cell_df$Div_metric)
-    max_value <- max(spatial_div_per_cell_df$Div_metric)
-
-    # compute 10 classes:
-    interval_span <- (max_value - min_value)/10
-    breaks <- c(round(min_value, 2), round(min_value + interval_span, 2),
-                round(min_value + interval_span*2, 2),
-                round(min_value + interval_span*3, 2),
-                round(min_value + interval_span*4, 2),
-                round(min_value + interval_span*5, 2),
-                round(min_value + interval_span*6, 2),
-                round(min_value + interval_span*7, 2),
-                round(min_value + interval_span*8, 2),
-                round(min_value + interval_span*9, 2),
-                round(max_value, 2))
-
-
-    # if plot title is TRUE:
-    if (plot_title == TRUE) {
-
-      div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
-
-        ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
-
-        ggplot2::scale_fill_gradientn(colors = col_pal,
-                                      breaks = breaks, name = metric_nm)  +
-
-        ggplot2::theme(legend.position = "bottom",
-                       legend.title = ggplot2::element_text(size = 12),
-                       legend.text = ggplot2::element_text(angle = 90, size = 7),
-                       axis.text = ggplot2::element_text(size = 12),
-                       axis.title = ggplot2::element_text(size = 12),
-                       panel.grid.major = ggplot2::element_line(colour = "lightgrey"),
-                       panel.background = ggplot2::element_rect(fill = NA,
-                                                                colour = "black"))  +
-
-        ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
-                      fill= metric_nm) +
-
-        ggplot2::ggtitle(paste0(div_facet_nm, sep = " - ",
-                                unique(div_per_cell_df$Taxon)))
-
-    }
-
-    # if plot title is FALSE:
-    if (plot_title == FALSE) {
-
-      div_map <- ggplot2::ggplot(data = spatial_div_per_cell_df) +
-
-        ggplot2::geom_sf(ggplot2::aes(fill = Div_metric)) +
-
-        ggplot2::scale_fill_gradientn(colors = col_pal,
-                                      breaks = breaks, name = metric_nm)  +
-
-        ggplot2::theme(legend.position = "bottom",
-                       legend.title = ggplot2::element_text(size = 12),
-                       legend.text = ggplot2::element_text(angle = 90, size = 7),
-                       axis.text = ggplot2::element_text(size = 12),
-                       axis.title = ggplot2::element_text(size = 12),
-                       panel.grid.major = ggplot2::element_line(colour = "lightgrey"),
-                       panel.background = ggplot2::element_rect(fill = NA,
-                                                                colour = "black"))  +
-
-        ggplot2::labs(x = "Longitude (EPSG 3035)", y = "Latitude (EPSG 3035)",
-                      fill= metric_nm)
-
-    }
-
-
-  } # if discrete scale
-
-
   # Print the plot:
-  print(div_map)
+  print(plot_map)
 
   # Save if needed:
   if (save == TRUE) {
 
-    ggplot2::ggsave(plot = div_map,
+    ggplot2::ggsave(plot = plot_map,
                     filename = here::here("outputs",
                                           paste0(unique(div_per_cell_df$Taxon),
                                                  sep = "_",
@@ -227,6 +152,21 @@ div.maps.plot <- function(div_per_cell_df,
                                                  sep = ".",
                                                  "pdf")),
                     device = "pdf",
+                    scale = 1,
+                    height = 3000,
+                    width = 5000,
+                    units = "px",
+                    dpi = 600)
+    ggplot2::ggsave(plot = plot_map,
+                    filename = here::here("outputs",
+                                          paste0(unique(div_per_cell_df$Taxon),
+                                                 sep = "_",
+                                                 metric_nm,
+                                                 sep = "_",
+                                                 unique(div_per_cell_df$Grid),
+                                                 sep = ".",
+                                                 "pdf")),
+                    device = "jpg",
                     scale = 1,
                     height = 3000,
                     width = 5000,
@@ -249,19 +189,7 @@ div.3d.plots <- function(div_per_cell_list,
   print("Make sure that the list is ordered with 1 - richness, 2 - dispersion,
         3 - originality dataframes")
 
-  # Rename the column with metrics name:
-  for (i in c(1:length(div_per_cell_list))) {
-
-    dim_nm <- names(div_per_cell_list)[i]
-
-    colnames(div_per_cell_list[[i]])[2] <- dim_nm
-
-  }
-
-  # Remove rows with no values for all metrics:
-  cells_rm
-
-  # Link the df into a big dataframe:
+  # Link the three tables:
   for (i in  c(1:length(div_per_cell_list))){
 
     if (i == 1){
@@ -271,70 +199,13 @@ div.3d.plots <- function(div_per_cell_list,
       dim_div_df <- dplyr::full_join(dim_div_df,
                                      div_per_cell_list[[i]][, c(1:2)])
     }
-
   }
 
-  # Add a new column that will contains the code to plot:
-  dim_div_df$code <- rep(NA, nrow(dim_div_df))
-  for (i in c(1:nrow(dim_div_df))) {
 
-    if (dim_div_df[i, 2] > 0) {
+  # Compute the values for plotting:
+  rgb.values <- tricolor::Tricolore(simdata, breaks = Inf, show_data = FALSE,
+                          p1 = "X", p2 = "Y", p3 = "Z", legend = TRUE)
 
-      if (dim_div_df[i, 3] > 0) {
-
-        if (dim_div_df[i, 4] > 0) {
-          dim_div_df[i, 5] <- "white"
-        }
-
-        if (dim_div_df[i, 4] < 0) {
-          dim_div_df[i, 5] <- "deeppink3"
-        }
-
-      }
-
-      if (dim_div_df[i, 3] < 0) {
-
-        if (dim_div_df[i, 4] > 0) {
-          dim_div_df[i, 5] <- "gold"
-        }
-
-        if (dim_div_df[i, 4] < 0) {
-          dim_div_df[i, 5] <- "firebrick"
-        }
-
-      }
-
-    }
-
-    if (dim_div_df[i, 2] < 0) {
-
-      if (dim_div_df[i, 3] > 0) {
-
-        if (dim_div_df[i, 4] > 0) {
-          dim_div_df[i, 5] <- "turquoise"
-        }
-
-        if (dim_div_df[i, 4] < 0) {
-          dim_div_df[i, 5] <- "royalblue3"
-        }
-
-      }
-
-      if (dim_div_df[i, 3] < 0) {
-
-        if (dim_div_df[i, 4] > 0) {
-          dim_div_df[i, 5] <- "yellowgreen"
-        }
-
-        if (dim_div_df[i, 4] < 0) {
-          dim_div_df[i, 5] <- "grey80"
-        }
-
-      }
-
-    }
-
-  }
 
 
 

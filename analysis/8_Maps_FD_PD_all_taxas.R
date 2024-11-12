@@ -41,6 +41,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
+
 
 # Transform the data frames to plot:
 trees_ses_faith_clean_df <- trees_ses_faith_df %>%
@@ -68,22 +73,22 @@ trees_SES_faith_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_faith_clea
                                           div_facet_nm = "PD",
                                           metric_nm = "SES Faith",
                                           grid = grid_50km,
-                                          continuous = TRUE,
                                           plot_title = TRUE,
+                                          land_mask = land_mask,
                                           save = TRUE)
 trees_SES_MPD_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_mpd_clean_df,
                                           div_facet_nm = "PD",
                                           metric_nm = "SES MPD",
                                           grid = grid_50km,
-                                          continuous = TRUE,
                                           plot_title = TRUE,
+                                          land_mask = land_mask,
                                           save = TRUE)
 trees_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_mntd_clean_df,
                                         div_facet_nm = "PD",
                                         metric_nm = "SES MNTD",
                                         grid = grid_50km,
-                                        continuous = TRUE,
                                         plot_title = TRUE,
+                                        land_mask = land_mask,
                                         save = TRUE)
 
 # Map the three dimensions of PD together:
@@ -118,6 +123,10 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
 
 # Transform the data frames to plot:
 trees_ses_fric_clean_df <- trees_ses_fric_df %>%
@@ -145,21 +154,21 @@ trees_SES_fric_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_fric_clean_
                                          div_facet_nm = "FD",
                                          metric_nm = "SES FRic",
                                          grid = grid_50km,
-                                         continuous = TRUE,
                                          plot_title = TRUE,
+                                         land_mask = land_mask,
                                          save = TRUE)
 trees_SES_FMPD_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_fmpd_clean_df,
                                          div_facet_nm = "FD",
                                          metric_nm = "SES FMPD",
                                          grid = grid_50km,
-                                         continuous = TRUE,
                                          plot_title = TRUE,
+                                         land_mask = land_mask,
                                          save = TRUE)
 trees_SES_fori_50km_map <- div.maps.plot(div_per_cell_df = trees_ses_fori_clean_df,
                                          div_facet_nm = "FD",
                                          metric_nm = "SES FOri",
                                          grid = grid_50km,
-                                         continuous = TRUE,
+                                         land_mask = land_mask,
                                          plot_title = TRUE,
                                          save = TRUE)
 
@@ -190,6 +199,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
+
 
 # Transform the data frames to plot:
 birds_ses_faith_clean_df <- birds_ses_faith_df %>%
@@ -217,21 +231,21 @@ birds_SES_faith_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_faith_clea
                                           div_facet_nm = "PD",
                                           metric_nm = "SES Faith",
                                           grid = grid_50km,
-                                          continuous = TRUE,
+                                          land_mask = land_mask,
                                           plot_title = TRUE,
                                           save = TRUE)
 birds_SES_MPD_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_mpd_clean_df,
                                         div_facet_nm = "PD",
                                         metric_nm = "SES MPD",
                                         grid = grid_50km,
-                                        continuous = TRUE,
+                                        land_mask = land_mask,
                                         plot_title = TRUE,
                                         save = TRUE)
 birds_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_mntd_clean_df,
                                          div_facet_nm = "PD",
                                          metric_nm = "SES MNTD",
                                          grid = grid_50km,
-                                         continuous = TRUE,
+                                         land_mask = land_mask,
                                          plot_title = TRUE,
                                          save = TRUE)
 
@@ -257,6 +271,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
                                     "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
 
 
 # Transform the data frames to plot:
@@ -285,21 +304,21 @@ birds_SES_fric_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_fric_clean_
                                           div_facet_nm = "FD",
                                           metric_nm = "SES FRic",
                                           grid = grid_50km,
-                                          continuous = TRUE,
+                                          land_mask = land_mask,
                                           plot_title = TRUE,
                                           save = TRUE)
 birds_SES_FMPD_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_fmpd_clean_df,
                                         div_facet_nm = "FD",
                                         metric_nm = "SES FMPD",
                                         grid = grid_50km,
-                                        continuous = TRUE,
+                                        land_mask = land_mask,
                                         plot_title = TRUE,
                                         save = TRUE)
 birds_SES_fori_50km_map <- div.maps.plot(div_per_cell_df = birds_ses_fori_clean_df,
                                          div_facet_nm = "FD",
                                          metric_nm = "SES FOri",
                                          grid = grid_50km,
-                                         continuous = TRUE,
+                                         land_mask = land_mask,
                                          plot_title = TRUE,
                                          save = TRUE)
 
@@ -328,6 +347,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
+
 
 # Transform the data frames to plot:
 reptiles_ses_faith_clean_df <- reptiles_ses_faith_df %>%
@@ -355,21 +379,21 @@ reptiles_SES_faith_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_fait
                                           div_facet_nm = "PD",
                                           metric_nm = "SES Faith",
                                           grid = grid_50km,
-                                          continuous = TRUE,
+                                          land_mask = land_mask,
                                           plot_title = TRUE,
                                           save = TRUE)
 reptiles_SES_MPD_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_mpd_clean_df,
                                         div_facet_nm = "PD",
                                         metric_nm = "SES MPD",
                                         grid = grid_50km,
-                                        continuous = TRUE,
+                                        land_mask = land_mask,
                                         plot_title = TRUE,
                                         save = TRUE)
 reptiles_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_mntd_clean_df,
                                          div_facet_nm = "PD",
                                          metric_nm = "SES MNTD",
                                          grid = grid_50km,
-                                         continuous = TRUE,
+                                         land_mask = land_mask,
                                          plot_title = TRUE,
                                          save = TRUE)
 
@@ -394,6 +418,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
                                     "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
 
 
 # Transform the data frames to plot:
@@ -422,21 +451,21 @@ reptiles_SES_fric_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_fric_
                                             div_facet_nm = "FD",
                                             metric_nm = "SES FRic",
                                             grid = grid_50km,
-                                            continuous = TRUE,
+                                            land_mask = land_mask,
                                             plot_title = TRUE,
                                             save = TRUE)
 reptiles_SES_FMPD_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_fmpd_clean_df,
                                             div_facet_nm = "FD",
                                             metric_nm = "SES FMPD",
                                             grid = grid_50km,
-                                            continuous = TRUE,
+                                            land_mask = land_mask,
                                             plot_title = TRUE,
                                             save = TRUE)
 reptiles_SES_fori_50km_map <- div.maps.plot(div_per_cell_df = reptiles_ses_fori_clean_df,
                                             div_facet_nm = "FD",
                                             metric_nm = "SES FOri",
                                             grid = grid_50km,
-                                            continuous = TRUE,
+                                            land_mask = land_mask,
                                             plot_title = TRUE,
                                             save = TRUE)
 
@@ -465,6 +494,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
+
 
 # Transform the data frames to plot:
 mammals_ses_faith_clean_df <- mammals_ses_faith_df %>%
@@ -492,21 +526,21 @@ mammals_SES_faith_50km_map <- div.maps.plot(div_per_cell_df = mammals_ses_faith_
                                             div_facet_nm = "PD",
                                             metric_nm = "SES Faith",
                                             grid = grid_50km,
-                                            continuous = TRUE,
+                                            land_mask = land_mask,
                                             plot_title = TRUE,
                                             save = TRUE)
 mammals_SES_MPD_50km_map <- div.maps.plot(div_per_cell_df = mammals_ses_mpd_clean_df,
                                           div_facet_nm = "PD",
                                           metric_nm = "SES MPD",
                                           grid = grid_50km,
-                                          continuous = TRUE,
+                                          land_mask = land_mask,
                                           plot_title = TRUE,
                                           save = TRUE)
 mammals_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = mammals_ses_mntd_clean_df,
                                            div_facet_nm = "PD",
                                            metric_nm = "SES MNTD",
                                            grid = grid_50km,
-                                           continuous = TRUE,
+                                           land_mask = land_mask,
                                            plot_title = TRUE,
                                            save = TRUE)
 
@@ -532,6 +566,10 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
 
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
 
 # Transform the data frames to plot:
 mammals_ses_fric_clean_df <- mammals_ses_fric_df %>%
@@ -559,21 +597,21 @@ mammals_SES_fric_50km_map <- div.maps.plot(div_per_cell_df = mammals_ses_fric_cl
                                            div_facet_nm = "FD",
                                            metric_nm = "SES FRic",
                                            grid = grid_50km,
-                                           continuous = TRUE,
+                                           land_mask = land_mask,
                                            plot_title = TRUE,
                                            save = TRUE)
 mammals_SES_FMPD_50km_map <- div.maps.plot(div_per_cell_df = mammals_ses_fmpd_clean_df,
                                            div_facet_nm = "FD",
                                            metric_nm = "SES FMPD",
                                            grid = grid_50km,
-                                           continuous = TRUE,
+                                           land_mask = land_mask,
                                            plot_title = TRUE,
                                            save = TRUE)
 mammals_SES_fori_50km_map <- div.maps.plot(div_per_cell_df = mammals_ses_fori_clean_df,
                                            div_facet_nm = "FD",
                                            metric_nm = "SES FOri",
                                            grid = grid_50km,
-                                           continuous = TRUE,
+                                           land_mask = land_mask,
                                            plot_title = TRUE,
                                            save = TRUE)
 
@@ -600,6 +638,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
                                     "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
 
 
 # Transform the data frames to plot:
@@ -628,21 +671,21 @@ butterflies_SES_faith_50km_map <- div.maps.plot(div_per_cell_df = butterflies_se
                                                 div_facet_nm = "PD",
                                                 metric_nm = "SES Faith",
                                                 grid = grid_50km,
-                                                continuous = TRUE,
+                                                land_mask = land_mask,
                                                 plot_title = TRUE,
                                                 save = TRUE)
 butterflies_SES_MPD_50km_map <- div.maps.plot(div_per_cell_df = butterflies_ses_mpd_clean_df,
                                               div_facet_nm = "PD",
                                               metric_nm = "SES MPD",
                                               grid = grid_50km,
-                                              continuous = TRUE,
+                                              land_mask = land_mask,
                                               plot_title = TRUE,
                                               save = TRUE)
 butterflies_SES_MNTD_50km_map <- div.maps.plot(div_per_cell_df = butterflies_ses_mntd_clean_df,
                                                div_facet_nm = "PD",
                                                metric_nm = "SES MNTD",
                                                grid = grid_50km,
-                                               continuous = TRUE,
+                                               land_mask = land_mask,
                                                plot_title = TRUE,
                                                save = TRUE)
 
@@ -667,6 +710,11 @@ grid_50km <- sf::st_read(here::here("integradiv_db",
                                     "spgrid_50x50km_EUROMEDIT_EPSG3035.shp"))
 # Rename the GRD_ID column as Idgrid:
 grid_50km <- dplyr::rename(grid_50km, Idgrid = GRD_ID)
+
+# Load the Europe land mask:
+land_mask <- sf::st_read(here::here("integradiv_db",
+                                    "land_mask",
+                                    "land_EPSG3035.shp"))
 
 
 # Transform the data frames to plot:
@@ -695,21 +743,21 @@ butterflies_SES_fric_50km_map <- div.maps.plot(div_per_cell_df = butterflies_ses
                                                div_facet_nm = "FD",
                                                metric_nm = "SES FRic",
                                                grid = grid_50km,
-                                               continuous = TRUE,
+                                               land_mask = land_mask,
                                                plot_title = TRUE,
                                                save = TRUE)
 butterflies_SES_FMPD_50km_map <- div.maps.plot(div_per_cell_df = butterflies_ses_fmpd_clean_df,
                                                div_facet_nm = "FD",
                                                metric_nm = "SES FMPD",
                                                grid = grid_50km,
-                                               continuous = TRUE,
+                                               land_mask = land_mask,
                                                plot_title = TRUE,
                                                save = TRUE)
 butterflies_SES_fori_50km_map <- div.maps.plot(div_per_cell_df = butterflies_ses_fori_clean_df,
                                                div_facet_nm = "FD",
                                                metric_nm = "SES FOri",
                                                grid = grid_50km,
-                                               continuous = TRUE,
+                                               land_mask = land_mask,
                                                plot_title = TRUE,
                                                save = TRUE)
 
