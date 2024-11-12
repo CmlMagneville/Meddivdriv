@@ -189,6 +189,15 @@ div.3d.plots <- function(div_per_cell_list,
   print("Make sure that the list is ordered with 1 - richness, 2 - dispersion,
         3 - originality dataframes")
 
+  # Rename the column with metrics name:
+  for (i in c(1:length(div_per_cell_list))) {
+
+    dim_nm <- names(div_per_cell_list)[i]
+
+    colnames(div_per_cell_list[[i]])[2] <- dim_nm
+
+  }
+
   # Link the three tables:
   for (i in  c(1:length(div_per_cell_list))){
 
@@ -201,10 +210,14 @@ div.3d.plots <- function(div_per_cell_list,
     }
   }
 
+  # rename the columns:
+  colnames(dim_div_df)[c(2:4)] <- c("richness",
+                                    "dispersion",
+                                    "originality")
+
 
   # Compute the values for plotting:
-  rgb.values <- tricolor::Tricolore(simdata, breaks = Inf, show_data = FALSE,
-                          p1 = "X", p2 = "Y", p3 = "Z", legend = TRUE)
+
 
 
 
