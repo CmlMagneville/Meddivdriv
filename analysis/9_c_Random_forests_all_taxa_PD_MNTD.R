@@ -146,6 +146,16 @@ saveRDS(varimp_birds[[1]], here::here("transformed_data",
 saveRDS(varimp_birds[[2]], here::here("transformed_data",
                                       "std_rf_birds_PD_mntd_50.rds"))
 
+# Save mean R squared and sd R squared:
+saveRDS(varimp_birds[[3]], here::here("transformed_data",
+                                      "meanr2_rf_birds_PD_mntd_50.rds"))
+saveRDS(varimp_birds[[4]], here::here("transformed_data",
+                                      "sd_meanr2_rf_birds_PD_mntd_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_birds[[5]], here::here("transformed_data",
+                                      "residuals_rf_birds_PD_mntd_50.rds"))
+
 
 # Plot variable importance (std importance):
 # Variable importance standardised between 0-1: 1 most important ...
@@ -223,6 +233,16 @@ saveRDS(varimp_reptiles[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_reptiles[[2]], here::here("transformed_data",
                                          "std_rf_reptiles_PD_mntd_50.rds"))
+
+# Save mean R squared and sd R squared:
+saveRDS(varimp_reptiles[[3]], here::here("transformed_data",
+                                         "meanr2_rf_reptiles_PD_mntd_50.rds"))
+saveRDS(varimp_reptiles[[4]], here::here("transformed_data",
+                                         "sd_meanr2_rf_reptiles_PD_mntd_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_reptiles[[5]], here::here("transformed_data",
+                                         "residuals_rf_reptiles_PD_mntd_50.rds"))
 
 
 # Plot variable importance (std importance):
@@ -308,6 +328,10 @@ saveRDS(varimp_trees[[3]], here::here("transformed_data",
 saveRDS(varimp_trees[[4]], here::here("transformed_data",
                                       "sd_meanr2_rf_trees_PD_mntd_50.rds"))
 
+# Save residuals:
+saveRDS(varimp_trees[[5]], here::here("transformed_data",
+                                      "residuals_rf_trees_PD_mntd_50.rds"))
+
 
 # Plot variable importance (std importance):
 # Variable importance standardised between 0-1: 1 most important ...
@@ -384,6 +408,16 @@ saveRDS(varimp_mammals[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_mammals[[2]], here::here("transformed_data",
                                         "std_rf_mammals_PD_mntd_50.rds"))
+
+# Save mean R squared and sd R squared:
+saveRDS(varimp_mammals[[3]], here::here("transformed_data",
+                                        "meanr2_rf_mammals_PD_mntd_50.rds"))
+saveRDS(varimp_mammals[[4]], here::here("transformed_data",
+                                        "sd_meanr2_rf_mammals_PD_mntd_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_mammals[[5]], here::here("transformed_data",
+                                        "residuals_rf_mammals_PD_mntd_50.rds"))
 
 
 # Plot variable importance (std importance):
@@ -462,6 +496,15 @@ saveRDS(varimp_butterflies[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_butterflies[[2]], here::here("transformed_data",
                                             "std_rf_butterflies_PD_mntd_50.rds"))
+# Save mean R squared and sd R squared:
+saveRDS(varimp_butterflies[[3]], here::here("transformed_data",
+                                            "meanr2_rf_butterflies_PD_mntd_50.rds"))
+saveRDS(varimp_butterflies[[4]], here::here("transformed_data",
+                                            "sd_meanr2_rf_butterflies_PD_mntd_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_butterflies[[5]], here::here("transformed_data",
+                                            "residuals_rf_butterflies_PD_mntd_50.rds"))
 
 
 # Plot variable importance (std importance):

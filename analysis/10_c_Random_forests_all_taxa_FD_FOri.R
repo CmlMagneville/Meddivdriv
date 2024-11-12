@@ -39,6 +39,12 @@ fori_ses_trees_df <- readRDS(here::here("transformed_data",
 fori_ses_reptiles_df <- readRDS(here::here("transformed_data",
                                            "div_values_null_models",
                                            "FD_FORi_null_models_metrics_50km_REPTILES.rds"))
+fori_ses_mammals_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "FD_FORi_null_models_metrics_50km_MAMMALS.rds"))
+fori_ses_butterflies_df <- readRDS(here::here("transformed_data",
+                                           "div_values_null_models",
+                                           "FD_FORi_null_models_metrics_50km_BUTTERFLIES.rds"))
 
 # Load grid data(for locating grid cells):
 grid_50km <- sf::st_read(here::here("integradiv_db",
@@ -60,6 +66,12 @@ rf_fori_trees_df <- dplyr::inner_join(envdriv_full_db,
 rf_fori_reptiles_df <- dplyr::inner_join(envdriv_full_db,
                                          fori_ses_reptiles_df[, c("Idgrid", "ses")],
                                          by = "Idgrid")
+rf_fori_mammals_df <- dplyr::inner_join(envdriv_full_db,
+                                         fori_ses_mammals_df[, c("Idgrid", "ses")],
+                                         by = "Idgrid")
+rf_fori_butterflies_df <- dplyr::inner_join(envdriv_full_db,
+                                         fori_ses_butterflies_df[, c("Idgrid", "ses")],
+                                         by = "Idgrid")
 
 # Put Idgrid as rownames:
 rf_fori_birds_df <- rf_fori_birds_df %>%
@@ -67,6 +79,10 @@ rf_fori_birds_df <- rf_fori_birds_df %>%
 rf_fori_trees_df <- rf_fori_trees_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 rf_fori_reptiles_df <- rf_fori_reptiles_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_fori_mammals_df <- rf_fori_mammals_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_fori_butterflies_df <- rf_fori_butterflies_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 
 
@@ -124,9 +140,9 @@ varimp_birds <- test.rf.model(rf_data = rf_fori_birds_df,
 varimp_birds[[1]]
 # Std Variable importance:
 varimp_birds[[2]]
-# Mean R-squared: 0.4819586
+# Mean R-squared:
 varimp_birds[[3]]
-# Sd R-squared: 0.004002422
+# Sd R-squared:
 varimp_birds[[4]]
 
 # Save variable importance:
@@ -136,10 +152,16 @@ saveRDS(varimp_birds[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_birds[[2]], here::here("transformed_data",
                                       "std_rf_birds_FD_fori_50.rds"))
-saveRDS(varimp_trees[[3]], here::here("transformed_data",
+
+# Save mean R2 and sd:
+saveRDS(varimp_birds[[3]], here::here("transformed_data",
                                       "meanr2_rf_birds_FD_fori_50.rds"))
-saveRDS(varimp_trees[[4]], here::here("transformed_data",
+saveRDS(varimp_birds[[4]], here::here("transformed_data",
                                       "sd_meanr2_rf_birds_FD_fori_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_birds[[5]], here::here("transformed_data",
+                                      "residuals_rf_birds_FD_fori_50.rds"))
 
 
 # Plot variable importance (std importance):
@@ -169,6 +191,12 @@ str(rf_fori_reptiles_df)
 # Check that diversity metric doesn't have NA:
 rownames(rf_fori_reptiles_df[which(is.na(rf_fori_reptiles_df$ses) == TRUE), ])
 
+# Remove cells with NA:
+rf_fori_reptiles_df <- rf_fori_reptiles_df[which(! is.na(rf_fori_reptiles_df$ses)), ]
+# Check which cells are kept:
+locate.cells(cell_vect = rownames(rf_fori_reptiles_df),
+             grid = grid_50km)
+
 # Change SES from names num to num:
 rf_fori_reptiles_df$ses <- as.numeric(rf_fori_reptiles_df$ses)
 
@@ -176,7 +204,7 @@ rf_fori_reptiles_df$ses <- as.numeric(rf_fori_reptiles_df$ses)
 set.seed(42)
 
 # See if 300 trees and mtry = 17 ok:
-# Run the random forest model mtry = 17 and 300 trees:
+# Run the random forest model mtry = 16 and 300 trees:
 rf_reptiles <- randomForest::randomForest(ses~.,
                                           data = rf_fori_reptiles_df,
                                           ntree = 300,
@@ -208,9 +236,9 @@ varimp_reptiles <- test.rf.model(rf_data = rf_fori_reptiles_df,
 varimp_reptiles[[1]]
 # Std Variable importance:
 varimp_reptiles[[2]]
-# Mean R-squared: 0.3049044
+# Mean R-squared:
 varimp_reptiles[[3]]
-# Sd R-squared: 0.005425804
+# Sd R-squared:
 varimp_reptiles[[4]]
 
 # Save variable importance:
@@ -220,6 +248,16 @@ saveRDS(varimp_reptiles[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_reptiles[[2]], here::here("transformed_data",
                                          "std_rf_reptiles_FD_fori_50.rds"))
+
+# Save mean R2 and sd:
+saveRDS(varimp_reptiles[[3]], here::here("transformed_data",
+                                         "meanr2_rf_reptiles_FD_fori_50.rds"))
+saveRDS(varimp_reptiles[[4]], here::here("transformed_data",
+                                         "sd_meanr2_rf_reptiles_FD_fori_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_reptiles[[5]], here::here("transformed_data",
+                                         "residuals_rf_reptiles_FD_fori_50.rds"))
 
 
 # Plot variable importance (std importance):
@@ -247,6 +285,12 @@ str(rf_fori_trees_df)
 # Check that diversity metric doesn't have NA:
 rownames(rf_fori_trees_df[which(is.na(rf_fori_trees_df$ses) == TRUE), ])
 
+# Remove cells with NA:
+rf_fori_trees_df <- rf_fori_trees_df[which(! is.na(rf_fori_trees_df$ses)), ]
+# Check which cells are kept:
+locate.cells(cell_vect = rownames(rf_fori_trees_df),
+             grid = grid_50km)
+
 # Change SES from names num to num:
 rf_fori_trees_df$ses <- as.numeric(rf_fori_trees_df$ses)
 
@@ -254,7 +298,7 @@ rf_fori_trees_df$ses <- as.numeric(rf_fori_trees_df$ses)
 set.seed(42)
 
 # See if 300 trees and mtry = 17 ok:
-# Run the random forest model mtry = 17 and 300 trees:
+# Run the random forest model mtry = 16 and 300 trees:
 rf_trees <- randomForest::randomForest(ses~.,
                                        data = rf_fori_trees_df,
                                        ntree = 300,
@@ -286,9 +330,9 @@ varimp_trees <- test.rf.model(rf_data = rf_fori_trees_df,
 varimp_trees[[1]]
 # Std Variable importance:
 varimp_trees[[2]]
-# Mean R-squared:
+# Mean R-squared: 0.4819586
 varimp_trees[[3]]
-# Sd R-squared:
+# Sd R-squared: 0.004002422
 varimp_trees[[4]]
 
 # Save variable importance:
@@ -298,11 +342,16 @@ saveRDS(varimp_trees[[1]], here::here("transformed_data",
 # Save standardised variable importance:
 saveRDS(varimp_trees[[2]], here::here("transformed_data",
                                       "std_rf_trees_FD_fori_50.rds"))
-# Save mean R squared and sd R squared:
+
+# Save mean R2 and sd:
 saveRDS(varimp_trees[[3]], here::here("transformed_data",
                                       "meanr2_rf_trees_FD_fori_50.rds"))
 saveRDS(varimp_trees[[4]], here::here("transformed_data",
                                       "sd_meanr2_rf_trees_FD_fori_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_trees[[5]], here::here("transformed_data",
+                                      "residuals_rf_trees_FD_fori_50.rds"))
 
 
 # Plot variable importance (std importance):
@@ -321,7 +370,197 @@ ggplot2::ggsave(plot = varimp_plot_trees,
                 units = "px",
                 dpi = 600)
 
-# 6 - Plot a heatmap comparing variables importance across taxa ================
+
+# 6 - Random forest for mammals ==================================================
+
+
+# Check types of variables
+str(rf_fori_mammals_df)
+
+# Check that diversity metric doesn't have NA:
+rownames(rf_fori_mammals_df[which(is.na(rf_fori_mammals_df$ses) == TRUE), ])
+
+# Remove cells with NA:
+rf_fori_mammals_df <- rf_fori_mammals_df[which(! is.na(rf_fori_mammals_df$ses)), ]
+# Check which cells are kept:
+locate.cells(cell_vect = rownames(rf_fori_mammals_df),
+             grid = grid_50km)
+
+# Change SES from names num to num:
+rf_fori_mammals_df$ses <- as.numeric(rf_fori_mammals_df$ses)
+
+# Set seed for randomisation:
+set.seed(42)
+
+# See if 300 mammals and mtry = 17 ok:
+# Run the random forest model mtry = 16 and 300 mammals:
+rf_mammals <- randomForest::randomForest(ses~.,
+                                         data = rf_fori_mammals_df,
+                                         ntree = 300,
+                                         mtry = 17,
+                                         importance = TRUE)
+# ntree:
+plot(rf_mammals)
+
+# mtry:
+mtry <- randomForest::tuneRF(rf_fori_mammals_df[-ncol(rf_fori_mammals_df)],
+                             rf_fori_mammals_df$ses,
+                             mtryStart = 17,
+                             ntreeTry = 300,
+                             stepFactor = 1.5,
+                             improve = 0.00001,
+                             trace = TRUE,
+                             plot = TRUE)
+print(mtry) # mtry = 17 seems ok (after a few tries)
+
+
+# Compute 100 random forests and mean importance of each variable + ALE plots:
+varimp_mammals <- test.rf.model(rf_data = rf_fori_mammals_df,
+                                iteration_nb = 100,
+                                metric_nm = "FD_fori",
+                                taxa_nm = "MAMMALS",
+                                drivers_nm_df = drivers_nm_df,
+                                plot = TRUE)
+# Variable importance:
+varimp_mammals[[1]]
+# Std Variable importance:
+varimp_mammals[[2]]
+# Mean R-squared: 0.4819586
+varimp_mammals[[3]]
+# Sd R-squared: 0.004002422
+varimp_mammals[[4]]
+
+# Save variable importance:
+saveRDS(varimp_mammals[[1]], here::here("transformed_data",
+                                        "rf_mammals_FD_fori_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_mammals[[2]], here::here("transformed_data",
+                                        "std_rf_mammals_FD_fori_50.rds"))
+
+# Save mean R2 and sd:
+saveRDS(varimp_mammals[[3]], here::here("transformed_data",
+                                        "meanr2_rf_mammals_FD_fori_50.rds"))
+saveRDS(varimp_mammals[[4]], here::here("transformed_data",
+                                        "sd_meanr2_rf_mammals_FD_fori_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_mammals[[5]], here::here("transformed_data",
+                                        "residuals_rf_mammals_FD_fori_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_mammals <- varimp.plot(varimp_mammals[[2]])
+
+# Save it:
+ggplot2::ggsave(plot = varimp_plot_mammals,
+                filename = here::here("outputs",
+                                      "varimp_FD_fori_50_MAMMALS.pdf"),
+                device = "pdf",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+
+# 7 - Random forest for butterflies ==================================================
+
+
+# Check types of variables
+str(rf_fori_butterflies_df)
+
+# Check that diversity metric doesn't have NA:
+rownames(rf_fori_butterflies_df[which(is.na(rf_fori_butterflies_df$ses) == TRUE), ])
+
+# Remove cells with NA:
+rf_fori_butterflies_df <- rf_fori_butterflies_df[which(! is.na(rf_fori_butterflies_df$ses)), ]
+# Check which cells are kept:
+locate.cells(cell_vect = rownames(rf_fori_butterflies_df),
+             grid = grid_50km)
+
+# Change SES from names num to num:
+rf_fori_butterflies_df$ses <- as.numeric(rf_fori_butterflies_df$ses)
+
+# Set seed for randomisation:
+set.seed(42)
+
+# See if 300 butterflies and mtry = 17 ok:
+# Run the random forest model mtry = 16 and 300 butterflies:
+rf_butterflies <- randomForest::randomForest(ses~.,
+                                             data = rf_fori_butterflies_df,
+                                             ntree = 300,
+                                             mtry = 17,
+                                             importance = TRUE)
+# ntree:
+plot(rf_butterflies)
+
+# mtry:
+mtry <- randomForest::tuneRF(rf_fori_butterflies_df[-ncol(rf_fori_butterflies_df)],
+                             rf_fori_butterflies_df$ses,
+                             mtryStart = 17,
+                             ntreeTry = 300,
+                             stepFactor = 1.5,
+                             improve = 0.00001,
+                             trace = TRUE,
+                             plot = TRUE)
+print(mtry) # mtry = 17 seems ok (after a few tries)
+
+
+# Compute 100 random forests and mean importance of each variable + ALE plots:
+varimp_butterflies <- test.rf.model(rf_data = rf_fori_butterflies_df,
+                                    iteration_nb = 100,
+                                    metric_nm = "FD_fori",
+                                    taxa_nm = "BUTTERFLIES",
+                                    drivers_nm_df = drivers_nm_df,
+                                    plot = TRUE)
+# Variable importance:
+varimp_butterflies[[1]]
+# Std Variable importance:
+varimp_butterflies[[2]]
+# Mean R-squared: 0.4819586
+varimp_butterflies[[3]]
+# Sd R-squared: 0.004002422
+varimp_butterflies[[4]]
+
+# Save variable importance:
+saveRDS(varimp_butterflies[[1]], here::here("transformed_data",
+                                            "rf_butterflies_FD_fori_50.rds"))
+
+# Save standardised variable importance:
+saveRDS(varimp_butterflies[[2]], here::here("transformed_data",
+                                            "std_rf_butterflies_FD_fori_50.rds"))
+
+# Save mean R2 and sd:
+saveRDS(varimp_butterflies[[3]], here::here("transformed_data",
+                                            "meanr2_rf_butterflies_FD_fori_50.rds"))
+saveRDS(varimp_butterflies[[4]], here::here("transformed_data",
+                                            "sd_meanr2_rf_butterflies_FD_fori_50.rds"))
+
+# Save residuals:
+saveRDS(varimp_butterflies[[5]], here::here("transformed_data",
+                                            "residuals_rf_butterflies_FD_fori_50.rds"))
+
+
+# Plot variable importance (std importance):
+# Variable importance standardised between 0-1: 1 most important ...
+# ... and negative values = 0:
+varimp_plot_butterflies <- varimp.plot(varimp_butterflies[[2]])
+
+# Save it:
+ggplot2::ggsave(plot = varimp_plot_butterflies,
+                filename = here::here("outputs",
+                                      "varimp_FD_fori_50_BUTTERFLIES.pdf"),
+                device = "pdf",
+                scale = 1,
+                height = 5000,
+                width = 8000,
+                units = "px",
+                dpi = 600)
+
+# 8 - Plot a heatmap comparing variables importance across taxa ================
 
 
 # a - Load rf data:
@@ -343,7 +582,7 @@ FD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
                                 plot_nb = TRUE)
 
 
-# 7 - Broad categories importance: plot and test ===============================
+# 9 - Broad categories importance: plot and test ===============================
 
 
 # a - Load data ----------------------------------------------------------------
@@ -466,7 +705,7 @@ ggplot2::ggsave(plot = cat_imp[[2]],
                 dpi = 600)
 
 
-# 8 - Direction of the effect for each category ================================
+# 10 - Direction of the effect for each category ================================
 
 # Note: For each driver's category, we chose the first variables that ...
 # ... had the highest importance to study in which direction they are driving
