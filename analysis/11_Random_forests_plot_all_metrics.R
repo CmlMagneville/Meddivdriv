@@ -23,33 +23,45 @@
 birds_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_Faith_50.rds"))
 reptiles_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_Faith_50.rds"))
 trees_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_Faith_50.rds"))
+mammals_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_mammals_PD_Faith_50.rds"))
+butterflies_Faith_rf <- readRDS(here::here("transformed_data", "std_rf_butterflies_PD_Faith_50.rds"))
 
 # PD - Originality:
 birds_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_mntd_50.rds"))
 reptiles_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_mntd_50.rds"))
 trees_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_mntd_50.rds"))
+mammals_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_mammals_PD_mntd_50.rds"))
+butterflies_mntd_rf <- readRDS(here::here("transformed_data", "std_rf_butterflies_PD_mntd_50.rds"))
 
 # PD - Dispersion:
 birds_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_PD_mpd_50.rds"))
 reptiles_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_PD_mpd_50.rds"))
 trees_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_PD_mpd_50.rds"))
+mammals_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_mammals_PD_mpd_50.rds"))
+butterflies_mpd_rf <- readRDS(here::here("transformed_data", "std_rf_butterflies_PD_mpd_50.rds"))
 
 # FD - Richness:
 birds_fric_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_FRic_50.rds"))
 reptiles_fric_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_FD_FRic_50.rds"))
 trees_fric_rf <- readRDS(here::here("transformed_data", "std_rf_trees_FD_FRic_50.rds"))
+mammals_fric_rf <- readRDS(here::here("transformed_data", "std_rf_mammals_FD_FRic_50.rds"))
+butterflies_fric_rf <- readRDS(here::here("transformed_data", "std_rf_butterflies_FD_FRic_50.rds"))
 
 
 # FD - Originality:
 birds_fori_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_fori_50.rds"))
 reptiles_fori_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_FD_fori_50.rds"))
 trees_fori_rf <- readRDS(here::here("transformed_data", "std_rf_trees_FD_fori_50.rds"))
+mammals_fori_rf <- readRDS(here::here("transformed_data", "std_rf_mammals_FD_fori_50.rds"))
+butterflies_fori_rf <- readRDS(here::here("transformed_data", "std_rf_butterflies_FD_fori_50.rds"))
 
 
 # FD - Dispersion:
 birds_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_birds_FD_fmpd_50.rds"))
 reptiles_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_reptiles_FD_FMPD_50.rds"))
 trees_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_trees_FD_FMPD_50.rds"))
+mammals_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_mammals_FD_FMPD_50.rds"))
+butterflies_fmpd_rf <- readRDS(here::here("transformed_data", "std_rf_butterflies_FD_FMPD_50.rds"))
 
 
 # Load the file which contain drivers shorter names:
@@ -83,6 +95,20 @@ rf_df_list <- list("PD Richness" = reptiles_Faith_rf,
                    "PD Originality" = reptiles_mntd_rf)
 rf_plot_reptiles_df <- create.df.circular.plot(rf_df_list = rf_df_list,
                                             var_nb = 15)
+
+# For mammals:
+rf_df_list <- list("PD Richness" = mammals_Faith_rf,
+                   "PD Dispersion" = mammals_mpd_rf,
+                   "PD Originality" = mammals_mntd_rf)
+rf_plot_mammals_df <- create.df.circular.plot(rf_df_list = rf_df_list,
+                                              var_nb = 15)
+
+# For butterflies:
+rf_df_list <- list("PD Richness" = butterflies_Faith_rf,
+                   "PD Dispersion" = butterflies_mpd_rf,
+                   "PD Originality" = butterflies_mntd_rf)
+rf_plot_butterflies_df <- create.df.circular.plot(rf_df_list = rf_df_list,
+                                                  var_nb = 15)
 
 # 3 - Plot the circular plots - PD =============================================
 
@@ -184,6 +210,77 @@ ggplot2::ggsave(plot = circular_plot_trees,
 ggplot2::ggsave(plot = circular_plot_trees,
                 filename = here::here("outputs",
                                       "circular_plot_50_PD_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+
+# For mammals: (palette according to which variables are chosen - put the colors
+# ... which are not represented at the end)
+unique(rf_plot_mammals_df$Drivers_cat)
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+circular_plot_mammals <- circular.drivers.plot(taxa_plot_df = rf_plot_mammals_df,
+                                               drivers_nm_df = drivers_nm_df,
+                                               palette = palette,
+                                               div_facet = "PD")
+circular_plot_mammals
+
+# Save it:
+ggplot2::ggsave(plot = circular_plot_mammals,
+                filename = here::here("outputs",
+                                      "circular_plot_50_PD_MAMMALS.pdf"),
+                device = "pdf",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = circular_plot_mammals,
+                filename = here::here("outputs",
+                                      "circular_plot_50_PD_MAMMALS.jpeg"),
+                device = "jpeg",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+
+
+# For butterflies: (palette according to which variables are chosen - put the colors
+# ... which are not represented at the end)
+unique(rf_plot_butterflies_df$Drivers_cat)
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+circular_plot_butterflies <- circular.drivers.plot(taxa_plot_df = rf_plot_butterflies_df,
+                                                   drivers_nm_df = drivers_nm_df,
+                                                   palette = palette,
+                                                   div_facet = "PD")
+circular_plot_butterflies
+
+# Save it:
+ggplot2::ggsave(plot = circular_plot_butterflies,
+                filename = here::here("outputs",
+                                      "circular_plot_50_PD_BUTTERFLIES.pdf"),
+                device = "pdf",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = circular_plot_butterflies,
+                filename = here::here("outputs",
+                                      "circular_plot_50_PD_BUTTERFLIES.jpeg"),
                 device = "jpeg",
                 scale = 0.7,
                 height = 6500,
