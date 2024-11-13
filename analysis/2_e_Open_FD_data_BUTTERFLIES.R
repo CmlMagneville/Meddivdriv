@@ -23,6 +23,8 @@ INTEGRADIV_butterflies_occ_df <- readRDS(here::here("transformed_data",
                                                 "sp_asb_50km_BUTTERFLIES.rds"))
 
 
+
+
 # 2 - Load and clean traits data ================================
 
 
@@ -30,9 +32,21 @@ INTEGRADIV_butterflies_occ_df <- readRDS(here::here("transformed_data",
 INTEGRADIV_traits <- read.csv(file = here::here("integradiv_db",
                                                 "INTEGRADIV_traits_v4.csv"))
 
-# Only keep TREE data:
+# Load the host plant specificity trait that Manu computed (rm when new db):
+host_plant_spec <- read.csv(file = here::here("integradiv_db",
+                                              "INTEGRADIV_butterflies_traits.csv"))
+host_plant_spec <- host_plant_spec %>%
+  dplyr::filter(Trait == "HostPlantSpec") %>%
+  dplyr::filter(Source == "Clarke_2022")
+
+# Only keep butterflies data:
 butterflies_traits <- dplyr::filter(INTEGRADIV_traits,
                                 Taxon == "Butterflies")
+
+# (rm when new db): rm hold Host Plant Spec to add new:
+butterflies_traits <- butterflies_traits %>%
+  dplyr::filter(Trait != "HostPlantSpec") %>%
+  dplyr::bind_rows(host_plant_spec)
 
 # Check if all species in the occurrence df are in the traits db: YES :)
 setdiff(colnames(INTEGRADIV_butterflies_occ_df),

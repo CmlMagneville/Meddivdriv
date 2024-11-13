@@ -126,7 +126,7 @@ varimp_birds <- test.rf.model(rf_data = rf_mntd_birds_df,
                               iteration_nb = 100,
                               metric_nm = "PD_MNTD",
                               taxa_nm = "BIRDS",
-                              plot = TRUE,
+                              plot = FALSE,
                               drivers_nm_df = drivers_nm_df)
 
 # Variable importance:
@@ -204,7 +204,7 @@ mtry <- randomForest::tuneRF(rf_mntd_reptiles_df[-ncol(rf_mntd_reptiles_df)],
                              stepFactor = 1.5,
                              improve = 0.00001,
                              trace = TRUE,
-                             plot = TRUE)
+                             plot = FALSE)
 print(mtry) # mtry = 17 seems ok (after a few tries)
 
 
@@ -214,7 +214,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_mntd_reptiles_df,
                                  iteration_nb = 100,
                                  metric_nm = "PD_MNTD",
                                  taxa_nm = "REPTILES",
-                                 plot = TRUE,
+                                 plot = FALSE,
                                  drivers_nm_df)
 
 # Variable importance:
@@ -302,7 +302,7 @@ varimp_trees <- test.rf.model(rf_data = rf_mntd_trees_df,
                               iteration_nb = 100,
                               metric_nm = "PD_MNTD",
                               taxa_nm = "TREES",
-                              plot = TRUE,
+                              plot = FALSE,
                               drivers_nm_df)
 
 # Variable importance:
@@ -389,7 +389,7 @@ varimp_mammals <- test.rf.model(rf_data = rf_mntd_mammals_df,
                                 iteration_nb = 100,
                                 metric_nm = "PD_MNTD",
                                 taxa_nm = "MAMMALS",
-                                plot = TRUE,
+                                plot = FALSE,
                                 drivers_nm_df = drivers_nm_df)
 
 # Variable importance:
@@ -477,7 +477,7 @@ varimp_butterflies <- test.rf.model(rf_data = rf_mntd_butterflies_df,
                                     iteration_nb = 100,
                                     metric_nm = "PD_MNTD",
                                     taxa_nm = "BUTTERFLIES",
-                                    plot = TRUE,
+                                    plot = FALSE,
                                     drivers_nm_df = drivers_nm_df)
 
 # Variable importance:
