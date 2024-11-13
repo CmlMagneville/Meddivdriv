@@ -32,10 +32,10 @@ str(sp_tr_BUTTERFLIES)
 # Create traits category data frame:
 traits_nm <- c("EggLayingType",
                "FlyingPeriodBreadth",
-               "HostPlantSpec",
                "VoltinismMax",
                "WingIndex",
                "WingSpan",
+               "HostPlantSpec",
                "OverwinteringStage")
 traits_cat <- c("O", "Q", "Q", "Q", "Q", "Q", "O")
 trait_cat_df <- data.frame(traits_nm, traits_cat)
@@ -165,21 +165,10 @@ fmpd_fori_indices_BUTTERFLIES <- mFD::alpha.fd.multidim(
   details_returned = TRUE)
 fmpd_fori_BUTTERFLIES <- fmpd_fori_indices_BUTTERFLIES$functional_diversity_indices
 
-
-# Remove assemblages that have less that 4 species for FRic (4 included):
-low_nb_sp_asb <- rownames(fmpd_fori_BUTTERFLIES[which(fmpd_fori_BUTTERFLIES$sp_richn < 5), ])
-sp_occ_subset_BUTTERFLIES <- as.data.frame(sp_occ_BUTTERFLIES)
-sp_occ_subset_BUTTERFLIES <- sp_occ_subset_BUTTERFLIES %>%
-  tibble::rownames_to_column(var = "Asb") %>%
-  dplyr::filter(! Asb %in% low_nb_sp_asb) %>%
-  tibble::column_to_rownames("Asb") %>%
-  as.matrix()
-
-
 # Compute FRic:
 fric_indices_BUTTERFLIES <- mFD::alpha.fd.multidim(
   sp_faxes_coord   = sp_faxes_coord_BUTTERFLIES[ , c("PC1", "PC2", "PC3", "PC4")],
-  asb_sp_w         = sp_occ_subset_BUTTERFLIES,
+  asb_sp_w         = sp_occ_BUTTERFLIES,
   ind_vect         = c("fric"),
   scaling          = TRUE,
   check_input      = TRUE,
