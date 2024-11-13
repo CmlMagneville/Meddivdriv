@@ -66,6 +66,12 @@ rf_fric_trees_df <- dplyr::inner_join(envdriv_full_db,
 rf_fric_reptiles_df <- dplyr::inner_join(envdriv_full_db,
                                          fric_ses_reptiles_df[, c("Idgrid", "ses")],
                                          by = "Idgrid")
+rf_fric_mammals_df <- dplyr::inner_join(envdriv_full_db,
+                                         fric_ses_mammals_df[, c("Idgrid", "ses")],
+                                         by = "Idgrid")
+rf_fric_butterflies_df <- dplyr::inner_join(envdriv_full_db,
+                                         fric_ses_butterflies_df[, c("Idgrid", "ses")],
+                                         by = "Idgrid")
 
 # Put Idgrid as rownames:
 rf_fric_birds_df <- rf_fric_birds_df %>%
@@ -73,6 +79,10 @@ rf_fric_birds_df <- rf_fric_birds_df %>%
 rf_fric_trees_df <- rf_fric_trees_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 rf_fric_reptiles_df <- rf_fric_reptiles_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_fric_mammals_df <- rf_fric_mammals_df %>%
+  tibble::column_to_rownames(var = "Idgrid")
+rf_fric_butterflies_df <- rf_fric_butterflies_df %>%
   tibble::column_to_rownames(var = "Idgrid")
 
 
@@ -125,7 +135,7 @@ varimp_birds <- test.rf.model(rf_data = rf_fric_birds_df,
                               metric_nm = "FD_fric",
                               taxa_nm = "BIRDS",
                               drivers_nm_df = drivers_nm_df,
-                              plot = TRUE)
+                              plot = FALSE)
 # Variable importance:
 varimp_birds[[1]]
 # Std Variable importance:
@@ -215,7 +225,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_fric_reptiles_df,
                                  metric_nm = "FD_fric",
                                  taxa_nm = "REPTILES",
                                  drivers_nm_df = drivers_nm_df,
-                                 plot = TRUE)
+                                 plot = FALSE)
 # Variable importance:
 varimp_reptiles[[1]]
 # Std Variable importance:
@@ -303,7 +313,7 @@ varimp_trees <- test.rf.model(rf_data = rf_fric_trees_df,
                               metric_nm = "FD_fric",
                               taxa_nm = "TREES",
                               drivers_nm_df = drivers_nm_df,
-                              plot = TRUE)
+                              plot = FALSE)
 # Variable importance:
 varimp_trees[[1]]
 # Std Variable importance:
@@ -392,7 +402,7 @@ varimp_mammals <- test.rf.model(rf_data = rf_fric_mammals_df,
                                 metric_nm = "FD_fric",
                                 taxa_nm = "MAMMALS",
                                 drivers_nm_df = drivers_nm_df,
-                                plot = TRUE)
+                                plot = FALSE)
 # Variable importance:
 varimp_mammals[[1]]
 # Std Variable importance:
@@ -481,7 +491,7 @@ varimp_butterflies <- test.rf.model(rf_data = rf_fric_butterflies_df,
                                     metric_nm = "FD_fric",
                                     taxa_nm = "BUTTERFLIES",
                                     drivers_nm_df = drivers_nm_df,
-                                    plot = TRUE)
+                                    plot = FALSE)
 # Variable importance:
 varimp_butterflies[[1]]
 # Std Variable importance:
