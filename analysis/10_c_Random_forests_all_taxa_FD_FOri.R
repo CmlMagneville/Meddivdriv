@@ -135,7 +135,7 @@ varimp_birds <- test.rf.model(rf_data = rf_fori_birds_df,
                               metric_nm = "FD_fori",
                               taxa_nm = "BIRDS",
                               drivers_nm_df = drivers_nm_df,
-                              plot = TRUE)
+                              plot = FALSE)
 # Variable importance:
 varimp_birds[[1]]
 # Std Variable importance:
@@ -231,7 +231,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_fori_reptiles_df,
                                  metric_nm = "FD_fori",
                                  taxa_nm = "REPTILES",
                                  drivers_nm_df = drivers_nm_df,
-                                 plot = TRUE)
+                                 plot = FALSE)
 # Variable importance:
 varimp_reptiles[[1]]
 # Std Variable importance:
@@ -325,7 +325,7 @@ varimp_trees <- test.rf.model(rf_data = rf_fori_trees_df,
                               metric_nm = "FD_fori",
                               taxa_nm = "TREES",
                               drivers_nm_df = drivers_nm_df,
-                              plot = TRUE)
+                              plot = FALSE)
 # Variable importance:
 varimp_trees[[1]]
 # Std Variable importance:
@@ -420,7 +420,7 @@ varimp_mammals <- test.rf.model(rf_data = rf_fori_mammals_df,
                                 metric_nm = "FD_fori",
                                 taxa_nm = "MAMMALS",
                                 drivers_nm_df = drivers_nm_df,
-                                plot = TRUE)
+                                plot = FALSE)
 # Variable importance:
 varimp_mammals[[1]]
 # Std Variable importance:
@@ -515,7 +515,7 @@ varimp_butterflies <- test.rf.model(rf_data = rf_fori_butterflies_df,
                                     metric_nm = "FD_fori",
                                     taxa_nm = "BUTTERFLIES",
                                     drivers_nm_df = drivers_nm_df,
-                                    plot = TRUE)
+                                    plot = FALSE)
 # Variable importance:
 varimp_butterflies[[1]]
 # Std Variable importance:
