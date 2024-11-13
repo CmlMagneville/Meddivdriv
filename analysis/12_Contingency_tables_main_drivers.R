@@ -11,6 +11,8 @@
 ##
 ################################################################################
 
+# Define the pipe symbol so I can use it:
+`%>%` <- magrittr::`%>%`
 
 # 1 - TREES ====================================================================
 
@@ -54,8 +56,21 @@ driv_mntd_trees_df <- dplyr::inner_join(envdriv_full_db,
 
 ## Richness --------------------------------------------------------------------
 
+# Drivers to study: Past MAT sd, Herbivores Consumption, Depth Mean,
+# ... Cl Vel YD increase, Growth Rate Pop
 
-# Create data for the contingency table: low/high, +/- simplification:
+# have to call the ggmosaic package (can't figure out why necessary):
+library(ggmosaic)
+
+# Past MAT sd (function saves automatically graphs):
+contingency.analyses(driver_ses_df = driv_faith_trees_df,
+                     driver_nm = "Past_MAT_sd",
+                     color_nms = c("#0881bd", "#ccdbe2"),
+                     drivers_nm_df = drivers_nm_df,
+                     facet_nm = "PD",
+                     dim_nm = "Richness",
+                     taxa_nm = "TREES")
+
 
 
 ## Dispersion ------------------------------------------------------------------

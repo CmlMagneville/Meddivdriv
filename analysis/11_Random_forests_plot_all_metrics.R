@@ -317,6 +317,19 @@ rf_df_list <- list("FD Richness" = trees_fric_rf,
 rf_plot_trees_df <- create.df.circular.plot(rf_df_list = rf_df_list,
                                             var_nb = 15)
 
+# For mammals:
+rf_df_list <- list("FD Richness" = mammals_fric_rf,
+                   "FD Dispersion" = mammals_fmpd_rf,
+                   "FD Originality" = mammals_fori_rf)
+rf_plot_mammals_df <- create.df.circular.plot(rf_df_list = rf_df_list,
+                                              var_nb = 15)
+
+# For butterflies:
+rf_df_list <- list("FD Richness" = butterflies_fric_rf,
+                   "FD Dispersion" = butterflies_fmpd_rf,
+                   "FD Originality" = butterflies_fori_rf)
+rf_plot_butterflies_df <- create.df.circular.plot(rf_df_list = rf_df_list,
+                                                  var_nb = 15)
 
 
 # 5 - Plot the circular plots - FD =============================================
@@ -361,6 +374,7 @@ ggplot2::ggsave(plot = circular_plot_birds,
 # ... which are not represented at the end)
 palette <- c("#88CCEE",
              "#44AA99",
+             "#117733",
              "#DDCC77",
              "#CC6677",
              "#882255")
@@ -418,6 +432,76 @@ ggplot2::ggsave(plot = circular_plot_trees,
 ggplot2::ggsave(plot = circular_plot_trees,
                 filename = here::here("outputs",
                                       "circular_plot_50_FD_TREES.jpeg"),
+                device = "jpeg",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+
+# For MAMMALS: (palette according to which variables are chosen - put the colors
+# ... which are not represented at the end)
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+
+circular_plot_mammals <- circular.drivers.plot(taxa_plot_df = rf_plot_mammals_df,
+                                               drivers_nm_df = drivers_nm_df,
+                                               palette = palette,
+                                               div_facet = "FD")
+circular_plot_mammals
+
+# Save it:
+ggplot2::ggsave(plot = circular_plot_mammals,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_MAMMALS.pdf"),
+                device = "pdf",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = circular_plot_mammals,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_MAMMALS.jpeg"),
+                device = "jpeg",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+
+# For BUTTERFLIES: (palette according to which variables are chosen - put the colors
+# ... which are not represented at the end)
+palette <- c("#88CCEE",
+             "#44AA99",
+             "#117733",
+             "#DDCC77",
+             "#CC6677",
+             "#882255")
+
+circular_plot_butterflies <- circular.drivers.plot(taxa_plot_df = rf_plot_butterflies_df,
+                                                   drivers_nm_df = drivers_nm_df,
+                                                   palette = palette,
+                                                   div_facet = "FD")
+circular_plot_butterflies
+
+# Save it:
+ggplot2::ggsave(plot = circular_plot_butterflies,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_BUTTERFLIES.pdf"),
+                device = "pdf",
+                scale = 0.7,
+                height = 6500,
+                width = 6500,
+                units = "px",
+                dpi = 600)
+ggplot2::ggsave(plot = circular_plot_butterflies,
+                filename = here::here("outputs",
+                                      "circular_plot_50_FD_BUTTERFLIES.jpeg"),
                 device = "jpeg",
                 scale = 0.7,
                 height = 6500,
