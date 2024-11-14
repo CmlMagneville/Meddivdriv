@@ -23,6 +23,7 @@ Imports:
     FactoMineR,
     foreach,
     funbiogeo,
+    ggmosaic,
     ggplot2,
     ggsignif,
     ggstatsplot,
