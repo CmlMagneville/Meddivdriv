@@ -353,7 +353,6 @@ ggplot2::ggsave(plot = varimp_plot_trees,
 
 # 6 - Random forest for mammals ==================================================
 
-
 # Check types of variables
 str(rf_faith_mammals_df)
 

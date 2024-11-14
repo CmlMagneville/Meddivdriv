@@ -89,8 +89,7 @@ contingency.analyses <- function(driver_ses_df,
     }
 
     # If the driver is velocity - use mean of positive values as a threshold:
-    if (driver_nm %in% c("Past_CCVelHolocene_mean.voccMag",
-                         "Past_CCVelLGM_mean.voccMag",
+    if (driver_nm %in% c("Past_CCVelLGM_mean.voccMag",
                          "Past_CCVelYoungerDryas_mean.voccMag")) {
 
 
@@ -146,6 +145,36 @@ contingency.analyses <- function(driver_ses_df,
       colnames(final_df)[3] <- "ses"
 
     }
+
+    # If the driver is velocity Holocene - use mean as a threshold (but only + values):
+    if (driver_nm == "Past_CCVelHolocene_mean.voccMag") {
+
+
+      # Define the mean of positive value as the threshold:
+      threshold_value <- mean(simple_driver_ses_df[, driver_nm])
+
+      # Print an histogram:
+      hist(simple_driver_ses_df[, driver_nm])
+      abline(v = threshold_value, col = "red4")
+
+      # Complete the table with high/low compared to 0:
+      cat_drivers_ses_df <- simple_driver_ses_df %>%
+        dplyr::mutate(driver_cat = dplyr::if_else(get(driver_nm) > threshold_value,
+                                                  "high increase", "low increase"))
+
+      # Complete the table with +/- for ses:
+      cat_drivers_ses_df <- cat_drivers_ses_df %>%
+        dplyr::mutate(ses_cat = dplyr::if_else(ses > 0,
+                                               "positive", "negative"))
+
+      # Only keep the columns with categories and rename them:
+      final_df <- cat_drivers_ses_df[, c(1, 4, 5)]
+      colnames(final_df)[2] <- "driver"
+      colnames(final_df)[3] <- "ses"
+
+    }
+
+
 
 
     # If the driver is growth rate - use 0 as a threshold:
@@ -222,8 +251,7 @@ contingency.analyses <- function(driver_ses_df,
     }
 
     # If the driver is velocity:
-    if (driver_nm %in% c("Past_CCVelHolocene_mean.voccMag",
-                         "Past_CCVelLGM_mean.voccMag",
+    if (driver_nm %in% c("Past_CCVelLGM_mean.voccMag",
                          "Past_CCVelYoungerDryas_mean.voccMag")) {
 
 
@@ -276,6 +304,39 @@ contingency.analyses <- function(driver_ses_df,
         dplyr::mutate(driver_cat = dplyr::case_when(
           get(driver_nm) >= threshold_value_high ~ "extremely low decrease",
           get(driver_nm) <= threshold_value_low ~ "extremely high decrease",
+          TRUE ~ "other")) %>%
+        dplyr::filter(driver_cat != "other")
+      # Complete the table with +/- for ses:
+      cat_drivers_ses_df <- cat_drivers_ses_df %>%
+        dplyr::mutate(ses_cat = dplyr::if_else(ses > 0,
+                                               "positive", "negative"))
+
+      # Only keep the columns with categories and rename them:
+      final_df <- cat_drivers_ses_df[, c(1, 4, 5)]
+      colnames(final_df)[2] <- "driver"
+      colnames(final_df)[3] <- "ses"
+
+    }
+
+    # If the driver is velocity Holocene :
+    if (driver_nm %in% c("Past_CCVelHolocene_mean.voccMag")) {
+
+
+      # Define the two quantiles:
+      threshold_value_low <- quantile(simple_driver_ses_df[, driver_nm])[[2]]
+      threshold_value_high <- quantile(simple_driver_ses_df[, driver_nm])[[4]]
+
+
+      # Print an histogram:
+      hist(simple_driver_ses_df[, driver_nm])
+      abline(v = threshold_value_low, col = "blue4")
+      abline(v = threshold_value_high, col = "blue4")
+
+      # Complete the table with high/low and remove rows in the middle:
+      cat_drivers_ses_df <- simple_driver_ses_df %>%
+        dplyr::mutate(driver_cat = dplyr::case_when(
+          get(driver_nm) >= threshold_value_high ~ "extremely high increase",
+          get(driver_nm) <= threshold_value_low ~ "extremely low increase",
           TRUE ~ "other")) %>%
         dplyr::filter(driver_cat != "other")
       # Complete the table with +/- for ses:
