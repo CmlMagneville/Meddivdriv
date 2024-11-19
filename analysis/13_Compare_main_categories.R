@@ -55,17 +55,17 @@ orig_mammals <- readRDS(here::here("transformed_data",
 # 1 - b - Heatmap of drivers categories importance =============================
 
 list_richness <- list("Trees" = richn_trees,
-                      "Butterfies" = richn_butterflies,
+                      "Butterflies" = richn_butterflies,
                       "Birds" = richn_birds,
                       "Reptiles" = richn_reptiles,
                       "Mammals" = richn_mammals)
 list_dispersion <- list("Trees" = disp_trees,
-                        "Butterfies" = disp_butterflies,
+                        "Butterflies" = disp_butterflies,
                         "Birds" = disp_birds,
                         "Reptiles" = disp_reptiles,
                         "Mammals" = disp_mammals)
 list_originality <- list("Trees" = orig_trees,
-                         "Butterfies" = orig_butterflies,
+                         "Butterflies" = orig_butterflies,
                          "Birds" = orig_birds,
                          "Reptiles" = orig_reptiles,
                          "Mammals" = orig_mammals)
@@ -117,17 +117,17 @@ orig_mammals <- readRDS(here::here("transformed_data",
 # 1 - b - Heatmap of drivers categories importance =============================
 
 list_richness <- list("Trees" = richn_trees,
-                      "Butterfies" = richn_butterflies,
+                      "Butterflies" = richn_butterflies,
                       "Birds" = richn_birds,
                       "Reptiles" = richn_reptiles,
                       "Mammals" = richn_mammals)
 list_dispersion <- list("Trees" = disp_trees,
-                        "Butterfies" = disp_butterflies,
+                        "Butterflies" = disp_butterflies,
                         "Birds" = disp_birds,
                         "Reptiles" = disp_reptiles,
                         "Mammals" = disp_mammals)
 list_originality <- list("Trees" = orig_trees,
-                         "Butterfies" = orig_butterflies,
+                         "Butterflies" = orig_butterflies,
                          "Birds" = orig_birds,
                          "Reptiles" = orig_reptiles,
                          "Mammals" = orig_mammals)

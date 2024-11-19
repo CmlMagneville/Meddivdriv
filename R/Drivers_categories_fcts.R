@@ -568,17 +568,12 @@ heatmap.categories <- function(list_richness,
                                                     "Past Land Use",
                                                     "Present Direct Human Impact"))
 
-
-  # Define a color gradient to plot the heatmap:
-  try <- all_metric_plot_df
-  try$colors <- colors3d::colors2d(try[, 2:3])
-
-  # Plot the legend:
-  richn_plot_df %>%
-    ggplot(aes(sd, mean, fill = colors2d)) +
-    geom_raster() +
-    scale_fill_identity()
-
+  all_metric_plot_df$Taxa_nm <- factor(all_metric_plot_df$Taxa_nm,
+                                          levels = c("Mammals",
+                                                     "Birds",
+                                                     "Reptiles",
+                                                     "Butterflies",
+                                                     "Trees"))
 
   # Create a mean heatmap:
   heatmap_mean_plot <- ggplot2::ggplot(data = all_metric_plot_df,
@@ -590,8 +585,7 @@ heatmap.categories <- function(list_richness,
     ggplot2::scale_fill_viridis_c(limits = c(min(all_metric_plot_df$mean),
                                              max(all_metric_plot_df$mean))) +
 
-    ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white",
-                                                            colour = "grey83"),
+    ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
                    panel.grid.major = ggplot2::element_line(colour = "grey83"),
                    legend.title = ggplot2::element_text(colour = "grey40",
                                                         size = 12),
@@ -652,7 +646,7 @@ heatmap.categories <- function(list_richness,
 
   combines_plot <- heatmap_mean_plot + heatmap_sd_plot + patchwork::plot_layout(nrow = 2) +
     patchwork::plot_annotation(title = facet_nm,
-                    theme = theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5,
+                    theme = ggplot2::theme(plot.title = ggplot2::element_text(size = 20, face = "bold", hjust = 0.5,
                                                             color = "grey40")))
 
 
