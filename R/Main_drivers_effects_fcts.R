@@ -12,6 +12,64 @@
 ################################################################################
 
 
+#' Compute logistic regression
+#'
+#' @param driver_ses_df
+#' @param driver_nm
+#'
+#' @return
+#' @export
+#'
+
+log.reg.compute <- function(drivers_ses_df,
+                            driver_nm) {
+
+
+  # Set the SES variable as binary:
+  binary_rf_df <- drivers_ses_df
+  binary_rf_df$ses_binary <- ifelse(binary_rf_df$ses > 0, "positive", "negative")
+  binary_rf_df$ses_binary <- as.factor(binary_rf_df$ses_binary)
+
+  # Compute the logistic regression:
+  log_model <- stats::glm(ses_binary ~ get(driver_nm),
+                          data = binary_rf_df,
+                          family = binomial)
+
+ # Get the model summary in a nice df:
+  model_summ <- broom::tidy(log_model)
+
+  # Compute odds ratios and 95% CI:
+  model_summ <- model_summ %>%
+    dplyr::mutate(Odds_Ratios = exp(estimate),
+                  lower_CI = exp(estimate - 1.96 * std.error),
+                  higher_CI = exp(estimate + 1.96 * std.error))
+
+  print(model_summ)
+  return(model_summ)
+
+}
+
+
+#' Plot forest plots for each taxa
+#'
+#' @param model_summ_list
+#' @param col_pal
+#' @param drivers_nm_df
+#'
+#' @return
+#' @export
+#'
+
+
+forest.plot <- function(model_summ_list,
+                        col_pal,
+                        drivers_nm_df) {
+
+
+
+
+}
+
 
 #' Contingency table, Chi2 and associated plots to get drivers effect
 #'

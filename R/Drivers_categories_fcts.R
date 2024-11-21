@@ -176,6 +176,7 @@ cat.distrib.plot <- function(rf_df,
                                                type = "np") %>%
     dplyr::mutate(groups = purrr::pmap(.l = list(group1, group2), .f = c)) %>%
     dplyr::arrange(group1)
+  print(stat_df)
 
   # Create a vector to gather y positions of significant bracket:
   y_pos_values <- c(max(rf_posit_plot_df$Value))
@@ -237,7 +238,7 @@ cat.distrib.plot <- function(rf_df,
                                          Value ~ Drivers_cat)
   print(krustall_test)
 
-  return(list(distrib_plot, stat_plot))
+  return(list(distrib_plot, stat_plot, stat_df))
 
 }
 

@@ -2,12 +2,14 @@
 ##
 ## Script to test whether +/- SES have associated with high/low values of
 ## ... certain drivers - directionality of each driver for the main ones
+## ... FINAL DECISION: don't use that analysis because mean doesn't have an
+## ... ecological meaning + may be middle values are driving and not extremes
 ##
 ## Camille Magneville
 ##
 ## 11/2024
 ##
-## 12_Contingency_tables_main_drivers.R
+## 12_a_Contingency_tables_main_drivers.R
 ##
 ################################################################################
 
@@ -141,6 +143,15 @@ plot(x = driv_faith_trees_df$ses, y = driv_faith_trees_df$Pr_RatePop_2020_mean)
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
 
+# Cl Vel LGM (function saves automatically graphs): significant association
+contingency.analyses(driver_ses_df = driv_mpd_trees_df,
+                     driver_nm = "Past_CCVelLGM_mean.voccMag",
+                     color_nms = c("#0881bd", "#ccdbe2"),
+                     threshold_type = "normal",
+                     drivers_nm_df = drivers_nm_df,
+                     facet_nm = "PD",
+                     dim_nm = "Dispersion",
+                     taxa_nm = "TREES")
 # Cl Vel YD decrease (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_mpd_trees_df,
                      driver_nm = "Past_CCVelYoungerDryas_mean.voccMag",
@@ -163,6 +174,16 @@ driv_mntd_trees_df$Depth_mean <- as.numeric(driv_mntd_trees_df$Depth_mean)
 contingency.analyses(driver_ses_df = driv_mntd_trees_df,
                      driver_nm = "Depth_mean",
                      color_nms = c("#2dae99", "#c6d8d5"),
+                     threshold_type = "normal",
+                     drivers_nm_df = drivers_nm_df,
+                     facet_nm = "PD",
+                     dim_nm = "Originality",
+                     taxa_nm = "TREES")
+
+# Past MAT sd (function saves automatically graphs): significant association
+contingency.analyses(driver_ses_df = driv_mntd_trees_df,
+                     driver_nm = "Past_MAT_sd",
+                     color_nms = c("#0881bd", "#ccdbe2"),
                      threshold_type = "normal",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "PD",
@@ -351,7 +372,7 @@ contingency.analyses(driver_ses_df = driv_faith_birds_df,
 # Present MAT mean (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_faith_birds_df,
                      driver_nm = "Present_MAT_mean",
-                     color_nms = c("#0881bd", "#ccdbe2"),
+                     color_nms = c("#2dae99", "#c6d8d5"),
                      threshold_type = "normal",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "PD",
@@ -1123,7 +1144,7 @@ contingency.analyses(driver_ses_df = driv_faith_mammals_df,
 contingency.analyses(driver_ses_df = driv_faith_mammals_df,
                      driver_nm = "Past_CCVelHolocene_mean.voccMag",
                      color_nms = c("#0881bd", "#ccdbe2"),
-                     threshold_type = "extreme",
+                     threshold_type = "extremes",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "PD",
                      dim_nm = "Richness",

@@ -1,16 +1,16 @@
 ################################################################################
 ##
-## Function to compute correlaion between PD and FD metrics and plot
+## Function to compute spatial correlation among residuals and
+## ... correlation between PD and FD metrics and plot
 ## ... scatterplots with species richness as dots size
 ##
 ## Camille Magneville
 ##
-## 02/11/2023
+## 11/2023-11/2024
 ##
-## Compute_plot_metrics_correlation_fcts.R
+## Check_residuals_and_correlation_fcts.R
 ##
 ################################################################################
-
 
 
 
