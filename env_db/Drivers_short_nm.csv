@@ -12,9 +12,9 @@ VWC_stdev,vWC sd
 Pr_FInt_2000_2023_mean,Fire intensity mean
 Pr_FInt_2000_2023_sd,Fire intensity sd
 Pr_FSurf_2000_2023_pixels,Fire surface
-Past_CCVelHolocene_mean.voccMag,Cl. Velocity Holocene
+Past_CCVelShortTerm_mean.voccMag,Cl. Velocity Holocene
 Past_CCVelLGM_mean.voccMag,Cl. Velocity LGM
-Past_CCVelShortTerm_mean.voccMag,Cl. Velocity YD increase
+Past_CCVelHolocene_mean.voccMag,Cl. Velocity YD increase
 Past_CCVelYoungerDryas_mean.voccMag,Cl. Velocity YD decrease
 Past_MAT_sd,Past MAT sd
 Past_TAP_sd,Past TAP sd
