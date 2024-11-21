@@ -328,6 +328,10 @@ saveRDS(varimp_trees[[3]], here::here("transformed_data",
                                       "meanr2_rf_trees_PD_mpd_50.rds"))
 saveRDS(varimp_trees[[4]], here::here("transformed_data",
                                       "sd_meanr2_rf_trees_PD_mpd_50.rds"))
+# Save residuals:
+saveRDS(varimp_trees[[5]], here::here("transformed_data",
+                                      "residuals_rf_trees_PD_mpd_50.rds"))
+
 
 
 # Plot variable importance (std importance):
@@ -542,128 +546,6 @@ PD_heatmap_nb <- heatmap.varimp(rf_all_taxa_list,
                                 metric_nm = "MPD - PD",
                                 plot_nb = TRUE)
 
-
-# 9 - Broad categories importance: plot and test ===============================
-
-
-# a - Load data ----------------------------------------------------------------
-
-# Load rf data:
-birds_rf <- readRDS(here::here("transformed_data", "rf_birds_PD_MPD_50.rds"))
-reptiles_rf <- readRDS(here::here("transformed_data", "rf_reptiles_PD_MPD_50.rds"))
-trees_rf <- readRDS(here::here("transformed_data", "rf_trees_PD_MPD_50.rds"))
-
-# Load the file which contain drivers shorter names:
-drivers_nm_df <- read.csv(here::here("env_db",
-                                     "Drivers_short_nm.csv"))
-
-# b - Plot the importance of broad drivers categories --------------------------
-
-# BIRDS:
-cat_imp <- cat.distrib.plot(rf_df = birds_rf,
-                            metric_nm = "MPD PD - Birds",
-                            palette = c("#88CCEE",
-                                        "#44AA99",
-                                        "#117733",
-                                        "#DDCC77",
-                                        "#CC6677",
-                                        "#882255"),
-                            drivers_nm_df = drivers_nm_df)
-# Plot categories importance:
-cat_imp[[1]]
-# Plot with stats:
-cat_imp[[2]]
-
-# Save it:
-ggplot2::ggsave(plot = cat_imp[[1]],
-                filename = here::here("outputs",
-                                      "catimp_PD_MPD_50_BIRDS.jpeg"),
-                device = "jpeg",
-                scale = 0.8,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-ggplot2::ggsave(plot = cat_imp[[2]],
-                filename = here::here("outputs",
-                                      "catimp_PD_MPD_withstats_50_BIRDS.jpeg"),
-                device = "jpeg",
-                scale = 0.8,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-
-# REPTILES:
-cat_imp <- cat.distrib.plot(rf_df = reptiles_rf,
-                            metric_nm = "MPD PD - Reptiles",
-                            palette = c("#88CCEE",
-                                        "#44AA99",
-                                        "#117733",
-                                        "#DDCC77",
-                                        "#CC6677",
-                                        "#882255"),
-                            drivers_nm_df = drivers_nm_df)
-# Plot categories importance:
-cat_imp[[1]]
-# Plot with stats:
-cat_imp[[2]]
-
-# Save it:
-ggplot2::ggsave(plot = cat_imp[[1]],
-                filename = here::here("outputs",
-                                      "catimp_PD_MPD_50_REPTILES.jpeg"),
-                device = "jpeg",
-                scale = 0.8,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-ggplot2::ggsave(plot = cat_imp[[2]],
-                filename = here::here("outputs",
-                                      "catimp_PD_MPD_withstats_50_REPTILES.jpeg"),
-                device = "jpeg",
-                scale = 0.8,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-
-
-# TREES:
-cat_imp <- cat.distrib.plot(rf_df = trees_rf,
-                            metric_nm = "MPD PD - Trees",
-                            palette = c("#88CCEE",
-                                        "#44AA99",
-                                        "#117733",
-                                        "#DDCC77",
-                                        "#CC6677",
-                                        "#882255"),
-                            drivers_nm_df = drivers_nm_df)
-# Plot categories importance:
-cat_imp[[1]]
-# Plot with stats:
-cat_imp[[2]]
-
-# Save it:
-ggplot2::ggsave(plot = cat_imp[[1]],
-                filename = here::here("outputs",
-                                      "catimp_PD_MPD_50_TREES.jpeg"),
-                device = "jpeg",
-                scale = 0.8,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
-ggplot2::ggsave(plot = cat_imp[[2]],
-                filename = here::here("outputs",
-                                      "catimp_PD_MPD_withstats_50_TREES.jpeg"),
-                device = "jpeg",
-                scale = 0.8,
-                height = 5000,
-                width = 8000,
-                units = "px",
-                dpi = 600)
 
 
 # 10 - Direction of the effect for each category ================================
