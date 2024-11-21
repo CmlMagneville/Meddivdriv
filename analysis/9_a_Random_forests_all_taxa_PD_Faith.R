@@ -128,7 +128,7 @@ varimp_birds <- test.rf.model(rf_data = rf_faith_birds_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "BIRDS",
-                              plot = TRUE,
+                              plot = FALSE,
                               drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_birds[[1]]
@@ -217,7 +217,7 @@ varimp_reptiles <- test.rf.model(rf_data = rf_faith_reptiles_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "REPTILES",
-                              plot = TRUE,
+                              plot = FALSE,
                               drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_reptiles[[1]]
@@ -305,7 +305,7 @@ varimp_trees <- test.rf.model(rf_data = rf_faith_trees_df,
                               iteration_nb = 100,
                               metric_nm = "PD_Faith",
                               taxa_nm = "TREES",
-                              plot = TRUE,
+                              plot = FALSE,
                               drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_trees[[1]]
@@ -389,7 +389,7 @@ varimp_mammals <- test.rf.model(rf_data = rf_faith_mammals_df,
                                 iteration_nb = 100,
                                 metric_nm = "PD_Faith",
                                 taxa_nm = "MAMMALS",
-                                plot = TRUE,
+                                plot = FALSE,
                                 drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_mammals[[1]]
@@ -475,7 +475,7 @@ varimp_butterflies <- test.rf.model(rf_data = rf_faith_butterflies_df,
                                     iteration_nb = 100,
                                     metric_nm = "PD_Faith",
                                     taxa_nm = "BUTTERFLIES",
-                                    plot = TRUE,
+                                    plot = FALSE,
                                     drivers_nm_df = drivers_nm_df)
 # Variable importance:
 varimp_butterflies[[1]]
