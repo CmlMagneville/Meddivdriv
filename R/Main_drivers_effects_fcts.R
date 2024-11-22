@@ -215,7 +215,7 @@ contingency.analyses <- function(driver_ses_df,
                                                                               "ses",
                                                                               driver_nm))]
 
-  # If the threshold is one which divides the data in two:
+  # If the threshold is one which divides the data in two using the mean:
   if (threshold_type == "normal") {
 
 
@@ -553,6 +553,42 @@ contingency.analyses <- function(driver_ses_df,
   } # end - if threshold type == extremes
 
 
+  # If the threshold is one which divides the data in three using quantiles:
+  if (threshold_type == "extremes_medium") {
+
+    # Define the two quantiles:
+    threshold_value_low <- quantile(simple_driver_ses_df[, driver_nm])[[2]]
+    threshold_value_high <- quantile(simple_driver_ses_df[, driver_nm])[[4]]
+
+
+    # Print an histogram:
+    hist(simple_driver_ses_df[, driver_nm])
+    abline(v = threshold_value_low, col = "blue4")
+    abline(v = threshold_value_high, col = "blue4")
+
+    # Complete the table with high/low and remove rows in the middle:
+    cat_drivers_ses_df <- simple_driver_ses_df %>%
+      dplyr::mutate(driver_cat = dplyr::case_when(
+        get(driver_nm) >= threshold_value_high ~ "high",
+        get(driver_nm) <= threshold_value_low ~ "low",
+        TRUE ~ "medium"))
+
+    # Format right order:
+    cat_drivers_ses_df$driver_cat <- factor(cat_drivers_ses_df$driver_cat,
+                                            levels = c("low", "medium", "high"))
+
+    # Complete the table with +/- for ses:
+    cat_drivers_ses_df <- cat_drivers_ses_df %>%
+      dplyr::mutate(ses_cat = dplyr::if_else(ses > 0,
+                                             "positive", "negative"))
+
+    # Only keep the columns with categories and rename them:
+    final_df <- cat_drivers_ses_df[, c(1, 4, 5)]
+    colnames(final_df)[2] <- "driver"
+    colnames(final_df)[3] <- "ses"
+
+  } # end - if threshold type == extremes_medium
+
   # Create the contingency table based on this data:
   # Table with total counts in each category:
   print("Count table")
@@ -570,6 +606,9 @@ contingency.analyses <- function(driver_ses_df,
   print("Chi2 test No Yate's corr as big sample size - pvalue < 0.05 significant association")
   test <- chisq.test(count_table, correct = FALSE)
   print(test)
+
+  # Right factor:
+  final_df$ses <- factor(final_df$ses, levels = c("negative", "positive"))
 
 
   # Mosaic plot:
@@ -611,7 +650,7 @@ contingency.analyses <- function(driver_ses_df,
   continuous_plot <- ggplot2::ggplot(data = simple_driver_plot_df) +
     ggplot2::geom_jitter(ggplot2::aes(x = ses, y = 0, color = driver),
                          height = 0.2, size = 2) +
-    ggplot2::scale_colour_gradient(low = color_nms[2], high = color_nms[1]) +
+    ggplot2::scale_colour_gradient(low = color_nms[1], high = color_nms[3]) +
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_blank()) +
