@@ -80,7 +80,7 @@ rf_df_list <- list("PD Richness" = birds_Faith_rf,
                    "PD Dispersion" = birds_mpd_rf,
                    "PD Originality" = birds_mntd_rf)
 rf_plot_birds_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                            var_nb = 15)
+                                            var_nb = 10)
 
 # For trees:
 rf_df_list <- list("PD Richness" = trees_Faith_rf,
