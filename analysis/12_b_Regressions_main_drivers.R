@@ -70,7 +70,7 @@ trees_pd_richness <- list("Past MAT sd" = var1,
                           "Herbivores Consumption" = var2,
                           "Depth mean" = var3,
                           "Clim. Vel. Holocene" = var4,
-                          "Pop growth rate" = var5)
+                          "Pop. Growth Rate" = var5)
 
 
 ## Dispersion ------------------------------------------------------------------
@@ -89,7 +89,7 @@ trees_pd_disp <- list("Clim. Vel. LGM" = var1,
 
 # Drivers to study: Depth mean and Past MAT sd
 
-driv_mpd_trees_df$Depth_mean <- as.numeric(driv_mpd_trees_df$Depth_mean)
+driv_mntd_trees_df$Depth_mean <- as.numeric(driv_mntd_trees_df$Depth_mean)
 var1 <- log.reg.compute(drivers_ses_df = driv_mntd_trees_df,
                         driver_nm = "Depth_mean")
 var2 <- log.reg.compute(drivers_ses_df = driv_mntd_trees_df,
@@ -98,7 +98,10 @@ trees_pd_orig <- list("Depth mean" = var1,
                       "Past MAT sd" = var2)
 
 ## Plot:
-
+model_summ_list <- list("Richness" = trees_pd_richness,
+                        "Dispersion" = trees_pd_disp,
+                        "Originality" = trees_pd_orig)
+drivers_nm_df
 
 
 

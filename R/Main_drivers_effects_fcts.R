@@ -53,7 +53,6 @@ log.reg.compute <- function(drivers_ses_df,
 #' Plot forest plots for each taxa
 #'
 #' @param model_summ_list
-#' @param col_pal
 #' @param drivers_nm_df
 #'
 #' @return
@@ -62,10 +61,119 @@ log.reg.compute <- function(drivers_ses_df,
 
 
 forest.plot <- function(model_summ_list,
-                        col_pal,
                         drivers_nm_df) {
 
 
+  # Create a dataframe that will contain all info for plotting:
+  plot_df <- as.data.frame(matrix(ncol = 6,
+                           nrow = 1,
+                           NA))
+  colnames(plot_df) <- c("Dim_nm", "Driver_nm",
+                         "Odd_ratios", "Lower_CI", "Upper_CI",
+                         "Driver_cat")
+
+  # Loop on dimensions:
+  for (i in c(1:length(model_summ_list))) {
+
+    # Get dimension name:
+    dim_nm <- names(model_summ_list)[i]
+
+    # Get dimension list:
+    dim_list <- model_summ_list[[i]]
+
+    # Create a dataframe which will contain information for this dimension:
+    dim_df <- as.data.frame(matrix(ncol = 5,
+                                   nrow = 1,
+                                   NA))
+    colnames(dim_df) <- c("Dim_nm", "Driver_nm",
+                           "Odd_ratios", "Lower_CI", "Upper_CI")
+
+    # Loop on each main driver for this given dimension:
+    for (j in c(1:length(dim_list))) {
+
+      # Get the dataframe related to the studied driver:
+      driver_df <- dim_list[[j]]
+
+      # Get the name of the driver:
+      driver_nm <- names(dim_list)[j]
+
+      # Fill the dimension data frame for the studied driver:
+      odds_ratios <- driver_df$Odds_Ratios[2]
+      lower_ci <- driver_df$lower_CI[2]
+      upper_ci <- driver_df$higher_CI[2]
+      dim_df <- dim_df %>%
+        dplyr::add_row("Dim_nm" = dim_nm,
+                       "Driver_nm" = driver_nm,
+                       "Odd_ratios" = odds_ratios,
+                       "Lower_CI" = lower_ci,
+                       "Upper_CI" = upper_ci)
+
+    } # end loop on each driver for the given dimension
+
+    # Remove the first row of dim_df (NA):
+    dim_df <- dim_df[-1, ]
+
+    # Add a driver_cat column filled with NA for now:
+    dim_df$Driver_cat <- rep(NA, nrow(dim_df))
+
+    # Add this df to the plot_df:
+    plot_df <- plot_df %>%
+      dplyr::bind_rows(dim_df)
+
+  } # end loop on each dimension
+
+  # Remove the first row of plot_df (NA):
+  plot_df <- plot_df[-1, ]
+
+  # Fill the Driver_cat column:
+  for (m in c(1:nrow(plot_df))) {
+
+    if (plot_df$Driver_nm[m] %in% c("Past MAT sd",
+                                    "Past TAP sd",
+                                    "Clim. Vel. LGM",
+                                    "Clim. Vel. YD increase",
+                                    "Clim. Vel. YD decrease",
+                                    "Clim. Vel. Holocene")) {
+      plot_df$Driver_cat[m] <- "Past Climate Stability"
+    }
+    if (plot_df$Driver_nm[m] %in% c("MAT mean",
+                                    "Depth mean",
+                                    "AI mean",
+                                    "Elevation mean")) {
+      plot_df$Driver_cat[m] <- "Present Habitat"
+    }
+    if (plot_df$Driver_nm[m] %in% c("Herbivores Consumption",
+                                    "Herbivores Richness")) {
+      plot_df$Driver_cat[m] <- "Disturbance"
+    }
+    if (plot_df$Driver_nm[m] %in% c("Pop. Growth Rate")) {
+      plot_df$Driver_cat[m] <- "Present Human Direct Impact"
+    }
+  }
+
+
+
+
+
+  # Plot the forest plot
+  ggplot(all_data, aes(x = OR, y = Driver, color = Category)) +
+    geom_pointrange(aes(xmin = Lower, xmax = Upper), position = position_dodge(width = 0.5)) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "black") +
+    labs(
+      x = "Odds Ratio (95% CI)",
+      y = "Driver",
+      title = "Effect of Drivers on Diversity Dimensions"
+    ) +
+    scale_color_manual(values = category_colors) +
+    theme_minimal() +
+    theme(
+      legend.position = "top",
+      axis.text.y = element_text(size = 10),
+      axis.title.y = element_text(size = 12),
+      plot.title = element_text(size = 14, face = "bold"),
+      strip.text = element_text(size = 12, face = "bold")  # Facet strip labels
+    ) +
+    facet_wrap(~Dimension, scales = "free_y", ncol = 1)
 
 
 }
