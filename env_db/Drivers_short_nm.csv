@@ -8,7 +8,7 @@ OC_stdev,OC sd
 pH_mean,pH mean
 pH_stdev,pH sd
 VWC_mean,VWC mean
-VWC_stdev,vWC sd
+VWC_stdev,VWC sd
 Pr_FInt_2000_2023_mean,Fire intensity mean
 Pr_FInt_2000_2023_sd,Fire intensity sd
 Pr_FSurf_2000_2023_pixels,Fire surface

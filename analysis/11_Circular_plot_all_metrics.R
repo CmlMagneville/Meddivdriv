@@ -87,28 +87,28 @@ rf_df_list <- list("PD Richness" = trees_Faith_rf,
                    "PD Dispersion" = trees_mpd_rf,
                    "PD Originality" = trees_mntd_rf)
 rf_plot_trees_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                            var_nb = 15)
+                                            var_nb = 10)
 
 # For reptiles:
 rf_df_list <- list("PD Richness" = reptiles_Faith_rf,
                    "PD Dispersion" = reptiles_mpd_rf,
                    "PD Originality" = reptiles_mntd_rf)
 rf_plot_reptiles_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                            var_nb = 15)
+                                            var_nb = 10)
 
 # For mammals:
 rf_df_list <- list("PD Richness" = mammals_Faith_rf,
                    "PD Dispersion" = mammals_mpd_rf,
                    "PD Originality" = mammals_mntd_rf)
 rf_plot_mammals_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                              var_nb = 15)
+                                              var_nb = 10)
 
 # For butterflies:
 rf_df_list <- list("PD Richness" = butterflies_Faith_rf,
                    "PD Dispersion" = butterflies_mpd_rf,
                    "PD Originality" = butterflies_mntd_rf)
 rf_plot_butterflies_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                                  var_nb = 15)
+                                                  var_nb = 10)
 
 # 3 - Plot the circular plots - PD =============================================
 
@@ -222,10 +222,8 @@ ggplot2::ggsave(plot = circular_plot_trees,
 unique(rf_plot_mammals_df$Drivers_cat)
 palette <- c("#88CCEE",
              "#44AA99",
-             "#117733",
              "#DDCC77",
-             "#CC6677",
-             "#882255")
+             "#CC6677")
 circular_plot_mammals <- circular.drivers.plot(taxa_plot_df = rf_plot_mammals_df,
                                                drivers_nm_df = drivers_nm_df,
                                                palette = palette,
@@ -258,7 +256,6 @@ ggplot2::ggsave(plot = circular_plot_mammals,
 unique(rf_plot_butterflies_df$Drivers_cat)
 palette <- c("#88CCEE",
              "#44AA99",
-             "#117733",
              "#DDCC77",
              "#CC6677",
              "#882255")
@@ -301,35 +298,35 @@ rf_df_list <- list("FD Richness" = birds_fric_rf,
                    "FD Dispersion" = birds_fmpd_rf,
                    "FD Originality" = birds_fori_rf)
 rf_plot_birds_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                            var_nb = 15)
+                                            var_nb = 10)
 
 # For reptiles:
 rf_df_list <- list("FD Richness" = reptiles_fric_rf,
                    "FD Dispersion" = reptiles_fmpd_rf,
                    "FD Originality" = reptiles_fori_rf)
 rf_plot_reptiles_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                               var_nb = 15)
+                                               var_nb = 10)
 
 # For trees:
 rf_df_list <- list("FD Richness" = trees_fric_rf,
                    "FD Dispersion" = trees_fmpd_rf,
                    "FD Originality" = trees_fori_rf)
 rf_plot_trees_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                            var_nb = 15)
+                                            var_nb = 10)
 
 # For mammals:
 rf_df_list <- list("FD Richness" = mammals_fric_rf,
                    "FD Dispersion" = mammals_fmpd_rf,
                    "FD Originality" = mammals_fori_rf)
 rf_plot_mammals_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                              var_nb = 15)
+                                              var_nb = 10)
 
 # For butterflies:
 rf_df_list <- list("FD Richness" = butterflies_fric_rf,
                    "FD Dispersion" = butterflies_fmpd_rf,
                    "FD Originality" = butterflies_fori_rf)
 rf_plot_butterflies_df <- create.df.circular.plot(rf_df_list = rf_df_list,
-                                                  var_nb = 15)
+                                                  var_nb = 10)
 
 
 # 5 - Plot the circular plots - FD =============================================
@@ -340,7 +337,6 @@ rf_plot_butterflies_df <- create.df.circular.plot(rf_df_list = rf_df_list,
 palette <- c("#88CCEE",
              "#44AA99",
              "#117733",
-             "#DDCC77",
              "#CC6677",
              "#882255")
 

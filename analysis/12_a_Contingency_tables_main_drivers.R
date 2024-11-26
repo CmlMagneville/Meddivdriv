@@ -56,7 +56,6 @@ driv_mntd_trees_df <- dplyr::inner_join(envdriv_full_db,
 ## Richness --------------------------------------------------------------------
 
 # Drivers to study: Past MAT sd, Herbivores Consumption, Depth Mean,
-# ... Cl Vel YD increase, Growth Rate Pop
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -92,47 +91,6 @@ contingency.analyses(driver_ses_df = driv_faith_trees_df,
                      dim_nm = "Richness",
                      taxa_nm = "TREES")
 
-
-# Cl. Vel. YD Increase (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_faith_trees_df,
-                     driver_nm = "Past_CCVelShortTerm_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "TREES")
-# Check with extreme values (over 75% quantile and below 25% quantile): close (0.07) but NO signif assoc
-contingency.analyses(driver_ses_df = driv_faith_trees_df,
-                     driver_nm = "Past_CCVelShortTerm_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "TREES")
-
-# Growth rate pop (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_faith_trees_df,
-                     driver_nm = "Pr_RatePop_2020_mean",
-                     color_nms = c("#882255", "#d6c4cd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "TREES")
-# With extremes: significant association
-contingency.analyses(driver_ses_df = driv_faith_trees_df,
-                     driver_nm = "Pr_RatePop_2020_mean",
-                     color_nms = c("#882255", "#d6c4cd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "TREES")
-plot(x = driv_faith_trees_df$ses, y = driv_faith_trees_df$Pr_RatePop_2020_mean)
-
-
 ## Dispersion ------------------------------------------------------------------
 
 # Drivers to study: Cl Vel YD decrease
@@ -140,15 +98,6 @@ plot(x = driv_faith_trees_df$ses, y = driv_faith_trees_df$Pr_RatePop_2020_mean)
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
 
-# Cl Vel LGM (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_mpd_trees_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "TREES")
 # Cl Vel YD decrease (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_mpd_trees_df,
                      driver_nm = "Past_CCVelYoungerDryas_mean.voccMag",
@@ -161,7 +110,7 @@ contingency.analyses(driver_ses_df = driv_mpd_trees_df,
 
 ## Originality -----------------------------------------------------------------
 
-# Drivers to study: Depth mean and Past MAT sd
+# Drivers to study: Depth mean
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -177,15 +126,6 @@ contingency.analyses(driver_ses_df = driv_mntd_trees_df,
                      dim_nm = "Originality",
                      taxa_nm = "TREES")
 
-# Past MAT sd (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_mntd_trees_df,
-                     driver_nm = "Past_MAT_sd",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "TREES")
 
 # 1 - b - FD ===================================================================
 
@@ -264,7 +204,7 @@ contingency.analyses(driver_ses_df = driv_fric_trees_df,
 
 ## Dispersion ------------------------------------------------------------------
 
-# Drivers to study: Cl velocity LGM, Past MAT sd
+# Drivers to study: Cl velocity LGM and Past MAT sd
 
 # Cl. Vel. LGM (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fmpd_trees_df,
@@ -275,20 +215,11 @@ contingency.analyses(driver_ses_df = driv_fmpd_trees_df,
                      facet_nm = "FD",
                      dim_nm = "Dispersion",
                      taxa_nm = "TREES")
-# Past MAT sd (function saves automatically graphs): NO significant association
+# Past MAT sd (function saves automatically graphs): Significant association
 contingency.analyses(driver_ses_df = driv_fmpd_trees_df,
                      driver_nm = "Past_MAT_sd",
                      color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
                      threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "TREES")
-# With extreme values: signif association
-contingency.analyses(driver_ses_df = driv_fmpd_trees_df,
-                     driver_nm = "Past_MAT_sd",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "FD",
                      dim_nm = "Dispersion",
@@ -352,7 +283,7 @@ driv_mntd_birds_df <- dplyr::inner_join(envdriv_full_db,
 
 ## Richness --------------------------------------------------------------------
 
-# Drivers to study: Past MAT sd and MAT mean
+# Drivers to study: Past MAT
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -361,15 +292,6 @@ library(ggmosaic)
 contingency.analyses(driver_ses_df = driv_faith_birds_df,
                      driver_nm = "Past_MAT_sd",
                      color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "BIRDS")
-# Present MAT mean (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_faith_birds_df,
-                     driver_nm = "Present_MAT_mean",
-                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
                      threshold_type = "extremes_medium",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "PD",
@@ -492,7 +414,7 @@ contingency.analyses(driver_ses_df = driv_fmpd_birds_df,
 
 # Originality ------------------------------------------------------------------
 
-# Drivers to study: MAT Mean, Elevation mean
+# Drivers to study: MAT Mean
 
 # MAT Mean (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fori_birds_df,
@@ -503,19 +425,6 @@ contingency.analyses(driver_ses_df = driv_fori_birds_df,
                      facet_nm = "FD",
                      dim_nm = "Originality",
                      taxa_nm = "BIRDS")
-
-# Elevation Mean (function saves automatically graphs): significant association
-driv_fori_birds_df$Elv_mean <- as.numeric(driv_fori_birds_df$Elv_mean)
-contingency.analyses(driver_ses_df = driv_fori_birds_df,
-                     driver_nm = "Elv_mean",
-                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Originality",
-                     taxa_nm = "BIRDS")
-
-
 
 # 3 - BUTTERFLIES ====================================================================
 
@@ -576,7 +485,7 @@ contingency.analyses(driver_ses_df = driv_faith_butterflies_df,
 
 ## Dispersion ------------------------------------------------------------------
 
-# Drivers to study: MAT mean and Past MAT sd
+# Drivers to study: MAT mean
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -590,35 +499,7 @@ contingency.analyses(driver_ses_df = driv_mpd_butterflies_df,
                      facet_nm = "PD",
                      dim_nm = "Dispersion",
                      taxa_nm = "BUTTERFLIES")
-# With extreme values: can't because expected < 5 + non signif anyway
-contingency.analyses(driver_ses_df = driv_mpd_butterflies_df,
-                     driver_nm = "Present_MAT_mean",
-                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "BUTTERFLIES")
 plot(x = driv_mpd_butterflies_df$ses, y = driv_mpd_butterflies_df$Present_MAT_mean)
-
-# Past MAT sd (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_mpd_butterflies_df,
-                     driver_nm = "Past_MAT_sd",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "BUTTERFLIES")
-# With extreme values: No signif association
-contingency.analyses(driver_ses_df = driv_mpd_butterflies_df,
-                     driver_nm = "Past_MAT_sd",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "BUTTERFLIES")
 
 ## Originality -----------------------------------------------------------------
 
@@ -677,12 +558,12 @@ driv_fori_butterflies_df <- dplyr::inner_join(envdriv_full_db,
 
 ## Richness --------------------------------------------------------------------
 
-# Drivers to study: Clim Veloc YD increase and Past MAT sd
+# Drivers to study: Clim Veloc Holocene and Past MAT sd
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
 
-# Cl Vel YD Increase (function saves automatically graphs): significant association
+# Cl Vel Holocene (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fric_butterflies_df,
                      driver_nm = "Past_CCVelShortTerm_mean.voccMag",
                      color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
@@ -704,9 +585,9 @@ contingency.analyses(driver_ses_df = driv_fric_butterflies_df,
 
 ## Dispersion ------------------------------------------------------------------
 
-# Drivers to study: Cl Velocity YD increase
+# Drivers to study: Cl Velocity Holocene
 
-# Cl. Vel. YD increase (function saves automatically graphs): significant association
+# Cl. Vel. Holocene (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fmpd_butterflies_df,
                      driver_nm = "Past_CCVelShortTerm_mean.voccMag",
                      color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
@@ -718,7 +599,7 @@ contingency.analyses(driver_ses_df = driv_fmpd_butterflies_df,
 
 ## Originality ------------------------------------------------------------------
 
-# Drivers to study: AI mean, Elevation mean
+# Drivers to study: AI mean
 
 # AI Mean (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fori_butterflies_df,
@@ -729,19 +610,6 @@ contingency.analyses(driver_ses_df = driv_fori_butterflies_df,
                      facet_nm = "FD",
                      dim_nm = "Originality",
                      taxa_nm = "BUTTERFLIES")
-
-# Elevation Mean (function saves automatically graphs): significant association
-driv_fori_butterflies_df$Elv_mean <- as.numeric(driv_fori_butterflies_df$Elv_mean)
-contingency.analyses(driver_ses_df = driv_fori_butterflies_df,
-                     driver_nm = "Elv_mean",
-                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Originality",
-                     taxa_nm = "BUTTERFLIES")
-
-
 
 # 4 - REPTILES ====================================================================
 
@@ -785,7 +653,7 @@ driv_mntd_reptiles_df <- dplyr::inner_join(envdriv_full_db,
 
 ## Richness --------------------------------------------------------------------
 
-# Drivers to study: Herb consumption, Past MAT sd, Climate Velocity LGM
+# Drivers to study: Herb consumption
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -795,35 +663,6 @@ contingency.analyses(driver_ses_df = driv_faith_reptiles_df,
                      driver_nm = "HerbCons_sum",
                      color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
                      threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "REPTILES")
-
-# Past MAT sd (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_faith_reptiles_df,
-                     driver_nm = "Past_MAT_sd",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "REPTILES")
-
-# Cl Vel LGM (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_faith_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "REPTILES")
-# Just to check with extremes: significant association
-contingency.analyses(driver_ses_df = driv_faith_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "PD",
                      dim_nm = "Richness",
@@ -831,7 +670,7 @@ contingency.analyses(driver_ses_df = driv_faith_reptiles_df,
 
 ## Dispersion ------------------------------------------------------------------
 
-# Drivers to study: Past MAT sd and Clim Velocity LGM
+# Drivers to study: Past MAT sd
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -846,28 +685,9 @@ contingency.analyses(driver_ses_df = driv_mpd_reptiles_df,
                      dim_nm = "Dispersion",
                      taxa_nm = "REPTILES")
 
-# Clim Velocity LGM (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_mpd_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "REPTILES")
-# With extreme values: signif association
-contingency.analyses(driver_ses_df = driv_mpd_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "REPTILES")
-
 ## Originality -----------------------------------------------------------------
 
-# Drivers to study: Herb consumption, Clim veloc YD increase, MAT mean, Cl Velocity LGM
+# Drivers to study: Herb consumption
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -881,58 +701,6 @@ contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
                      facet_nm = "PD",
                      dim_nm = "Originality",
                      taxa_nm = "REPTILES")
-
-# Clim Velocity YD increase (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
-                     driver_nm = "Past_CCVelShortTerm_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "REPTILES")
-# With extreme values: NO signif association
-contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
-                     driver_nm = "Past_CCVelShortTerm_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "REPTILES")
-plot(x = driv_mntd_reptiles_df$ses, y = driv_mntd_reptiles_df$Past_CCVelShortTerm_mean.voccMag)
-# Less variation in velocity for high + ses: tendency to have a lower decrease with high + values
-
-# MAT Mean (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
-                     driver_nm = "Present_MAT_mean",
-                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "REPTILES")
-
-# Clim Velocity LGM (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "REPTILES")
-# With extreme values: signif association
-contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "REPTILES")
-
-
 
 # 4 - b - FD ===================================================================
 
@@ -974,7 +742,7 @@ driv_fori_reptiles_df <- dplyr::inner_join(envdriv_full_db,
 
 ## Richness --------------------------------------------------------------------
 
-# Drivers to study: Herb Consumption, Past MAT sd
+# Drivers to study: Herb Consumption
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -1001,18 +769,9 @@ contingency.analyses(driver_ses_df = driv_fric_reptiles_df,
 
 ## Dispersion ------------------------------------------------------------------
 
-# Drivers to study: Cl velocity LGM, Past MAT sd
+# Drivers to study: Past MAT sd
 
-# Cl. Vel. LGM (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_fmpd_reptiles_df,
-                     driver_nm = "Past_CCVelLGM_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Dispersion",
-                     taxa_nm = "REPTILES")
-# Past MAT sd (function saves automatically graphs): NO significant association
+# Past MAT sd (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fmpd_reptiles_df,
                      driver_nm = "Past_MAT_sd",
                      color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
@@ -1025,7 +784,7 @@ contingency.analyses(driver_ses_df = driv_fmpd_reptiles_df,
 
 # Originality ------------------------------------------------------------------
 
-# Drivers to study: Past MAT sd, Herb Consumption
+# Drivers to study: Past MAT sd, Herb Consumption (nearly 75% - 74% while past MAT 75%)
 
 # Past MAT sd (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fori_reptiles_df,
@@ -1093,12 +852,12 @@ driv_mntd_mammals_df <- dplyr::inner_join(envdriv_full_db,
 ## Note : Nb of cells with - SES really low : only 25 so can't use it as a threshold
 ## ...
 
-# Drivers to study: Herb consumption, Herb Richness (but normal), Cl Vel Holocene
+# Drivers to study: Herb consumption
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
 
-# Herb cons (function saves automatically graphs): NO significant association
+# Herb cons (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_faith_mammals_df,
                      driver_nm = "HerbCons_sum",
                      color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
@@ -1107,46 +866,6 @@ contingency.analyses(driver_ses_df = driv_faith_mammals_df,
                      facet_nm = "PD",
                      dim_nm = "Richness",
                      taxa_nm = "MAMMALS")
-# With extremes: NO signif association
-contingency.analyses(driver_ses_df = driv_faith_mammals_df,
-                       driver_nm = "HerbCons_sum",
-                       color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
-                       threshold_type = "extremes",
-                       drivers_nm_df = drivers_nm_df,
-                       facet_nm = "PD",
-                       dim_nm = "Richness",
-                       taxa_nm = "MAMMALS")
-plot(x = driv_faith_mammals_df$ses, y = driv_faith_mammals_df$HerbCons_sum)
-
-# Herb richn (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_faith_mammals_df,
-                     driver_nm = "HerbRichn_sum",
-                     color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "MAMMALS")
-
-# Cl Vel Holocene (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_faith_mammals_df,
-                     driver_nm = "Past_CCVelHolocene_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "MAMMALS")
-# With extreme values: signif association
-contingency.analyses(driver_ses_df = driv_faith_mammals_df,
-                     driver_nm = "Past_CCVelHolocene_mean.voccMag",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Richness",
-                     taxa_nm = "MAMMALS")
-
 
 ## Dispersion ------------------------------------------------------------------
 
@@ -1181,7 +900,7 @@ contingency.analyses(driver_ses_df = driv_mpd_mammals_df,
 ## Note : Nb of cells with - SES really low : only 5 so can't use it as a threshold
 ## ...
 
-# Drivers to study: Past AMT sd, Herb Cons and Herb richness
+# Drivers to study: Past MAT sd, Herb Cons
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -1206,20 +925,9 @@ contingency.analyses(driver_ses_df = driv_mntd_mammals_df,
                      taxa_nm = "MAMMALS")
 plot(x = driv_mntd_mammals_df$ses, y = driv_mntd_mammals_df$Past_MAT_sd)
 
-# Herb cons (function saves automatically graphs): NO significant association
+# Herb cons (function saves automatically graphs): significant association BUT < 5
 contingency.analyses(driver_ses_df = driv_mntd_mammals_df,
                      driver_nm = "HerbCons_sum",
-                     color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "PD",
-                     dim_nm = "Originality",
-                     taxa_nm = "MAMMALS")
-
-
-# Herb richn (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_mntd_mammals_df,
-                     driver_nm = "HerbRichn_sum",
                      color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
                      threshold_type = "extremes_medium",
                      drivers_nm_df = drivers_nm_df,
@@ -1268,7 +976,7 @@ driv_fori_mammals_df <- dplyr::inner_join(envdriv_full_db,
 
 ## Richness --------------------------------------------------------------------
 
-# Drivers to study: Past MAT sd, Herb richn, Past TAP sd, Herb consumption
+# Drivers to study: Past MAT sd, Herb richn
 
 # have to call the ggmosaic package (can't figure out why necessary):
 library(ggmosaic)
@@ -1321,7 +1029,6 @@ contingency.analyses(driver_ses_df = driv_fric_mammals_df,
                      facet_nm = "FD",
                      dim_nm = "Richness",
                      taxa_nm = "MAMMALS")
-plot(x = driv_fric_mammals_df$ses, y = driv_fric_mammals_df$HerbCons_sum)
 
 
 ## Dispersion ------------------------------------------------------------------
@@ -1350,7 +1057,7 @@ contingency.analyses(driver_ses_df = driv_fmpd_mammals_df,
 
 # Originality ------------------------------------------------------------------
 
-# Drivers to study: Past MAT sd, Cl Vel YD decrease, AI mean, Herb richn
+# Drivers to study: Past MAT sd, Cl Vel YD decrease
 
 # Past MAT sd (function saves automatically graphs): significant association
 contingency.analyses(driver_ses_df = driv_fori_mammals_df,
@@ -1366,26 +1073,6 @@ contingency.analyses(driver_ses_df = driv_fori_mammals_df,
 contingency.analyses(driver_ses_df = driv_fori_mammals_df,
                      driver_nm = "Past_CCVelYoungerDryas_mean.voccMag",
                      color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Originality",
-                     taxa_nm = "MAMMALS")
-
-# AI mean (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_fori_mammals_df,
-                     driver_nm = "Present_AI_mean",
-                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Originality",
-                     taxa_nm = "MAMMALS")
-
-# Herbivores richn (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_fori_mammals_df,
-                     driver_nm = "HerbRichn_sum",
-                     color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
                      threshold_type = "extremes_medium",
                      drivers_nm_df = drivers_nm_df,
                      facet_nm = "FD",
