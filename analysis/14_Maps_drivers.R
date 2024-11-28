@@ -63,7 +63,7 @@ drivers.maps.plot(drivers_df = envdriv_full_db,
                   land_mask = land_mask,
                   save = TRUE)
 
-# Velocity YD increase:
+# Velocity Holocene:
 drivers.maps.plot(drivers_df = envdriv_full_db,
                   driver_nm = "Past_CCVelShortTerm_mean.voccMag",
                   grid = grid_50km,
@@ -71,7 +71,7 @@ drivers.maps.plot(drivers_df = envdriv_full_db,
                   land_mask = land_mask,
                   save = TRUE)
 
-# Velocity Holocene:
+# Velocity YD decrease:
 drivers.maps.plot(drivers_df = envdriv_full_db,
                   driver_nm = "Past_CCVelYoungerDryas_mean.voccMag",
                   grid = grid_50km,
@@ -79,7 +79,7 @@ drivers.maps.plot(drivers_df = envdriv_full_db,
                   land_mask = land_mask,
                   save = TRUE)
 
-# Velocity YD decrease:
+# Velocity YD increase:
 drivers.maps.plot(drivers_df = envdriv_full_db,
                   driver_nm = "Past_CCVelHolocene_mean.voccMag",
                   grid = grid_50km,
@@ -104,6 +104,7 @@ drivers.maps.plot(drivers_df = envdriv_full_db,
                   save = TRUE)
 
 # Elevation mean:
+envdriv_full_db$Elv_mean <- as.numeric(envdriv_full_db$Elv_mean)
 drivers.maps.plot(drivers_df = envdriv_full_db,
                   driver_nm = "Elv_mean",
                   grid = grid_50km,
@@ -112,6 +113,7 @@ drivers.maps.plot(drivers_df = envdriv_full_db,
                   save = TRUE)
 
 # Depth mean:
+envdriv_full_db$Depth_mean <- as.numeric(envdriv_full_db$Depth_mean)
 drivers.maps.plot(drivers_df = envdriv_full_db,
                   driver_nm = "Depth_mean",
                   grid = grid_50km,

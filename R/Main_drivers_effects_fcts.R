@@ -573,6 +573,15 @@ contingency.analyses <- function(driver_ses_df,
         get(driver_nm) <= threshold_value_low ~ "low",
         TRUE ~ "medium"))
 
+    # But if driver = velocity Holocene, as it's always negative:
+    if (driver_nm %in% c("Past_CCVelShortTerm_mean.voccMag")) {
+      cat_drivers_ses_df <- simple_driver_ses_df %>%
+        dplyr::mutate(driver_cat = dplyr::case_when(
+          get(driver_nm) >= threshold_value_high ~ "low",
+          get(driver_nm) <= threshold_value_low ~ "high",
+          TRUE ~ "medium"))
+    }
+
     # Format right order:
     cat_drivers_ses_df$driver_cat <- factor(cat_drivers_ses_df$driver_cat,
                                             levels = c("low", "medium", "high"))
