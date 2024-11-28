@@ -605,6 +605,14 @@ contingency.analyses <- function(driver_ses_df,
   print(count_table)
   print("Frequency table")
   print((count_table/nrow(final_df))*100)
+  print("Frequency table - % negative or positive")
+  count_table_negpos <- as.data.frame(count_table)
+  nb_pos <- nrow(final_df[which(final_df$ses == "positive"), ])
+  nb_neg <- nrow(final_df[which(final_df$ses == "negative"), ])
+  count_table_negpos$Freq[which(count_table_negpos$ses == "positive")] <- count_table_negpos$Freq[which(count_table_negpos$ses == "positive")]/nb_pos
+  count_table_negpos$Freq[which(count_table_negpos$ses == "negative")] <- count_table_negpos$Freq[which(count_table_negpos$ses == "negative")]/nb_neg
+  count_table_negpos <- dplyr::arrange(count_table_negpos, driver)
+  print(count_table_negpos)
 
   # Do the Chi squared test of independence:
   # First check that ok to do the test: expected values > 5
