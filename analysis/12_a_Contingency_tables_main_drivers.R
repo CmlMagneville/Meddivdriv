@@ -702,6 +702,16 @@ contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
                      dim_nm = "Originality",
                      taxa_nm = "REPTILES")
 
+# MAT mean (quite 75% too): significant association
+contingency.analyses(driver_ses_df = driv_mntd_reptiles_df,
+                     driver_nm = "Present_MAT_mean",
+                     color_nms = c("#dfeae8", "#acd6cf", "#2dae99"),
+                     threshold_type = "extremes_medium",
+                     drivers_nm_df = drivers_nm_df,
+                     facet_nm = "PD",
+                     dim_nm = "Originality",
+                     taxa_nm = "REPTILES")
+
 # 4 - b - FD ===================================================================
 
 # Note: Get a contingency tables for the main drivers of FD dimensions, ...
@@ -805,6 +815,8 @@ contingency.analyses(driver_ses_df = driv_fori_reptiles_df,
                      facet_nm = "FD",
                      dim_nm = "Originality",
                      taxa_nm = "REPTILES")
+
+
 
 
 # 5 - MAMMALS ====================================================================
@@ -1031,6 +1043,8 @@ contingency.analyses(driver_ses_df = driv_fric_mammals_df,
                      taxa_nm = "MAMMALS")
 
 
+
+
 ## Dispersion ------------------------------------------------------------------
 
 # Drivers to study: Herb richness and consumption
@@ -1078,3 +1092,5 @@ contingency.analyses(driver_ses_df = driv_fori_mammals_df,
                      facet_nm = "FD",
                      dim_nm = "Originality",
                      taxa_nm = "MAMMALS")
+
+

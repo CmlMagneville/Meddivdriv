@@ -159,7 +159,7 @@ cat.distrib.plot <- function(rf_df,
 
     ggplot2::scale_fill_manual(values = palette) +
 
-    ggplot2::ylab("Drivers importance") +
+    ggplot2::ylab("Drivers standardised importance") +
 
     ggplot2::ggtitle(metric_nm) +
 
@@ -190,21 +190,21 @@ cat.distrib.plot <- function(rf_df,
       stat_df$asterisk_label[i] <- "*"
       if (i >= 2) {
         j <- j + 1
-        y_pos_values[j] <- y_pos_values[j-1] + 0.001
+        y_pos_values[j] <- y_pos_values[j-1] + 0.03
       }
     }
     if (stat_df$p.value[i] < 0.01) {
       stat_df$asterisk_label[i] <- "**"
       if (i >= 2) {
         j <- j + 1
-        y_pos_values[j] <- y_pos_values[j-1] + 0.001
+        y_pos_values[j] <- y_pos_values[j-1] + 0.03
       }
     }
     if (stat_df$p.value[i] < 0.001) {
       stat_df$asterisk_label[i] <- "***"
       if (i >= 2) {
         j <- j + 1
-        y_pos_values[j] <- y_pos_values[j-1] + 0.001
+        y_pos_values[j] <- y_pos_values[j-1] + 0.03
       }
     }
   }
@@ -665,9 +665,7 @@ heatmap.categories <- function(list_richness,
                   units = "px",
                   dpi = 600)
 
-
-
-
-
+  # return the plot dataframe:
+  return(all_metric_plot_df)
 
 }

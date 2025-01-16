@@ -1030,7 +1030,7 @@ create.df.circular.plot <- function(rf_df_list,
                                      "Present_Perc_wild_lands_Weighted_Sd",
                                      "Pr_Pop_2020_mean",
                                      "Pr_RatePop_2020_mean")) {
-      final_df$Drivers_cat[i] <- "Present Direct Human Impact"
+      final_df$Drivers_cat[i] <- "Present Human Direct Impact"
     }
 
   }
@@ -1131,7 +1131,7 @@ create.df.circular.plot <- function(rf_df_list,
                                           "Present_Perc_wild_lands_Weighted_Sd",
                                           "Pr_Pop_2020_mean",
                                           "Pr_RatePop_2020_mean")) {
-        temp_df$Drivers_cat[i] <- "Present Direct Human Impact"
+        temp_df$Drivers_cat[i] <- "Present Human Direct Impact"
       }
 
     }
@@ -1184,7 +1184,7 @@ circular.drivers.plot <- function(taxa_plot_df,
                                                 "Present Habitat Heterogeneity",
                                                 "Disturbances",
                                                 "Past Land Use",
-                                                "Present Direct Human Impact"))
+                                                "Present Human Direct Impact"))
 
   # Decreasing variable importance:
   taxa_plot_df <- taxa_plot_df %>%
@@ -1230,14 +1230,14 @@ circular.drivers.plot <- function(taxa_plot_df,
 
   # Prepare a dataframe for metrics labels
   if (div_facet == "PD") {
-    data_labmetric <- data.frame(x = c(5, 18, 31),
+    data_labmetric <- data.frame(x = c(8, 26, 44),
                                  y = c(-0.3, -0.3, -0.3),
                                  label = c("PD Dispersion",
                                            "PD Originality",
                                            "PD Richness"))
   }
   if (div_facet == "FD") {
-    data_labmetric <- data.frame(x = c(5, 18, 31),
+    data_labmetric <- data.frame(x = c(8, 26, 44),
                                  y = c(-0.3, -0.3, -0.3),
                                  label = c("FD Dispersion",
                                            "FD Originality",
@@ -1297,23 +1297,23 @@ circular.drivers.plot <- function(taxa_plot_df,
                                                        label = Drivers_short_nm,
                                                        hjust = hjust),
                        color = "black", alpha = 0.6, fontface = "bold",
-                       size = 3, angle = label_data$angle,
+                       size = 2.5, angle = label_data$angle,
                        inherit.aes = FALSE) +
 
     # Add metrics retangles and name:
-    ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = 11,
+    ggplot2::geom_rect(ggplot2::aes(xmin = 0, xmax = 16,
                                     ymin = -0.5, ymax = -0.05),
                        fill = "grey80",
                        alpha = 0.7,
                        color = "white",
                        size = 2) +
-    ggplot2::geom_rect(ggplot2::aes(xmin = 13, xmax = 24,
+    ggplot2::geom_rect(ggplot2::aes(xmin = 18, xmax = 34,
                                   ymin = -0.5, ymax = -0.05),
                       fill = "grey80",
                       alpha = 0.7,
                       color = "white",
                       size = 2) +
-    ggplot2::geom_rect(ggplot2::aes(xmin = 26, xmax = 37,
+    ggplot2::geom_rect(ggplot2::aes(xmin = 36, xmax = 52,
                                     ymin = -0.5, ymax = -0.05),
                       fill = "grey80",
                       alpha = 0.7,
