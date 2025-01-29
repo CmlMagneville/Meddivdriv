@@ -11,9 +11,6 @@
 ################################################################################
 
 
-
-
-
 #' Plot A Given Diversity Metric At A Given Scale
 #'
 #' @param div_per_cell_df a data frame with the spatial cells in rows and the
@@ -179,7 +176,7 @@ div.maps.plot <- function(div_per_cell_df,
 
 
 
-#' Maps drivers
+#' Maps drivers or residuals
 #'
 #' @param drivers_df the data frame with drivers values
 #' @param driver_nm a character string referring to the driver to study
@@ -188,6 +185,12 @@ div.maps.plot <- function(div_per_cell_df,
 #' the 10x10km grid (WOODIV one) or the 50x50km one (INTEGRADIV one).
 #' @param col_pal a vector gathering two colors for the gradient from low to high
 #' @param land_mask a shapefile of europe land mask
+#' @param type a character string being "residuals" is residuals are being
+#' plotted - if not residuals, the function will automatically save the file as
+#' a driver map
+#' @param div_dim a character string to fill out if \code{type = "residuals},
+#' to get the dimensions of diversity the map is referring to
+#' (ex "PD_richness_TREES")
 #' @param save TRUE or FALSE whether the plot is to be saved or not
 #'
 #' @return
@@ -199,6 +202,8 @@ drivers.maps.plot <- function(drivers_df,
                               grid,
                               col_pal,
                               land_mask,
+                              type,
+                              div_dim,
                               save) {
 
 
@@ -252,30 +257,66 @@ drivers.maps.plot <- function(drivers_df,
   # Save if needed:
   if (save == TRUE) {
 
-    ggplot2::ggsave(plot = plot_map,
-                    filename = here::here("outputs",
-                                          "drivers_maps",
-                                          paste0(driver_nm,
-                                                 sep = ".",
-                                                 "pdf")),
-                    device = "pdf",
-                    scale = 1,
-                    height = 3000,
-                    width = 5000,
-                    units = "px",
-                    dpi = 600)
-    ggplot2::ggsave(plot = plot_map,
-                    filename = here::here("outputs",
-                                          "drivers_maps",
-                                          paste0(driver_nm,
-                                                 sep = ".",
-                                                 "jpg")),
-                    device = "jpg",
-                    scale = 1,
-                    height = 3000,
-                    width = 5000,
-                    units = "px",
-                    dpi = 600)
+    # If it's a residual map:
+    if (type == "residuals") {
+
+      ggplot2::ggsave(plot = plot_map,
+                      filename = here::here("outputs",
+                                            "residuals_maps",
+                                            paste0(driver_nm,
+                                                   sep = "_",
+                                                   div_dim,
+                                                   sep = ".",
+                                                   "pdf")),
+                      device = "pdf",
+                      scale = 1,
+                      height = 3000,
+                      width = 5000,
+                      units = "px",
+                      dpi = 600)
+      ggplot2::ggsave(plot = plot_map,
+                      filename = here::here("outputs",
+                                            "residuals_maps",
+                                            paste0(driver_nm,
+                                                   sep = "_",
+                                                   div_dim,
+                                                   sep = ".",
+                                                   "jpg")),
+                      device = "jpg",
+                      scale = 1,
+                      height = 3000,
+                      width = 5000,
+                      units = "px",
+                      dpi = 600)
+
+    }
+    # If it's a driver map:
+    else {
+      ggplot2::ggsave(plot = plot_map,
+                      filename = here::here("outputs",
+                                            "drivers_maps",
+                                            paste0(driver_nm,
+                                                   sep = ".",
+                                                   "pdf")),
+                      device = "pdf",
+                      scale = 1,
+                      height = 3000,
+                      width = 5000,
+                      units = "px",
+                      dpi = 600)
+      ggplot2::ggsave(plot = plot_map,
+                      filename = here::here("outputs",
+                                            "drivers_maps",
+                                            paste0(driver_nm,
+                                                   sep = ".",
+                                                   "jpg")),
+                      device = "jpg",
+                      scale = 1,
+                      height = 3000,
+                      width = 5000,
+                      units = "px",
+                      dpi = 600)
+    }
 
   }
 
