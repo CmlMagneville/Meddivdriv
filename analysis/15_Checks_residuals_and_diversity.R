@@ -1019,8 +1019,135 @@ weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
 spdep::moran.test(spatial_df$mean_residual, weight_list)
 
 
+# MAMMALS ------------------------------------------------------------------------
+# FD Richness
+# Link spatial coordinates and residuals:
+spatial_df <- mammals_fd_richn_rf[, c("Idgrid", "mean_residual")]
+spatial_df <- dplyr::left_join(spatial_df,
+                               grid_50km,
+                               by = "Idgrid")
+spatial_df <- dplyr::select(spatial_df, c("Idgrid",
+                                          "X_LLC",
+                                          "Y_LLC",
+                                          "mean_residual"))
+# Convert data to spatial points df:
+spatial_final_df <- sp::SpatialPointsDataFrame(cbind(spatial_df$X_LLC,
+                                                     spatial_df$Y_LLC),
+                                               spatial_df)
+# Construct a list of spatial weights using the 8 neighbors (queen contig):
+weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
+                                                               k = 8)))
+# Compute Moran's I using models residuals:
+spdep::moran.test(spatial_df$mean_residual, weight_list)
+
+# FD Dispersion
+# Link spatial coordinates and residuals:
+spatial_df <- mammals_fd_disp_rf[, c("Idgrid", "mean_residual")]
+spatial_df <- dplyr::left_join(spatial_df,
+                               grid_50km,
+                               by = "Idgrid")
+spatial_df <- dplyr::select(spatial_df, c("Idgrid",
+                                          "X_LLC",
+                                          "Y_LLC",
+                                          "mean_residual"))
+# Convert data to spatial points df:
+spatial_final_df <- sp::SpatialPointsDataFrame(cbind(spatial_df$X_LLC,
+                                                     spatial_df$Y_LLC),
+                                               spatial_df)
+# Construct a list of spatial weights using the 8 neighbors (queen contig):
+weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
+                                                               k = 8)))
+# Compute Moran's I using models residuals:
+spdep::moran.test(spatial_df$mean_residual, weight_list)
+
+# FD Originality
+# Link spatial coordinates and residuals:
+spatial_df <- mammals_fd_orig_rf[, c("Idgrid", "mean_residual")]
+spatial_df <- dplyr::left_join(spatial_df,
+                               grid_50km,
+                               by = "Idgrid")
+spatial_df <- dplyr::select(spatial_df, c("Idgrid",
+                                          "X_LLC",
+                                          "Y_LLC",
+                                          "mean_residual"))
+# Convert data to spatial points df:
+spatial_final_df <- sp::SpatialPointsDataFrame(cbind(spatial_df$X_LLC,
+                                                     spatial_df$Y_LLC),
+                                               spatial_df)
+# Construct a list of spatial weights using the 8 neighbors (queen contig):
+weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
+                                                               k = 8)))
+# Compute Moran's I using models residuals:
+spdep::moran.test(spatial_df$mean_residual, weight_list)
+
+
+# PD Richness
+# Link spatial coordinates and residuals:
+spatial_df <- mammals_pd_richn_rf[, c("Idgrid", "mean_residual")]
+spatial_df <- dplyr::left_join(spatial_df,
+                               grid_50km,
+                               by = "Idgrid")
+spatial_df <- dplyr::select(spatial_df, c("Idgrid",
+                                          "X_LLC",
+                                          "Y_LLC",
+                                          "mean_residual"))
+# Convert data to spatial points df:
+spatial_final_df <- sp::SpatialPointsDataFrame(cbind(spatial_df$X_LLC,
+                                                     spatial_df$Y_LLC),
+                                               spatial_df)
+# Construct a list of spatial weights using the 8 neighbors (queen contig):
+weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
+                                                               k = 8)))
+# Compute Moran's I using models residuals:
+spdep::moran.test(spatial_df$mean_residual, weight_list)
+
+# PD Dispersion
+# Link spatial coordinates and residuals:
+spatial_df <- mammals_pd_disp_rf[, c("Idgrid", "mean_residual")]
+spatial_df <- dplyr::left_join(spatial_df,
+                               grid_50km,
+                               by = "Idgrid")
+spatial_df <- dplyr::select(spatial_df, c("Idgrid",
+                                          "X_LLC",
+                                          "Y_LLC",
+                                          "mean_residual"))
+# Convert data to spatial points df:
+spatial_final_df <- sp::SpatialPointsDataFrame(cbind(spatial_df$X_LLC,
+                                                     spatial_df$Y_LLC),
+                                               spatial_df)
+# Construct a list of spatial weights using the 8 neighbors (queen contig):
+weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
+                                                               k = 8)))
+# Compute Moran's I using models residuals:
+spdep::moran.test(spatial_df$mean_residual, weight_list)
+
+# PD Originality
+# Link spatial coordinates and residuals:
+spatial_df <- mammals_pd_orig_rf[, c("Idgrid", "mean_residual")]
+spatial_df <- dplyr::left_join(spatial_df,
+                               grid_50km,
+                               by = "Idgrid")
+spatial_df <- dplyr::select(spatial_df, c("Idgrid",
+                                          "X_LLC",
+                                          "Y_LLC",
+                                          "mean_residual"))
+# Convert data to spatial points df:
+spatial_final_df <- sp::SpatialPointsDataFrame(cbind(spatial_df$X_LLC,
+                                                     spatial_df$Y_LLC),
+                                               spatial_df)
+# Construct a list of spatial weights using the 8 neighbors (queen contig):
+weight_list <- spdep::nb2listw(spdep::knn2nb(spdep::knearneigh(spatial_final_df,
+                                                               k = 8)))
+# Compute Moran's I using models residuals:
+spdep::moran.test(spatial_df$mean_residual, weight_list)
+
 
 # 2 - Compute correlation between metrics ======================================
 
-# Cf already coded function
+
+# Get raw diversity values:
+
+
+
+
 

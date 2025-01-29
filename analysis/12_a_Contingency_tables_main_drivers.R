@@ -1013,38 +1013,6 @@ contingency.analyses(driver_ses_df = driv_fric_mammals_df,
                      dim_nm = "Richness",
                      taxa_nm = "MAMMALS")
 
-# Past TAP sd (function saves automatically graphs): significant association
-contingency.analyses(driver_ses_df = driv_fric_mammals_df,
-                     driver_nm = "Past_TAP_sd",
-                     color_nms = c("#ccdbe2", "#73b2d1", "#0881bd"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Richness",
-                     taxa_nm = "MAMMALS")
-
-# Herbivores cons (function saves automatically graphs): NO significant association
-contingency.analyses(driver_ses_df = driv_fric_mammals_df,
-                     driver_nm = "HerbCons_sum",
-                     color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
-                     threshold_type = "extremes_medium",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Richness",
-                     taxa_nm = "MAMMALS")
-# With extreme values: NO signif association
-contingency.analyses(driver_ses_df = driv_fric_mammals_df,
-                     driver_nm = "HerbCons_sum",
-                     color_nms = c("#f2eedb", "#f0e3a5","#dab811"),
-                     threshold_type = "extremes",
-                     drivers_nm_df = drivers_nm_df,
-                     facet_nm = "FD",
-                     dim_nm = "Richness",
-                     taxa_nm = "MAMMALS")
-
-
-
-
 ## Dispersion ------------------------------------------------------------------
 
 # Drivers to study: Herb richness and consumption
