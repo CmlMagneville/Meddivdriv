@@ -27,6 +27,9 @@
 envdriv_full_db <- readRDS(here::here("transformed_data", "env_db",
                                        "env_drivers_final_restricted_db.rds"))
 
+# Check that all columns are numeric:
+sapply(env_drivers_df, is.numeric)
+
 # Load the file which contain drivers shorter names:
 drivers_nm_df <- read.csv(here::here("env_db",
                                      "Drivers_short_nm.csv"))

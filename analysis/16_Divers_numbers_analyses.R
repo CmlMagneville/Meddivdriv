@@ -191,3 +191,52 @@ cor.test(herb_richn_df$sp_richn, herb_richn_df$HerbCons_sum,
          method = c("pearson"))
 plot(x = herb_richn_df$sp_richn,
      y = herb_richn_df$HerbCons_sum)
+
+
+# Compute correlation between all drivers ###############
+
+
+# Load the environmental data:
+env_drivers_df <- readRDS(here::here("transformed_data",
+                                     "env_db",
+                                     "env_drivers_final_restricted_db.rds"))
+# Remove Idgrid to compute correlation matrix:
+env_drivers_df <- env_drivers_df[, -1]
+
+# Check that all columns are numeric:
+sapply(env_drivers_df, is.numeric)
+
+# Put those which are not as numeric:
+for (col in c("Depth_mean", "Depth_stdev", "Elv_mean",
+              "Elv_stdev", "OC_mean", "OC_stdev",
+              "pH_mean", "pH_stdev",
+              "Pr_FCon_percentage_percentage",
+              "VWC_mean", "VWC_stdev")) {
+  env_drivers_df[[col]] <- as.numeric(env_drivers_df[[col]])
+}
+
+# Compute correlation matrix:
+cor_matrix <- round(cor(env_drivers_df), 1)
+colnames(cor_matrix) <- colnames(env_drivers_df)
+rownames(cor_matrix) <- colnames(env_drivers_df)
+
+# Plot the correlation matrix:
+correl_drivers_plot <- ggcorrplot::ggcorrplot(cor_matrix,
+                                              hc.order = TRUE,
+                                              type = "lower")+
+  ggplot2::theme(axis.text.x = ggplot2::element_text(size = 7,
+                                                     angle = 90,
+                                                     hjust = 1),
+        axis.text.y = ggplot2::element_text(size = 7))
+correl_drivers_plot
+
+# Save the plot:
+ggplot2::ggsave(plot = correl_drivers_plot,
+                filename = here::here("outputs",
+                                      "drivers_correlations.jpg"),
+                device = "jpg",
+                scale = 1,
+                height = 5000,
+                width = 5000,
+                units = "px",
+                dpi = 600)

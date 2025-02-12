@@ -5,7 +5,7 @@
 ##
 ## Camille Magneville
 ##
-## 11/2024
+## 11/2024 - 01/2025
 ##
 ## 15_Checks_diversity_correlation.R
 ##
@@ -1145,7 +1145,56 @@ spdep::moran.test(spatial_df$mean_residual, weight_list)
 # 2 - Compute correlation between metrics ======================================
 
 
+# TREES ------------------------------------------------------------------------
 # Get raw diversity values:
+fd_richn_trees <- readRDS(here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "FD_FRic_50km_TREES.rds"))
+fd_disp_orig_trees <- readRDS(here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "FD_FMPD_FOri_50km_TREES.rds"))
+pd_richn_trees <- readRDS(here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "PD_Faith_50km_TREES.rds"))
+pd_disp_trees <- readRDS(here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "PD_MPD_50km_TREES.rds"))
+pd_orig_trees <- readRDS(here::here("transformed_data",
+                                     "div_values_null_models",
+                                     "PD_MNTD_50km_TREES.rds"))
+
+# Set rownames to columns for FD indices:
+fd_richn_trees <- fd_richn_trees$functional_diversity_indices
+fd_richn_trees <- tibble::rownames_to_column(fd_richn_trees, var = "Idgrid")
+fd_disp_orig_trees <- fd_disp_orig_trees$functional_diversity_indices
+fd_disp_orig_trees <- tibble::rownames_to_column(fd_disp_orig_trees, var = "Idgrid")
+
+# Give names to PD indices:
+colnames(pd_richn_trees)[2] <- "Faith"
+colnames(pd_disp_trees)[2] <- "MPD"
+colnames(pd_orig_trees)[2] <- "MNTD"
+
+# Link diversity values:
+trees_div_df <- fd_richn_trees %>%
+  dplyr::left_join(fd_disp_orig_trees[, c(1, 3, 4)],
+                   by = "Idgrid") %>%
+  dplyr::left_join(pd_richn_trees[, c(1, 2)],
+                   by = "Idgrid") %>%
+  dplyr::left_join(pd_disp_trees[, c(1, 2)],
+                   by = "Idgrid") %>%
+  dplyr::left_join(pd_orig_trees[, c(1, 2)],
+                   by = "Idgrid")
+
+# Compute correlation and correlogram:
+correl_matrix <- cor(trees_div_df[, -1])
+corrplot::corrplot(correl_matrix, method = "color", type = "upper",
+                   col = colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))(200),
+                   addCoef.col = "black", tl.col = "black", tl.srt = 45)
+
+
+
+
+# 3 - Compute correlation between metrics our=t of null models =================
 
 
 
