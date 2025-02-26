@@ -205,6 +205,37 @@ cat_order <- c("Past Climate Stability",
 alluvial_plot_pd_final_df$Drivers_cat <- factor(alluvial_plot_pd_final_df$Drivers_cat,
                                                 levels = cat_order)
 
+# Order the Taxa_Dim column:
+taxa_order <- c("Trees Richness",
+                "Trees Dispersion",
+                "Trees Originality",
+                "Butterflies Richness",
+                "Butterflies Dispersion",
+                "Butterflies Originality",
+                "Reptiles Richness",
+                "Reptiles Dispersion",
+                "Reptiles Originality",
+                "Birds Richness",
+                "Birds Dispersion",
+                "Birds Originality",
+                "Mammals Richness",
+                "Mammals Dispersion",
+                "Mammals Originality")
+alluvial_plot_pd_final_df$Taxa_Dim <- factor(alluvial_plot_pd_final_df$Taxa_Dim,
+                                             levels = taxa_order)
+
+# Order the drivers:
+drivers_order <- c("Past MAT sd",
+                   "Cl. Velocity LGM",
+                   "Cl. Velocity YD decrease",
+                   "Cl. Velocity Holocene",
+                   "MAT mean",
+                   "Depth mean",
+                   "Herbivores Consumption",
+                   "Herbivores Richness")
+alluvial_plot_pd_final_df$Drivers_nm <- factor(alluvial_plot_pd_final_df$Drivers_nm,
+                                               levels = drivers_order)
+
 # Create the alluvial plot:
 alluvial_plot_pd <- ggplot2::ggplot(data = alluvial_plot_pd_final_df,
                 ggplot2::aes(axis1 = Drivers_nm, axis2 = Taxa_Dim,
@@ -312,6 +343,38 @@ cat_order <- c("Past Climate Stability",
                "Present Human Direct Impact")
 alluvial_plot_fd_final_df$Drivers_cat <- factor(alluvial_plot_fd_final_df$Drivers_cat,
                                                 levels = cat_order)
+
+# Order the Taxa_Dim column:
+taxa_order <- c("Trees Richness",
+               "Trees Dispersion",
+               "Trees Originality",
+               "Butterflies Richness",
+               "Butterflies Dispersion",
+               "Butterflies Originality",
+               "Reptiles Richness",
+               "Reptiles Dispersion",
+               "Reptiles Originality",
+               "Birds Richness",
+               "Birds Dispersion",
+               "Birds Originality",
+               "Mammals Richness",
+               "Mammals Dispersion",
+               "Mammals Originality")
+alluvial_plot_fd_final_df$Taxa_Dim <- factor(alluvial_plot_fd_final_df$Taxa_Dim,
+                                                levels = taxa_order)
+
+# Order the drivers:
+drivers_order <- c("Past MAT sd",
+                   "Cl. Velocity LGM",
+                   "Cl. Velocity YD decrease",
+                   "Cl. Velocity Holocene",
+                   "MAT mean",
+                   "AI mean",
+                   "Elevation mean",
+                   "Herbivores Consumption",
+                   "Growth rate pop")
+alluvial_plot_fd_final_df$Drivers_nm <- factor(alluvial_plot_fd_final_df$Drivers_nm,
+                                               levels = drivers_order)
 
 # Create the alluvial plot:
 alluvial_plot_fd <- ggplot2::ggplot(data = alluvial_plot_fd_final_df,
